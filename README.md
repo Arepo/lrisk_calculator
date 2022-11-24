@@ -1,1 +1,1 @@
-# longtermist_calculator
+# L-risk calculator
