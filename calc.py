@@ -1,10 +1,19 @@
 import pdb
 
+# This script prints out a series of probabilities for transition becoming interstellar based on
+# estimates of the transition probabilities of various(values are currently hardcoded placeholders)
+# states, as in a Markov chain. The states are extinction, survival, preindustrial, industrial, time
+# of perils, multiplanetary, and interstellar.
+#
+# A full description/explanation of the model is in the section titled The Cyclical Model in this
+# post:
+# https://forum.effectivealtruism.org/posts/YnBwoNNqe6knBJH8p/modelling-civilisation-after-a-catastrophe#The_cyclical_model
+
+
 # Transition probabilities
 
 class InvalidTransitionProbabilities(Exception):
   pass
-
 
 def extinction_given_survival():
   return 0.1
@@ -84,15 +93,14 @@ if not extinction_given_multiplanetary() + survival_given_multiplanetary() + pre
   raise InvalidTransitionProbabilities("Transition probabilities from multiplanetary must == 1")
 
 
-
-# Simplifying
+# Shortcuts for the probability of direct-path transitions
 
 probability_of_industrial_to_perils_directly = perils_given_industrial()
 probability_of_preindustrial_to_perils_directly = industrial_given_preindustrial() * probability_of_industrial_to_perils_directly
 probability_of_survival_to_perils_directly = preindustrial_given_survival() * probability_of_preindustrial_to_perils_directly
 
 
-# =>
+# Calculated absorbtion probabilities from the different starting states (see working at bottom)
 
 probability_of_interstellar_from_extinction = 0
 probability_of_interstellar_from_interstellar = 1
@@ -104,7 +112,6 @@ probability_of_interstellar_from_perils = (interstellar_given_perils() + multipl
                                                                                    + preindustrial_given_multiplanetary() * probability_of_preindustrial_to_perils_directly
                                                                                    + industrial_given_multiplanetary() * probability_of_industrial_to_perils_directly
                                                                                    + perils_given_multiplanetary())))
-
 probability_of_interstellar_from_survival = probability_of_survival_to_perils_directly * probability_of_interstellar_from_perils
 probability_of_interstellar_from_industrial = probability_of_industrial_to_perils_directly * probability_of_interstellar_from_perils
 probability_of_interstellar_from_preindustrial = probability_of_preindustrial_to_perils_directly * probability_of_interstellar_from_perils
@@ -114,9 +121,6 @@ probability_of_interstellar_from_multiplanetary = (survival_given_multiplanetary
                                                    + perils_given_multiplanetary() * probability_of_interstellar_from_perils
                                                    + interstellar_given_multiplanetary())
 
-
-
-# pdb.set_trace()
 
 print(f"""
 Probability of becoming interstellar from extinction = {probability_of_interstellar_from_extinction}
