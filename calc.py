@@ -1,7 +1,5 @@
 import pdb
 
-# wibble
-
 # Transition probabilities
 
 class InvalidTransitionProbabilities(Exception):
