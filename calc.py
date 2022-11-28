@@ -242,24 +242,24 @@ Probability of becoming interstellar from interstellar = {probability_of_interst
 #                                                                       + prob(M | C)])
 
 # probability_of_preindustrial_to_perils_directly = prob(I | P) * prob(M | I)
-# survival_to_perils_directly = prob(P | S) * probability_of_preindustrial_to_perils_directly
+# probability_of_survival_to_perils_directly = prob(P | S) * probability_of_preindustrial_to_perils_directly
 
 # # =>
-# a4 = [prob(V | M) + prob(C | M) * prob(V | C)] / (1 - [prob(S | M) * survival_to_perils_directly
+# a4 = [prob(V | M) + prob(C | M) * prob(V | C)] / (1 - [prob(S | M) * probability_of_survival_to_perils_directly
 #                                                      + prob(P | M) * probability_of_preindustrial_to_perils_directly
 #                                                      + prob(I | M) * prob(M | I)
-#                                                      + prob(C | M) * [prob(S | C) * survival_to_perils_directly
+#                                                      + prob(C | M) * [prob(S | C) * probability_of_survival_to_perils_directly
 #                                                                       + prob(P | C) * prob(I | P) * prob(M | I)
 #                                                                       + prob(I | C) * prob(M | I)
 #                                                                       + prob(M | C)])
 
 # probability_of_interstellar_from_perils = a4 = [interstellar_given_perils() + multiplanetary_given_perils() * interstellar_given_multiplanetary()] /
-#                                                (1 - [survival_given_perils() * survival_to_perils_directly
+#                                                (1 - [survival_given_perils() * probability_of_survival_to_perils_directly
 #                                                      + preindustrial_given_perils() * probability_of_preindustrial_to_perils_directly
 #                                                      + industrial_given_perils() * perils_given_industrial()
-#                                                      + multiplanetary_given_perils() * [survival_given_multiplanetary() * survival_to_perils_directly
+#                                                      + multiplanetary_given_perils() * [survival_given_multiplanetary() * probability_of_survival_to_perils_directly
 #                                                                                         + preindustrial_given_multiplanetary() * industrial_given_preindustrial() * perils_given_industrial()
-#                                                                                         + preindustrial_given_multiplanetary() * perils_given_industrial()
+#                                                                                         + industrial_given_multiplanetary() * perils_given_industrial()
 #                                                                                         + perils_given_multiplanetary()]])
 
 # probability_of_interstellar_from_multiplanetary = a5 = survival_given_multiplanetary() * preindustrial_given_survival() * industrial_given_preindustrial() * perils_given_industrial() * probability_of_interstellar_from_perils
