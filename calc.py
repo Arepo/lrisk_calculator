@@ -102,7 +102,7 @@ probability_of_interstellar_from_perils = (interstellar_given_perils() + multipl
                                                 + industrial_given_perils() * probability_of_preindustrial_to_perils_directly
                                                 + multiplanetary_given_perils() * (survival_given_multiplanetary() * probability_of_survival_to_perils_directly
                                                                                    + preindustrial_given_multiplanetary() * probability_of_preindustrial_to_perils_directly
-                                                                                   + preindustrial_given_multiplanetary() * probability_of_preindustrial_to_perils_directly
+                                                                                   + industrial_given_multiplanetary() * probability_of_industrial_to_perils_directly
                                                                                    + perils_given_multiplanetary())))
 
 probability_of_interstellar_from_survival = probability_of_survival_to_perils_directly * probability_of_interstellar_from_perils
