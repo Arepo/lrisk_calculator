@@ -130,6 +130,11 @@ Probability of becoming interstellar from industrial = {probability_of_interstel
 Probability of becoming interstellar from perils = {probability_of_interstellar_from_perils}
 Probability of becoming interstellar from multiplanetary = {probability_of_interstellar_from_multiplanetary}
 Probability of becoming interstellar from interstellar = {probability_of_interstellar_from_interstellar}
+
+Differences in probability from perils...
+... for survival = {probability_of_interstellar_from_perils - probability_of_interstellar_from_survival}
+... for preindustrial = {probability_of_interstellar_from_perils - probability_of_interstellar_from_preindustrial}
+... for industrial = {probability_of_interstellar_from_perils - probability_of_interstellar_from_industrial}
 """)
 
 
