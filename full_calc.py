@@ -18,7 +18,6 @@ class InvalidTransitionProbabilities(Exception):
   """Raised when transition probabilities from a state don't sum to 1"""
   pass
 
-
 ## Transition probabilities from survival state
 
 def extinction_given_survival(k):
@@ -120,10 +119,13 @@ def extinction_given_preindustrial(k):
   # 'Using the 2Myr origin of Homo strengthens the bound by an order of magnitude in a
   # similar way and produces annual extinction probabilities below 1 in 870,000.''
 
-  base_extinction_estimate = 1 - ((1 - extinction_probability_per_year) ** expected_time_in_years)
+  base_total_extinction_probability = 1 - ((1 - extinction_probability_per_year) ** expected_time_in_years)
+  raise BaseException("there's a lot of negations I need to check in this function")
+
   multiplier_per_previous_preindustrial = 0.4 # Naively this seems like it should be
                                               # the same as in the
                                               # extinction_given_survival() function
+
   expected_number_of_previous_preindustrials = (k - 1) * 0.4
   # Thoughts behind above variable: I assume biopandemics would leave us enough technology to retain
   # industry; malevolent AI would most likely either wipe us out or be controlled by bad acting humans,
@@ -131,7 +133,7 @@ def extinction_given_preindustrial(k):
   # destroy industry, but wouldn't be big enough for the first few years of a time of perils; some
   # kind of multiple catastrophe could also cause this
 
-  return ((1 - base_extinction_estimate) *
+  return ((1 - base_total_extinction_probability) *
           multiplier_per_previous_preindustrial ** expected_number_of_previous_preindustrials)
 
 def industrial_given_preindustrial(k):
@@ -149,16 +151,18 @@ def extinction_given_industrial(k):
   number of retries it should probably increase, as we gain evidence of our capacity to deal with
   those scarcer resources. There might also be dramatic differences in difficulty based exactly on what
   has been used up or left behind by previous civilisations, so we might want a branching function.
+  Below I've used a branching function for the pessimistic case, but otherwise defaulted to the simple
+  approach of assuming exponential decline
   """
 
   # For extinction probability per year, we can start with the base rates given in the previous
   # calculation, and then multiply them by some factor based on whether we think industry would make
   # humans more or less resilient.
-  # background_extinction_probability_per_year = 1/14_000
-  # background_extinction_probability_per_year = 1/22_800
-  # background_extinction_probability_per_year = 1/140_000
-  background_extinction_probability_per_year = 1/87_000
-  # background_extinction_probability_per_year = 1/870_000
+  # base_annual_extinction_probability = 1/14_000
+  # base_annual_extinction_probability = 1/22_800
+  # base_annual_extinction_probability = 1/140_000
+  base_annual_extinction_probability = 1/87_000
+  # base_annual_extinction_probability = 1/870_000
 
   annual_extinction_probability_multiplier = 0.7 # Intuition based on the reasoning below:
   # This paper estimates that British grain output approxmately doubled between ~1760-1850, and had
@@ -177,15 +181,16 @@ def extinction_given_industrial(k):
 
   # For expected time in years, we have to make some strong assumptions.
 
-  resource_related_difficulty_modifier = 1.2 # How much longer would take a typical reboot than
-  # in the previous one develop modern technology given only resource-depletion considerations
-
   # Pessimistic scenario
   # In this scenario, I assume all knowledge of previous civilisations' technology is either lost or
   # made useless by different resource constraints. Thus I imagine the original ~145 years for this
   # transition is stretched substantially by the decline in resource availability - most strongly so
   # from the initial lack of fossil fuels in reboot 1 and from phosphorus in subsequent reboots, then
-  # more gently as metals are gradually left in unusable states.
+  # somewhat more gently as rare earths etc are gradually left in unusable states.
+
+  per_reboot_difficulty_modifier = 1.5 # How much longer/less long would it take a typical reboot than in the
+  # previous one to develop modern technology given resource-depletion considerations
+
   if k == 1:
     expected_time_in_years = 1450
     # I mostly arbitrarily assume ten times the duration for rebooting with no oil, much less
@@ -197,15 +202,23 @@ def extinction_given_industrial(k):
     # He gives no probability estimates, but uses phrases like 'For a society to stand any chance of
     # industrialising under such conditions' and 'an industrial revolution without coal would be, at
     # a minimum, very difficult', suggesting he might think it's unlikely to *ever* happen.
-  if k == 2:
+  elif k == 2:
     expected_time_in_years = 2900
     # I imagine this disproportionately stretched again by the complete absence of coal and other easily
     # depletable resources. In particular easily phosphorus accessible rock phosphorus would be gone
     # (see discussion between John Halstead and David Denkenberger here):
     # https://forum.effectivealtruism.org/posts/rtoGkzQkAhymErh2Q/are-we-going-to-run-out-of-phosphorous
   else:
-    expected_time_in_years = 2900 * resource_related_difficulty_modifier ** (k - 2)
-  return 0.1
+    expected_time_in_years = 2900 * per_reboot_difficulty_modifier ** (k - 2)
+
+  # Optimistic scenario
+  # In this scenario I assume the absence of fossil fuels/other resources is much less punitive
+  # especially early on and enough knowledge from previous civilisations is mostly retained to actually
+  # speed up this transition the first couple of times
+  per_reboot_difficulty_modifier = 1.2
+  expected_time_in_years = 100 * per_reboot_difficulty_modifier ** k
+
+  return 1 - ((1 - base_annual_extinction_probability * annual_extinction_probability_multiplier) ** expected_time_in_years)
 
 def perils_given_industrial(k):
   return 1 - extinction_given_industrial(k)
@@ -233,18 +246,20 @@ def extinction_given_perils(k):
   pass
 
 def extinction_given_perils(k, p):
-  def x_stretch(k, p):
-    return pass
+  def x_stretch(k):
+    """How much longer/less long would it take a typical reboot than in the previous one to develop
+     modern technology given resource-depletion considerations"""
+    return 1.5 ** k
 
-  def y_stretch(k, p):
-    """This determines max probability per year of this transition. I treat this is a constant,
+  def y_stretch(k):
+    """This determines max probability per year of this transition - a value of 0.5 would mean it asymptotes towards 0.5. I treat this is a constant,
     since theoretically accessible technologies won't change across reboots."""
     return pass
 
-  def x_translation(k, p):
+  def x_translation():
     return pass
 
-  def gradient_factor(k, p):
+  def gradient_factor(k):
     return pass
 
   return sigmoid_curved_risk(x_stretch(), y_stretch(), gradient_factor())
