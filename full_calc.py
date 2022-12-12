@@ -1,5 +1,7 @@
 import pdb
 import math
+import constant
+
 # This script prints out a series of probabilities for transition becoming interstellar based on
 # estimates of the transition probabilities of various(values are currently hardcoded placeholders)
 # states, as in a Markov chain. The states are extinction, survival, preindustrial, industrial, time
@@ -228,7 +230,7 @@ if not extinction_given_industrial() + perils_given_industrial() == 1:
 
 ## Transition probabilities from time of perils state
 
-def sigmoid_curved_risk(p:int, x_stretch:float, y_stretch:float, x_translation: float, gradient_factor: float=2) -> float:
+def sigmoid_curved_risk(x:int, x_stretch:float, y_stretch:float, x_translation: float, gradient_factor: float=2) -> float:
   """A stretched sigmoid the simplest intuitive trajectory I can think of to describe most risks in
   a time of perils. Risks of all exits, good or bad, start at 0 and asymptote to some value V, such
   that 0 < V < 1, and such that the sum of V for all possible exits is <= 1, with p as the
@@ -263,8 +265,8 @@ def sigmoid_curved_risk(p:int, x_stretch:float, y_stretch:float, x_translation: 
 
   TODO: look into failure rate functions as an alternative approach"""
 
-  return y_stretch /  (1 + (1/x_stretch * p - x_translation) ** -gradient_factor
-                             * math.e ** -(1/x_stretch * (p - x_translation)))
+  return y_stretch /  (1 + (1/x_stretch * x - x_translation) ** -gradient_factor
+                             * math.e ** -(1/x_stretch * (x - x_translation)))
 
 
 def extinction_given_perils(k):
@@ -283,6 +285,7 @@ def extinction_given_perils(k, p):
     develop technology that might make us extinct, the less likely we should think it that that
     technology will actually do so"""
 
+    # Desmos formula (not functioning)
     # x^{3}\cdot\max\left(1-x,0\ +\left(c+e^{-x^{2}}\right)\max\left(\min\left(x,1\right),0\right)\right)
     # To translate right by n units, add that for x < n, value = 0
     pass
@@ -420,7 +423,7 @@ def regression_to_perils_year_n_given_perils(k:int, p:int, n=None):
   if not n:
     # Allows us to check total probability sums to 1
     return intra_perils_regression(k, p)
-  else:
+  elif n:
     return intra_perils_regression(k, p) * weighting_for_progress_year_n / arithmetic_sum_of_weightings
 
     total_probability_of_loss = intra_perils_regression(k, p) # How likely is it in total
@@ -446,9 +449,7 @@ def regression_to_perils_year_n_given_perils(k:int, p:int, n=None):
     # Desmos version:
     # https://www.desmos.com/calculator/xtlzmxvikn
 
-
 def multiplanetary_given_perils(k):
-  """I treat Elon Musk's target of 2050 as TODO"""
   pass
 
 def multiplanetary_given_perils(k, p):
@@ -538,9 +539,11 @@ def exponentially_decaying_risk(two_planet_risk, q, k, decay_rate=0.5, min_risk=
   """
   return two_planet_risk  * (1 - decay_rate) ** (q - 2) + min_risk
 
+
 def extinction_given_multiplanetary(k):
   """Sum of total extinction exit probability over all values of q given k"""
-  pass
+
+
 
 def extinction_given_multiplanetary(k, q):
   def single_planet_risk():
@@ -579,7 +582,7 @@ def perils_given_multiplanetary(k):
   """Sum of total perils exit probability over all values of q given k"""
   pass
 
-def regression_to_n_planets_given_multiplanetary(k, q, n):
+def transition_to_n_planets_given_multiplanetary(k, q, n):
     """Should be a value between 0 and 1. Lower treats events that could cause regression to a
     1-planet civilisation in a perils state as having their probability less reduced by having
     multiple settlements.
@@ -615,6 +618,10 @@ def regression_to_n_planets_given_multiplanetary(k, q, n):
   if not n:
     # Allows us to check total probability sums to 1
     return any_intra_multiplanetary_regression(k, q)
+  elif n == q:
+    return 0
+  elif n == q+1:
+    return some_leftover_value_TODO()
   else:
     # The commented return value describes the linear decrease described above
     # Uncomment the next two lines if you think this is a more reasonable treatment
@@ -638,6 +645,9 @@ def regression_to_n_planets_given_multiplanetary(k, q, n):
 
     return total_probability_of_loss * weighting_for_n_planets / geometric_sum_of_weightings
 
+def intraplanetary_regression_matrix(k):
+  return [[transition_to_n_planets_given_multiplanetary(k, q, n) for n in range(2, q-1)]
+           for q in range(2, constant.MAX_PLANETS)]
 
 def perils_given_multiplanetary(k, q):
   """Ideally this would have a more specific notion of where in a time of perils you expect to end
@@ -648,14 +658,28 @@ def perils_given_multiplanetary(k, q):
   the existing formula for this.
 
   TODO if going to a fixed perils year, make it a later one."""
-  return regression_to_n_planets_given_multiplanetary(k, q, 1)
+  return transition_to_n_planets_given_multiplanetary(k, q, 1)
 
-def interstellar_given_multiplanetary(k):
-  return (1 - extinction_given_multiplanetary(k)
-            - survival_given_multiplanetary(k)
-            - preindustrial_given_multiplanetary(k)
-            - industrial_given_multiplanetary(k)
-            - perils_given_multiplanetary(k))
+def interstellar_given_multiplanetary(k, q):
+  """Max value should get pretty close to 1, since at a certain number of planets the tech is all
+  necessarily availabile and you've run out of extra planets to spread to.
+
+  TODO need to specify behaviour for max value."""
+
+  def x_stretch():
+    return 0.2
+
+  def y_stretch():
+    return 1
+    raise Exception('TODO - if this asymptotes too fast, we might get invalid total probabilities')
+
+  def x_translation():
+    return 2
+
+  def gradient_factor():
+    return 1
+
+  return sigmoid_curved_risk(q, x_stretch(), y_stretch(), x_translation(), gradient_factor())
 
 if not 1 == (extinction_given_multiplanetary(k)
              + survival_given_multiplanetary(k)
@@ -664,5 +688,16 @@ if not 1 == (extinction_given_multiplanetary(k)
              + perils_given_multiplanetary(k)
              + interstellar_given_multiplanetary(k)):
   raise InvalidTransitionProbabilities("Transition probabilities from multiplanetary must == 1")
+
+
+# Planets transition matrix
+[extinction_given_multiplanetary(k, q) for q in range(2, constant.MAX_PLANETS)]
+[survival_given_multiplanetary(k, q) for q in range(2, constant.MAX_PLANETS)]
+[preindustrial_given_multiplanetary(k, q) for q in range (2, constant.MAX_PLANETS)]
+[industrial_given_multiplanetary(k, q) for q in range(2, constant.MAX_PLANETS)]
+[perils_given_multiplanetary(k, q) for q in range(2, constant.MAX_PLANETS)]
+[0 for q in range(2, constant.MAX_PLANETS)]
+# [transition_to_n_planets_given_multiplanetary(k, q, n)]
+[industrial_given_multiplanetary(k, q) for q in range(2, constant.MAX_PLANETS)]
 
 
