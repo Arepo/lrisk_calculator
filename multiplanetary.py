@@ -1,6 +1,7 @@
 import pdb
 import math
 import constant
+from graph_functions import sigmoid_curved_risk
 
 
 # This script prints out a series of probabilities for transition becoming interstellar based on
@@ -54,29 +55,27 @@ def extinction_given_multiplanetary(k, q):
 
   return exponentially_decaying_risk(single_planet_risk(), q, k, decay_rate(), min_risk())
 
-def survival_given_multiplanetary(k):
+def survival_given_multiplanetary(k, q):
   """Sum of total survival exit probability over all values of q given k. I treat this as 0 on the
   grounds that it seems such a precise amount of damage that it's not worth the computation/complexity
   costs"""
   return 0
 
-def preindustrial_given_multiplanetary(k):
+def preindustrial_given_multiplanetary(k, q):
   """Sum of total preindustrial exit probability over all values of q given k. Again, while this seems
   more plausible than going directly to a survival state, it seems unlikely enough to treat as 0"""
   return 0
 
-def industrial_given_multiplanetary(k):
+def industrial_given_multiplanetary(k, q):
   """Sum of total industrial exit probability over all values of q given k. Again, while this looks
   somewhat more plausible, it still seems so much less likely than an event which either wipes out
   humanity or leaves the reaminder with some advanced technology as to be treatable as 0"""
   return 0
 
-def perils_given_multiplanetary(k):
+def perils_given_multiplanetary(k, q):
   """Sum of total perils exit probability over all values of q given k"""
   pass
 
-def any_intra_multiplanetary_regression(k, q):
-    return exponentially_decaying_risk(two_planet_risk(), q, k, decay_rate())
 
 def transition_to_n_planets_given_multiplanetary(k, q, n):
   """Should be a value between 0 and 1. Lower treats events that could cause regression to a
@@ -101,6 +100,9 @@ def transition_to_n_planets_given_multiplanetary(k, q, n):
   def decay_rate():
     return 0.4 # Intuition, no substantive reasoning
 
+  def any_intra_multiplanetary_regression(k, q):
+    return exponentially_decaying_risk(two_planet_risk(), q, k, decay_rate())
+
   def min_risk():
     """Across a Kardashev II civilisation the probability of losing at least one settlement
     seems like it should remain significant, though given that for the foreseeable future
@@ -112,10 +114,19 @@ def transition_to_n_planets_given_multiplanetary(k, q, n):
   if not n:
     # Allows us to check total probability sums to 1
     return any_intra_multiplanetary_regression(k, q)
-  elif n == q:
+  elif n == q + 1:
+    # This is our catchall branch - the probability is whatever's left after we decide all the other
+    # risks
+    return 1 - (extinction_given_multiplanetary(k, q)
+                + survival_given_multiplanetary(k, q)
+                + preindustrial_given_multiplanetary(k, q)
+                + industrial_given_multiplanetary(k, q)
+                + perils_given_multiplanetary(k, q)
+                + any_intra_multiplanetary_regression(k, q)
+                + interstellar_given_multiplanetary(k, q))
+  elif n >= q:
+    # We're only interested in changes to number of planets, and assume we can add max 1 at a time
     return 0
-  elif n == q+1:
-    return some_leftover_value_TODO()
   else:
     # The commented return value describes the linear decrease described above
     # Uncomment the next two lines if you think this is a more reasonable treatment
@@ -139,13 +150,7 @@ def transition_to_n_planets_given_multiplanetary(k, q, n):
 
     return total_probability_of_loss * weighting_for_n_planets / geometric_sum_of_weightings
 
-def regression_given_multiplanetary(k, q):
-  return (extinction_given_multiplanetary(k, q)
-          + survival_given_multiplanetary(k, q)
-          + preindustrial_given_multiplanetary(k, q)
-          + industrial_given_multiplanetary(k, q)
-          + any_intra_multiplanetary_regression(k, q)
-          + interstellar_given_multiplanetary(k, q))
+
 
 def intraplanetary_regression_matrix(k):
   return [[transition_to_n_planets_given_multiplanetary(k, q, n) for n in range(2, q-1)]

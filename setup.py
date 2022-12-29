@@ -1,0 +1,9 @@
+setuptools.setup(name='transitional_probabilities',
+version='0.1',
+description='Probability functions for the l-risk calculator',
+url='#',
+author='Arepo',
+install_requires=['opencv-python'],
+author_email='',
+packages=setuptools.find_packages(),
+zip_safe=False)

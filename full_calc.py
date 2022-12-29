@@ -3,15 +3,9 @@ import pdb
 from pydtmc import MarkovChain
 
 import constant
-import preperils_transition_probabilities
-import perils_transition_probabilities
-from multiplanetary_transition_probabilities import (extinction_given_multiplanetary,
-                                                    survival_given_multiplanetary,
-                                                    preindustrial_given_multiplanetary,
-                                                    industrial_given_multiplanetary,
-                                                    perils_given_multiplanetary,
-                                                    interstellar_given_multiplanetary,
-                                                    transition_to_n_planets_given_multiplanetary)
+import multiplanetary
+import perils
+import preperils
 
 
 # def intra_perils_markov_chain(k):
@@ -59,14 +53,14 @@ def intra_multiplanetary_markov_chain(k):
   interstellar_probabilities =   [0,0,0,0,0,1] + [0] * (constant.MAX_PLANETS - 1)
   planet_range = range(2, constant.MAX_PLANETS)
 
-  exit_probabilities = {q:[extinction_given_multiplanetary(k,q),
-                        survival_given_multiplanetary(k,q),
-                        preindustrial_given_multiplanetary(k,q),
-                        industrial_given_multiplanetary(k,q),
-                        perils_given_multiplanetary(k,q),
-                        interstellar_given_multiplanetary(k,q)] for q in planet_range}
+  exit_probabilities = {q:[multiplanetary.extinction_given_multiplanetary(k,q),
+                        multiplanetary.survival_given_multiplanetary(k,q),
+                        multiplanetary.preindustrial_given_multiplanetary(k,q),
+                        multiplanetary.industrial_given_multiplanetary(k,q),
+                        multiplanetary.perils_given_multiplanetary(k,q),
+                        multiplanetary.interstellar_given_multiplanetary(k,q)] for q in planet_range}
 
-  intra_transition_probabilities = {q:[transition_to_n_planets_given_multiplanetary(k, q, n) for n in planet_range]
+  intra_transition_probabilities = {q:[multiplanetary.transition_to_n_planets_given_multiplanetary(k, q, n) for n in planet_range]
                                     for q in planet_range}
 
   q_planet_probabilities = [exit_probabilities[q] + intra_transition_probabilities[q] for q in planet_range]
