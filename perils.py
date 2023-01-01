@@ -97,7 +97,7 @@ def preindustrial_given_perils(k, p):
     return 1.3 # Intuition, no substantive reasoning, except that it should be higher early than
     # going to survival
 
-  return sigmoid_curved_risk(x_stretch(), y_stretch(), gradient_factor())
+  return sigmoid_curved_risk(x_stretch(k), y_stretch(), gradient_factor())
 
 def industrial_given_perils(k):
   """Sum of total industrial exit probability over all values of p given k"""
@@ -209,9 +209,29 @@ def multiplanetary_given_perils(k, p):
   def gradient_factor():
     return 0.8
 
+    return sigmoid_curved_risk(p, x_stretch(k), y_stretch(), x_translation(), gradient_factor())
+
 def interstellar_given_perils(k):
-  def interstellar_given_perils(k, p):
-    return (1 - extinction_given_perils(k, p))
+  pass
+
+def interstellar_given_perils(k, p):
+  def x_stretch(k):
+    base_value = 5
+    stretch_per_reboot = 1.5 # Intuition, no substantive reasoning
+    return base_value * stretch_per_reboot ** (k + 1)
+
+  def y_stretch():
+    return idk
+
+  def x_translation():
+    return idk
+
+  def gradient_factor():
+    return idk
+
+  return sigmoid_curved_risk(p, x_stretch(k), y_stretch(), x_translation(), gradient_factor())
+
+
 
 def _non_continuation_given_perils(k, p):
   return (extinction_given_perils(k, p)

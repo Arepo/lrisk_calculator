@@ -1,3 +1,4 @@
+import pdb
 import math
 
 def sigmoid_curved_risk(x:int, x_stretch:float, y_stretch:float, x_translation: float, gradient_factor: float=2) -> float:
@@ -34,6 +35,5 @@ def sigmoid_curved_risk(x:int, x_stretch:float, y_stretch:float, x_translation: 
   https://www.desmos.com/calculator/egndiwnukv
 
   TODO: look into failure rate functions as an alternative approach"""
-
-  return y_stretch /  (1 + (1/x_stretch * x - x_translation) ** -gradient_factor
-                             * math.e ** -(1/x_stretch * (x - x_translation)))
+  x_translation = x_translation - 1e-15 # Hack to prevent a DivisionbyZero error when this is equal to x
+  return y_stretch /  (1 + (x_stretch * (x - x_translation)) ** -gradient_factor * math.e ** -(x_stretch * (x - x_translation)))

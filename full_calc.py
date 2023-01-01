@@ -45,14 +45,16 @@ import preperils
 #                      'Interstellar'] + list(year_range))
 
 def intra_multiplanetary_markov_chain(k):
-  extinction_probililities =     [1,0,0,0,0,0] + [0] * (constant.MAX_PLANETS - 1)
-  survival_probabilities =       [0,1,0,0,0,0] + [0] * (constant.MAX_PLANETS - 1)
-  preindustrial_probabilities =  [0,0,1,0,0,0] + [0] * (constant.MAX_PLANETS - 1)
-  industrial_probabilities =     [0,0,0,1,0,0] + [0] * (constant.MAX_PLANETS - 1)
-  perils_probabilities =         [0,0,0,0,1,0] + [0] * (constant.MAX_PLANETS - 1)
-  interstellar_probabilities =   [0,0,0,0,0,1] + [0] * (constant.MAX_PLANETS - 1)
-  planet_range = range(2, constant.MAX_PLANETS)
+  extinction_probililities =     [0] * (constant.MAX_PLANETS - 1) + [1,0,0,0,0,0]
+  survival_probabilities =       [0] * (constant.MAX_PLANETS - 1) + [0,1,0,0,0,0]
+  preindustrial_probabilities =  [0] * (constant.MAX_PLANETS - 1) + [0,0,1,0,0,0]
+  industrial_probabilities =     [0] * (constant.MAX_PLANETS - 1) + [0,0,0,1,0,0]
+  perils_probabilities =         [0] * (constant.MAX_PLANETS - 1) + [0,0,0,0,1,0]
+  interstellar_probabilities =   [0] * (constant.MAX_PLANETS - 1) + [0,0,0,0,0,1]
+  planet_range = range(2, constant.MAX_PLANETS + 1) # Python range excludes max value
 
+  intra_transition_probabilities = {q:[multiplanetary.transition_to_n_planets_given_multiplanetary(k, q, n) for n in planet_range]
+                                    for q in planet_range}
   exit_probabilities = {q:[multiplanetary.extinction_given_multiplanetary(k,q),
                         multiplanetary.survival_given_multiplanetary(k,q),
                         multiplanetary.preindustrial_given_multiplanetary(k,q),
@@ -60,26 +62,27 @@ def intra_multiplanetary_markov_chain(k):
                         multiplanetary.perils_given_multiplanetary(k,q),
                         multiplanetary.interstellar_given_multiplanetary(k,q)] for q in planet_range}
 
-  intra_transition_probabilities = {q:[multiplanetary.transition_to_n_planets_given_multiplanetary(k, q, n) for n in planet_range]
-                                    for q in planet_range}
+  qth_planet_probabilities = [intra_transition_probabilities[q] + exit_probabilities[q] for q in planet_range]
 
-  q_planet_probabilities = [exit_probabilities[q] + intra_transition_probabilities[q] for q in planet_range]
+  qth_planet_list = {q:qth_planet_probabilities[q - 2] for q in planet_range}
+  # Useful for figuring out the row corresponding to q planets, not used in code
 
-  probability_matrix = [extinction_probililities,
-          survival_probabilities,
-          preindustrial_probabilities,
-          industrial_probabilities,
-          perils_probabilities,
-          interstellar_probabilities] + q_planet_probabilities
+  probability_matrix = qth_planet_probabilities + [extinction_probililities,
+                                                   survival_probabilities,
+                                                   preindustrial_probabilities,
+                                                   industrial_probabilities,
+                                                   perils_probabilities,
+                                                   interstellar_probabilities]
 
-  pdb.set_trace()
-  return MarkovChain(probability_matrix,
-                     ['Extinction',
-                     'Survival',
-                     'Preindustrial',
-                     'Industrial',
-                     'Perils',
-                     'Interstellar'] + list(planet_range))
+  # pdb.set_trace()
+  numbers = [f"{num}" for num in planet_range]
+  return MarkovChain(probability_matrix, list(numbers)
+                                         + ['Extinction',
+                                           'Survival',
+                                           'Preindustrial',
+                                           'Industrial',
+                                           'Perils',
+                                           'Interstellar'])
 
 intra_multiplanetary_markov_chain(1)
 
