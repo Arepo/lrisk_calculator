@@ -8,41 +8,41 @@ import perils
 import preperils
 
 
-# def intra_perils_markov_chain(k):
-#   extinction_probililities =     [1,0,0,0,0,0] + [0] * constant.MAX_PROGRESS_YEARS
-#   survival_probabilities =       [0,1,0,0,0,0] + [0] * constant.MAX_PROGRESS_YEARS
-#   preindustrial_probabilities =  [0,0,1,0,0,0] + [0] * constant.MAX_PROGRESS_YEARS
-#   industrial_probabilities =     [0,0,0,1,0,0] + [0] * constant.MAX_PROGRESS_YEARS
-#   multiplanetary_probabilities = [0,0,0,0,1,0] + [0] * constant.MAX_PROGRESS_YEARS
-#   interstellar_probabilities =   [0,0,0,0,0,1] + [0] * constant.MAX_PROGRESS_YEARS
-#   year_range = range(0, constant.MAX_PROGRESS_YEARS)
+def intra_perils_markov_chain(k):
+  extinction_probililities =     [1,0,0,0,0,0] + [0] * constant.MAX_PROGRESS_YEARS
+  survival_probabilities =       [0,1,0,0,0,0] + [0] * constant.MAX_PROGRESS_YEARS
+  preindustrial_probabilities =  [0,0,1,0,0,0] + [0] * constant.MAX_PROGRESS_YEARS
+  industrial_probabilities =     [0,0,0,1,0,0] + [0] * constant.MAX_PROGRESS_YEARS
+  multiplanetary_probabilities = [0,0,0,0,1,0] + [0] * constant.MAX_PROGRESS_YEARS
+  interstellar_probabilities =   [0,0,0,0,0,1] + [0] * constant.MAX_PROGRESS_YEARS
+  year_range = range(0, constant.MAX_PROGRESS_YEARS)
 
-#   exit_probabilities = {p:[extinction_given_perils(k, p),
-#                         survival_given_perils(k, p),
-#                         preindustrial_given_perils(k, p),
-#                         industrial_given_perils(k, p),
-#                         perils_given_perils(k, p),
-#                         interstellar_given_perils(k, p)] for p in year_range}
+  exit_probabilities = {p:[perils.extinction_given_perils(k, p),
+                        perils.survival_given_perils(k, p),
+                        perils.preindustrial_given_perils(k, p),
+                        perils.industrial_given_perils(k, p),
+                        perils.multiplanetary_given_perils(k, p),
+                        perils.interstellar_given_perils(k, p)] for p in year_range}
 
-#   intra_transition_probabilities = {p:[transition_to_year_n_given_perils(k, p, n) for n in year_range]
-#                                     for p in year_range}
+  intra_transition_probabilities = {p:[perils.transition_to_year_n_given_perils(k, p, n) for n in year_range]
+                                    for p in year_range}
 
-#   year_p_probabilities = [exit_probabilities[p] + intra_transition_probabilities[p] for p in year_range]
+  year_p_probabilities = [exit_probabilities[p] + intra_transition_probabilities[p] for p in year_range]
 
-#   probability_matrix = [extinction_probililities,
-#           survival_probabilities,
-#           preindustrial_probabilities,
-#           industrial_probabilities,
-#           perils_probabilities,
-#           interstellar_probabilities] + year_p_probabilities
+  probability_matrix = [extinction_probililities,
+          survival_probabilities,
+          preindustrial_probabilities,
+          industrial_probabilities,
+          perils_probabilities,
+          interstellar_probabilities] + year_p_probabilities
 
-#   return MarkovChain(probability_matrix,
-#                      ['Extinction',
-#                      'Survival',
-#                      'Preindustrial',
-#                      'Industrial',
-#                      'Perils',
-#                      'Interstellar'] + list(year_range))
+  return MarkovChain(probability_matrix,
+                     ['Extinction',
+                     'Survival',
+                     'Preindustrial',
+                     'Industrial',
+                     'Perils',
+                     'Interstellar'] + list(year_range))
 
 def intra_multiplanetary_markov_chain(k):
   extinction_probililities =     [0] * (constant.MAX_PLANETS - 1) + [1,0,0,0,0,0]
@@ -74,7 +74,6 @@ def intra_multiplanetary_markov_chain(k):
                                                    perils_probabilities,
                                                    interstellar_probabilities]
 
-  # pdb.set_trace()
   numbers = [f"{num}" for num in planet_range]
   return MarkovChain(probability_matrix, list(numbers)
                                          + ['Extinction',
@@ -84,7 +83,7 @@ def intra_multiplanetary_markov_chain(k):
                                            'Perils',
                                            'Interstellar'])
 
-intra_multiplanetary_markov_chain(1)
+intra_perils_markov_chain(1)
 
 ########
 

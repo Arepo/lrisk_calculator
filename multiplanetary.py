@@ -1,7 +1,7 @@
 import pdb
 import math
 import constant
-from graph_functions import sigmoid_curved_risk
+from graph_functions import sigmoid_curved_risk, exponentially_decaying_risk
 
 
 # This script prints out a series of probabilities for transition becoming interstellar based on
@@ -14,29 +14,6 @@ from graph_functions import sigmoid_curved_risk
 # https://forum.effectivealtruism.org/posts/YnBwoNNqe6knBJH8p/modelling-civilisation-after-a-catastrophe#The_cyclical_model
 
 ## Transition probabilities from multiplanetary state
-
-def exponentially_decaying_risk(two_planet_risk, q, k, decay_rate=0.5, min_risk=0):
-  """The simplest way I can think of to intuit the various risks given multiple interplanetary
-  settlements is as an exponential decay based on the number of planets.
-
-  Another intuitive option would be something like 1/(x ** <some_value>), which would eventually
-  decrease the probability of the risks more slowly, but could decrease it faster early on
-  if we thought eg proving the concept would substantially improve our prospects.
-
-  k is available as a parameter if people think it's important, but I'm treating it as irrelevant
-  once we've reached this stage.
-
-  You can play with the formula and values at https://www.desmos.com/calculator/bcu1qfp8wu
-
-  Note that min_risk is a translation on the y-axis. So if you set two_planet_risk as 0.4 and
-  min_risk as 0.1, your actual two_planet_risk will be 0.5
-  """
-  return two_planet_risk  * (1 - decay_rate) ** (q - 2) + min_risk
-
-
-def extinction_given_multiplanetary(k):
-  """Sum of total extinction exit probability over all values of q given k"""
-
 
 def extinction_given_multiplanetary(k, q):
   def single_planet_risk():
@@ -53,7 +30,7 @@ def extinction_given_multiplanetary(k, q):
     """For the very long run, if this doesn't tend to become almost 0, longtermism isn't possible"""
     return 0
 
-  return exponentially_decaying_risk(single_planet_risk(), q, k, decay_rate(), min_risk())
+  return exponentially_decaying_risk(single_planet_risk(), q, decay_rate(), min_risk())
 
 def survival_given_multiplanetary(k, q):
   """Sum of total survival exit probability over all values of q given k. I treat this as 0 on the
@@ -96,7 +73,7 @@ def transition_to_n_planets_given_multiplanetary(k, q, n):
     return 0.4 # Intuition, no substantive reasoning
 
   def any_intra_multiplanetary_regression(k, q):
-    return exponentially_decaying_risk(two_planet_risk(), q, k, decay_rate())
+    return exponentially_decaying_risk(two_planet_risk(), q, decay_rate())
 
   def remainder_outcome(k, q):
     return 1 - (extinction_given_multiplanetary(k, q)
@@ -137,7 +114,6 @@ def transition_to_n_planets_given_multiplanetary(k, q, n):
     # Uncomment the next two lines if you think this is a more reasonable treatment
     # return any_intra_multiplanetary_regression(k, q) * ((n + 1)
     #                                               / (1 + (q ** 2)/2 + 3 * q / 2))
-    print(f"transitioning to {n} planets from {q}")
     # The commented out return values is the exponential decrease described above. TODO - where?
     total_probability_of_loss = any_intra_multiplanetary_regression(k, q) # How likely is it in total
     # we lose any number of planets between 1 and (q - 1) inclusive?
@@ -150,12 +126,6 @@ def transition_to_n_planets_given_multiplanetary(k, q, n):
     geometric_sum_of_weightings = first_factor * (1 - weighting_decay_rate ** (q - 1)) / (1 - weighting_decay_rate)
     # Thus weighting_for_n_planets / geometric_sum_of_weightings is a proportion; you can play with
     # the values at https://www.desmos.com/calculator/ku0p2iahq3
-    print(f"transitioning to {n} planets from {q}")
-    print(f"geometric_sum_of_weightings: {geometric_sum_of_weightings}")
-    print(f"total_probability_of_loss: {total_probability_of_loss}")
-    print(f"weighting_for_n_planets (n = {n}: {weighting_for_n_planets}")
-    print(f"total: {total_probability_of_loss * (weighting_for_n_planets / geometric_sum_of_weightings)}")
-    print("************")
     return total_probability_of_loss * (weighting_for_n_planets / geometric_sum_of_weightings)
                                        # Brackets seem to improve floating point errors at least
                                        # when the contents should be 1
@@ -182,7 +152,7 @@ def interstellar_given_multiplanetary(k, q):
   TODO need to specify behaviour for max value."""
 
   def x_stretch():
-    return 0.1 # Just intuition
+    return 10 # Just intuition
 
   def y_stretch():
     # TODO - if this asymptotes too fast, we might get invalid total probabilities. Is there a neat
@@ -195,23 +165,24 @@ def interstellar_given_multiplanetary(k, q):
   def gradient_factor():
     return 4 # Just intuition
 
+  # Graph with these values: https://www.desmos.com/calculator/vdyih29fqb
   return sigmoid_curved_risk(q, x_stretch(), y_stretch(), x_translation(), gradient_factor())
 
 
 
-exit_probabilities = [extinction_given_multiplanetary(1,11),
-                        survival_given_multiplanetary(1,11),
-                        preindustrial_given_multiplanetary(1,11),
-                        industrial_given_multiplanetary(1,11),
-                        perils_given_multiplanetary(1,11),
-                        interstellar_given_multiplanetary(1,11)]
+# exit_probabilities = [extinction_given_multiplanetary(1,11),
+#                         survival_given_multiplanetary(1,11),
+#                         preindustrial_given_multiplanetary(1,11),
+#                         industrial_given_multiplanetary(1,11),
+#                         perils_given_multiplanetary(1,11),
+#                         interstellar_given_multiplanetary(1,11)]
 
-intra_transition_probabilities = [transition_to_n_planets_given_multiplanetary(1, 11, n) for n in range(2,21)]
+# intra_transition_probabilities = [transition_to_n_planets_given_multiplanetary(1, 11, n) for n in range(2,21)]
 
-row = exit_probabilities + intra_transition_probabilities
-# transition_to_n_planets_given_multiplanetary(1, 9, 3)
+# row = exit_probabilities + intra_transition_probabilities
+# # transition_to_n_planets_given_multiplanetary(1, 9, 3)
 
-any_intra_multiplanetary_regression = exponentially_decaying_risk(0.2, 1, 11, 0.4)
+# any_intra_multiplanetary_regression = exponentially_decaying_risk(0.2, 1, 0.4)
 
 # pdb.set_trace()
 

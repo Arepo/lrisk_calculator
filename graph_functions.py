@@ -32,8 +32,34 @@ def sigmoid_curved_risk(x:int, x_stretch:float, y_stretch:float, x_translation: 
   In general for my default estimates, I'm using the current time of perils as a template for
   k = 0
 
-  https://www.desmos.com/calculator/egndiwnukv
+  https://www.desmos.com/calculator/eb29bnsssr
 
   TODO: look into failure rate functions as an alternative approach"""
-  x_translation = x_translation - 1e-15 # Hack to prevent a DivisionbyZero error when this is equal to x
-  return y_stretch /  (1 + (x_stretch * (x - x_translation)) ** -gradient_factor * math.e ** -(x_stretch * (x - x_translation)))
+
+  min_value = 1 / x_stretch * (x - x_translation)
+
+  if x - x_translation == 0 or min_value < 0:
+    return 0 # Hack to prevent a DivisionbyZero error or accidentally introducing complex numbers
+
+  return y_stretch /  (1 + (min_value) ** -gradient_factor * math.e ** -(1 / x_stretch * (x - x_translation)))
+
+def exponentially_decaying_risk(starting_value, x, decay_rate=0.5, min_value=0, x_translation=2):
+  """The simplest way I can think of to intuit the various risks given multiple interplanetary
+  settlements is as an exponential decay based on the number of planets.
+
+  Another intuitive option would be something like 1/(x ** <some_value>), which would eventually
+  decrease the probability of the risks more slowly, but could decrease it faster early on
+  if we thought eg proving the concept would substantially improve our prospects.
+
+  k is available as a parameter if people think it's important, but I'm treating it as irrelevant
+  once we've reached this stage.
+
+  You can play with the formula and values at https://www.desmos.com/calculator/bcu1qfp8wu
+
+  x_translation defaults to 2, since this is mostly used for muultiplanetary
+  functions in which we define 2 as the min number of planets in the state
+
+  Note that min_value is a translation on the y-axis. So if you set starting_value as 0.4 and
+  min_value as 0.1, your actual starting_value will be 0.5
+  """
+  return starting_value  * (1 - decay_rate) ** (x - x_translation) + min_value
