@@ -28,11 +28,14 @@ def extinction_given_perils(k, p):
     return exponentially_decaying_risk(max_annual_risk, k, decay_rate, min_risk, x_translation=0)
 
   def x_translation():
+    # TODO I can probably subtract the lowest x_translation value from all the others to save some
+    # runtime, since nothing interesting happens until we hit it
     return 15
 
   def gradient_factor():
     return 2.5 # Intuition, no substantive reasoning
 
+  # Graph with these values for k=0 at https://www.desmos.com/calculator/mbwoy2muin
   return sigmoid_curved_risk(p, x_stretch(k), y_stretch(k), x_translation() ,gradient_factor())
 
 def survival_given_perils(k, p):
@@ -167,7 +170,7 @@ def transition_to_year_n_given_perils(k:int, p:int, n=None):
   if not n:
     # Allows us to check total probability sums to 1
     return any_intra_perils_regression()
-  elif n == p + 1 or n == p and p == constant.MAX_PROGRESS_YEARS:
+  elif n == p + 1 or n == p and p == constant.MAX_PROGRESS_YEARS - 1:
     # Our catchall is either progressing one progress year or staying on the spot if we're at max
     return remainder_outcome(k, p)
   elif n > (p + 1) or p - n > rounding_boundary:
