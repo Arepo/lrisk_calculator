@@ -161,17 +161,20 @@ def transition_to_year_n_given_perils(k:int, p:int, n=None):
                 + multiplanetary_given_perils(k, p)
                 + interstellar_given_perils(k, p))
 
+  rounding_boundary = 100 # The size of regress (in progress years) beyond which we just approximate
+  # the probability to 0
+
   if not n:
     # Allows us to check total probability sums to 1
     return any_intra_perils_regression()
   elif n == p + 1 or n == p and p == constant.MAX_PROGRESS_YEARS:
     # Our catchall is either progressing one progress year or staying on the spot if we're at max
     return remainder_outcome(k, p)
-  elif p - n > 100:
-    # Just round when numbers get small enough, so we don't have to deal with fractions like
-    # ~10^10000/2*10^10000 in the geometric sequence below
+  elif n > (p + 1) or p - n > rounding_boundary:
+    # We only allow progress to increment by up to one. We also round when numbers get small enough,
+    # so we don't have to deal with fractions like ~10^10000/2*10^10000 in the geometric sequence below
     return 0
-  elif p > 100:
+  elif p > rounding_boundary:
     # Reduce large numbers to the minimum, eg regression from progress-year 1000 from progress-year
     # 950 becomes regression from PY 50 to PY 0. This way we ensure proportions still sum to 0.
     p = p - n
@@ -179,6 +182,7 @@ def transition_to_year_n_given_perils(k:int, p:int, n=None):
 
   total_probability_of_loss = any_intra_perils_regression() # How likely is it in total
   # we regress any number of progress years between 0 and p inclusive?
+
   weighting_decay_rate = 1.4 # Higher gives higher probability that given such a loss we'll lose a
   # smaller number of progress years: 2 would mean regressing to year n is 2x
   # as likely as regressing to year n-1. I chose the current value fairly arbitrarily, by
@@ -188,6 +192,12 @@ def transition_to_year_n_given_perils(k:int, p:int, n=None):
   # eg survivor bias, and selection effects from starting to count immediately *after* WWII).
 
   geometric_sum_of_weightings = (1 - weighting_decay_rate ** (p + 1)) / (1 - weighting_decay_rate)
+  # try:
+  weighting_for_progress_year_n = weighting_decay_rate ** n # How likely is it, that given some loss,
+    # that loss took us to exactly progress year n?
+  # except OverflowError:
+  #   pdb.set_trace()
+
   # Thus weighting_for_progress_year_n / geometric_sum_of_weightings is a proportion; you can play with
   # the values at https://www.desmos.com/calculator/1pcgidwr3f
   return total_probability_of_loss * weighting_for_progress_year_n / geometric_sum_of_weightings

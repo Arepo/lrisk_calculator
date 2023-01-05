@@ -29,20 +29,22 @@ def intra_perils_markov_chain(k):
 
   year_p_probabilities = [exit_probabilities[p] + intra_transition_probabilities[p] for p in year_range]
 
-  probability_matrix = [extinction_probililities,
-          survival_probabilities,
-          preindustrial_probabilities,
-          industrial_probabilities,
-          perils_probabilities,
-          interstellar_probabilities] + year_p_probabilities
+  probability_matrix = year_p_probabilities + [extinction_probililities,
+                                               survival_probabilities,
+                                               preindustrial_probabilities,
+                                               industrial_probabilities,
+                                               multiplanetary_probabilities,
+                                               interstellar_probabilities]
 
-  return MarkovChain(probability_matrix,
-                     ['Extinction',
-                     'Survival',
-                     'Preindustrial',
-                     'Industrial',
-                     'Perils',
-                     'Interstellar'] + list(year_range))
+  pdb.set_trace()
+
+  return MarkovChain(probability_matrix, list(year_range)
+                                         + ['Extinction',
+                                           'Survival',
+                                           'Preindustrial',
+                                           'Industrial',
+                                           'Perils',
+                                           'Interstellar'])
 
 def intra_multiplanetary_markov_chain(k):
   extinction_probililities =     [0] * (constant.MAX_PLANETS - 1) + [1,0,0,0,0,0]
