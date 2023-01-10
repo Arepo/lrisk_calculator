@@ -1,6 +1,8 @@
-import pdb
+from functools import cache
 import math
+import pdb
 
+@cache
 def sigmoid_curved_risk(x:int, x_stretch:float, y_stretch:float, x_translation: float, gradient_factor: float=2) -> float:
   """A stretched sigmoid the simplest intuitive trajectory I can think of to describe most risks in
   a time of perils, and some in a multiplanetary state. Risks of all exits, good or bad, start at 0
@@ -43,6 +45,7 @@ def sigmoid_curved_risk(x:int, x_stretch:float, y_stretch:float, x_translation: 
 
   return y_stretch /  (1 + (min_value) ** -gradient_factor * math.e ** -(1 / x_stretch * (x - x_translation)))
 
+@cache
 def exponentially_decaying_risk(starting_value, x, decay_rate=0.5, min_value=0, x_translation=2):
   """The simplest way I can think of to intuit the various risks given multiple interplanetary
   settlements is as an exponential decay based on the number of planets.

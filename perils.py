@@ -1,10 +1,12 @@
 import pdb
 import math
 import constant
+from functools import cache
 from graph_functions import sigmoid_curved_risk, exponentially_decaying_risk
 
 ## Transition probabilities from time of perils state
 
+@cache
 def extinction_given_perils(k, p):
   def x_stretch(k):
     base_x_stretch = 83 # To set the initial shape of the graph to something plausibly consistent
@@ -38,6 +40,7 @@ def extinction_given_perils(k, p):
   # Graph with these values for k=0 at https://www.desmos.com/calculator/mbwoy2muin
   return sigmoid_curved_risk(p, x_stretch(k), y_stretch(k), x_translation() ,gradient_factor())
 
+@cache
 def survival_given_perils(k, p):
   """In principle the y_stretch (max probability per year) of this would probably decrease with
   higher values of k, since they provide some evidence that we're less likely to end in states that
@@ -74,6 +77,7 @@ def survival_given_perils(k, p):
 
   return sigmoid_curved_risk(p, x_stretch(k), y_stretch(), x_translation(), gradient_factor())
 
+@cache
 def preindustrial_given_perils(k, p):
   """I'm treating nukes as being substantially the most likely tech to cause this outcome, since
   they destroy far more resources than a pandemic would, making rebuilding much harder. So I expect
@@ -100,6 +104,7 @@ def preindustrial_given_perils(k, p):
 
   return sigmoid_curved_risk(p, x_stretch(k), y_stretch(), x_translation(), gradient_factor())
 
+@cache
 def industrial_given_perils(k, p):
   """I treat this as possible through any weapons tech, meaning it has the slowest incline but
   reaches the highest peak of the bad exits, and is generally higher per year than the others"""
@@ -123,6 +128,7 @@ def industrial_given_perils(k, p):
 
   return sigmoid_curved_risk(p, x_stretch(k), y_stretch(), x_translation(), gradient_factor())
 
+@cache
 def transition_to_year_n_given_perils(k:int, p:int, n=None):
   """The simplest intuitive way I can think of to deal with this is to assume the probability of
   regressing decreases exponentially with the number of years we regressing, eg for p = 3, given that
@@ -133,7 +139,7 @@ def transition_to_year_n_given_perils(k:int, p:int, n=None):
   regression to exactly progress-year n is a weighting_for_progress_year_n = <some weighting_decay_rate>**n,
   divided by the sum of weighting_for_progress_year_n for all valid values of n.
 
-  I don't think this is a very convincing algorithm. Based on global GDP, we've arguably regressed
+  I'm not sure this is a very convincing algorithm. Based on global GDP, we've arguably regressed
   in about 4 calendar years since 1961, when the world bank started tracking global data and perhaps
   5 times in the 20th century based on UK data between about 0 and 2 progress years each time, and about . For comparatively tiny
   values of weighting_decay_rate (ie barely above 1), being limited to such small regressions looks
@@ -146,16 +152,17 @@ def transition_to_year_n_given_perils(k:int, p:int, n=None):
   version, commented out below, as a way of getting an upper bound on the significance of regressions
   within the time of perils."""
 
+  # ... this function really sucks.
+
   def any_intra_perils_regression():
-    return 0.026 # Should be a function - but for now this is a placeholder based on it roughly
-                 # happening twice in 77 years on these graphs
+    return 0.026 # Might be a function of k and/or p - but for now this is a placeholder based on it
+                 # roughly happening twice in 77 years on these graphs
                  # https://data.worldbank.org/indicator/NY.GDP.MKTP.KD.ZG
                  # https://ourworldindata.org/grapher/world-gdp-over-the-last-two-millennia?time=1940..2015
                  # See also UK GDP, for which reliable data goes back farther but is unsurprisingly
                  # more uneven: https://ourworldindata.org/grapher/total-gdp-in-the-uk-since-1270
 
   def remainder_outcome(k, p):
-    # pdb.set_trace()
     return 1 - (extinction_given_perils(k, p)
                 + survival_given_perils(k, p)
                 + preindustrial_given_perils(k, p)
@@ -164,24 +171,39 @@ def transition_to_year_n_given_perils(k:int, p:int, n=None):
                 + multiplanetary_given_perils(k, p)
                 + interstellar_given_perils(k, p))
 
-  rounding_boundary = 100 # The size of regress (in progress years) beyond which we just approximate
+  max_regression_distance = 1 # The size of regress (in progress years) beyond which we just approximate
   # the probability to 0
 
-  if not n:
-    # Allows us to check total probability sums to 1
-    return any_intra_perils_regression()
-  elif n == p + 1 or n == p and p == constant.MAX_PROGRESS_YEARS - 1:
+  at_max_year = p == constant.MAX_PROGRESS_YEARS - 1 # The case where we've said we can't increment
+  # progress years any further
+
+  number_of_possible_regressions = p + 1
+  target_year = n
+
+  if (n == p + 1 and not at_max_year) or n == p and at_max_year:
     # Our catchall is either progressing one progress year or staying on the spot if we're at max
+
     return remainder_outcome(k, p)
-  elif n > (p + 1) or p - n > rounding_boundary:
-    # We only allow progress to increment by up to one. We also round when numbers get small enough,
+  elif n > (p + 1):
+    # We only allow progress to increment by up to one.
+    return 0
+  elif p - n > max_regression_distance:
+    # We round to 0 when numbers get small enough,
     # so we don't have to deal with fractions like ~10^10000/2*10^10000 in the geometric sequence below
     return 0
-  elif p > rounding_boundary:
+  elif p > max_regression_distance and not at_max_year:
     # Reduce large numbers to the minimum, eg regression from progress-year 1000 from progress-year
     # 950 becomes regression from PY 50 to PY 0. This way we ensure proportions still sum to 0.
-    p = p - n
-    n = 0
+    number_of_possible_regressions = (p + 1) - n
+    target_year = 0
+  elif p > max_regression_distance:
+    # In the specific case of being in the last allowed progress year, we have one fewer years to that
+    # point to distribute our total probability between (since staying on the spot becomes our
+    # remainder, rather than our smallest 'regression')
+    number_of_possible_regressions = p - n
+    target_year = 0
+  elif at_max_year:
+    number_of_possible_regressions = p
 
   total_probability_of_loss = any_intra_perils_regression() # How likely is it in total
   # we regress any number of progress years between 0 and p inclusive?
@@ -194,12 +216,14 @@ def transition_to_year_n_given_perils(k:int, p:int, n=None):
   # regression of 2, and looking for a probability outcome slightly below that (to account for
   # eg survivor bias, and selection effects from starting to count immediately *after* WWII).
 
-  geometric_sum_of_weightings = (1 - weighting_decay_rate ** (p + 1)) / (1 - weighting_decay_rate)
-  # try:
-  weighting_for_progress_year_n = weighting_decay_rate ** n # How likely is it, that given some loss,
-    # that loss took us to exactly progress year n?
-  # except OverflowError:
-  #   pdb.set_trace()
+  geometric_sum_of_weightings = ( (1 - weighting_decay_rate ** (number_of_possible_regressions))
+                                  / (1 - weighting_decay_rate))
+
+  weighting_for_progress_year_n = weighting_decay_rate ** target_year # How likely is it, that given some loss,
+  # that loss took us to exactly progress year n?
+
+  if p == 2 and n == 2:
+    pdb.set_trace()
 
   # Thus weighting_for_progress_year_n / geometric_sum_of_weightings is a proportion; you can play with
   # the values at https://www.desmos.com/calculator/1pcgidwr3f
@@ -211,6 +235,7 @@ def transition_to_year_n_given_perils(k:int, p:int, n=None):
     # Desmos version:
     # https://www.desmos.com/calculator/xtlzmxvikn
 
+@cache
 def multiplanetary_given_perils(k, p):
   """The default stretch/gradient values here are hacked so as to make it vaguely plausible (~10%)
   that at the annual probability predicted for 2050, Elon Musk's target, we would develop a colony within 10 years.
@@ -236,6 +261,7 @@ def multiplanetary_given_perils(k, p):
 
   return sigmoid_curved_risk(p, x_stretch(k), y_stretch(), x_translation(), gradient_factor())
 
+@cache
 def interstellar_given_perils(k, p):
   """Graph with these values at https://www.desmos.com/calculator/kcrmqyqow5"""
   def x_stretch(k):
@@ -264,6 +290,7 @@ def interstellar_given_perils(k, p):
 
   return sigmoid_curved_risk(p, x_stretch(k), y_stretch(), x_translation(), gradient_factor())
 
+@cache
 def _non_continuation_given_perils(k, p):
   return (extinction_given_perils(k, p)
           + survival_given_perils(k, p)
@@ -273,6 +300,7 @@ def _non_continuation_given_perils(k, p):
           + multiplanetary_given_perils(k, p)
           + interstellar_given_perils(k, p))
 
+@cache
 def perils_stasis_given_perils(k, p):
   """The probability that we transition to the same progress year."""
   if p >= constant.MAX_PROGRESS_YEARS:
@@ -284,6 +312,7 @@ def perils_stasis_given_perils(k, p):
     # https://data.worldbank.org/indicator/NY.GDP.MKTP.KD.ZG
     # https://ourworldindata.org/grapher/world-gdp-over-the-last-two-millennia?time=1940..2015
 
+@cache
 def perils_progression_given_perils(k, p):
   if p >= constant.MAX_PROGRESS_YEARS:
     return 0

@@ -1,3 +1,4 @@
+from functools import cache
 import pdb
 import math
 import constant
@@ -15,6 +16,7 @@ from graph_functions import sigmoid_curved_risk, exponentially_decaying_risk
 
 ## Transition probabilities from multiplanetary state
 
+@cache
 def extinction_given_multiplanetary(k, q):
   def single_planet_risk():
     # TODO check whether this should be single_ or two_
@@ -49,6 +51,7 @@ def industrial_given_multiplanetary(k, q):
   humanity or leaves the reaminder with some advanced technology as to be treatable as 0"""
   return 0
 
+@cache
 def transition_to_n_planets_given_multiplanetary(k, q, n):
   """Should be a value between 0 and 1. Lower treats events that could cause regression to a
   1-planet civilisation in a perils state as having their probability less reduced by having
@@ -130,10 +133,12 @@ def transition_to_n_planets_given_multiplanetary(k, q, n):
                                        # Brackets seem to improve floating point errors at least
                                        # when the contents should be 1
 
+@cache
 def intraplanetary_regression_matrix(k):
   return [[transition_to_n_planets_given_multiplanetary(k, q, n) for n in range(2, q-1)]
            for q in range(2, constant.MAX_PLANETS)]
 
+@cache
 def perils_given_multiplanetary(k, q):
   """Ideally this would have a more specific notion of where in a time of perils you expect to end
   up given this transition, but since that could get complicated fast, I'm treating it as going to
@@ -145,6 +150,7 @@ def perils_given_multiplanetary(k, q):
   TODO if going to a fixed perils year, make it a later one."""
   return transition_to_n_planets_given_multiplanetary(k, q, 1)
 
+@cache
 def interstellar_given_multiplanetary(k, q):
   """Max value should get pretty close to 1, since at a certain number of planets the tech is all
   necessarily available and you've run out of extra planets to spread to.

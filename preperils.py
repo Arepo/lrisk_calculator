@@ -1,3 +1,4 @@
+from functools import cache
 import pdb
 
 class InvalidTransitionProbabilities(Exception):
@@ -6,7 +7,9 @@ class InvalidTransitionProbabilities(Exception):
 
 ## Transition probabilities from survival state
 
+@cache
 def extinction_given_survival(k):
+
   """I expect this to decrease slightly with the value of k, given civilisations in the state have
   evidently survived to reach perils."""
   base_estimate = 0.0003 # I've just lifted this from one of Rodriguez's most pessimistic scenarios
@@ -14,16 +17,23 @@ def extinction_given_survival(k):
   # I don't think the first two scenarios really describe a state of 'survival' for much the reasons
   # she describes. It could be much higher, given model uncertainty or its sensitivity to
   # lower numbers of surviving humans or much lower if we define the survival state more broadly
-  probability_multiplier_per_previous_survival = 0.4 # This is just intuition. There's probably a
-                                                     # more formal way of deriving such a multiplier
   expected_number_of_previous_survivals = (k - 1) * 0.01 # Again, just intuition of what proportion
                                                          # of milestone regressions took us back to
                                                          # a survival state.
+  probability_multiplier_per_previous_survival = 0.995 # This is very naively reduced by slightly less
+                                                       # than the expected number of previous survivals
+                                                       # - the more survival states we've been through, the
+                                                       # faster the probability of extinction should fall
   return (base_estimate *
           probability_multiplier_per_previous_survival ** expected_number_of_previous_survivals)
 
-def preindustrial_given_survival(k):
-  return 1 - extinction_given_survival(k)
+@cache
+def preindustrial_given_survival(k, k1):
+  if k != k1:
+    # We can't transition to different civilisations from a preperils state
+    return 0
+  else:
+    return 1 - extinction_given_survival(k)
 
 #  TODO - decide whether to reintroduce these checksums
 #  if not extinction_given_survival(k) + preindustrial_given_survival(k) == 1:
@@ -31,6 +41,7 @@ def preindustrial_given_survival(k):
 
 ## Transition probabilities from preindustrial state
 
+@cache
 def extinction_given_preindustrial(k):
   """I expect this to decrease slightly with the value of k, given civilisations in the state have
   evidently survived to reach perils. Depleted resources will be a slight issue. There are various
@@ -70,7 +81,7 @@ def extinction_given_preindustrial(k):
   # expected_time_in_years = 33_000 # Upper end of her range in this scenario
 
   # To account for her remarks about technological stagnation, I just naively add 10000 years to
-  # above each of the:
+  # each of the above:
   # expected_time_in_years = 10_100
   # expected_time_in_years = 10_500
   # expected_time_in_years = 11_000
@@ -106,11 +117,6 @@ def extinction_given_preindustrial(k):
   # similar way and produces annual extinction probabilities below 1 in 870,000.''
 
   base_total_extinction_probability = 1 - ((1 - extinction_probability_per_year) ** expected_time_in_years)
-  raise BaseException("there's a lot of negations I need to check in this function")
-
-  multiplier_per_previous_preindustrial = 0.4 # Naively this seems like it should be
-                                              # the same as in the
-                                              # extinction_given_survival() function
 
   expected_number_of_previous_preindustrials = (k - 1) * 0.4
   # Thoughts behind above variable: I assume biopandemics would leave us enough technology to retain
@@ -119,11 +125,24 @@ def extinction_given_preindustrial(k):
   # destroy industry, but wouldn't be big enough for the first few years of a time of perils; some
   # kind of multiple catastrophe could also cause this
 
-  return ((1 - base_total_extinction_probability) *
+  multiplier_per_previous_preindustrial = 0.95 # Mostly intuition. Each iteration provides less evidence
+                                               # for the probability of success than in the next than survival
+                                               # since the period is much longer, and could be affected
+                                               # by changing environmental factors. But we expect to
+                                               # pass through many more of these states across reboots,
+                                               # so we collect many more instances of this evidence.
+
+
+  return (base_total_extinction_probability *
           multiplier_per_previous_preindustrial ** expected_number_of_previous_preindustrials)
 
-def industrial_given_preindustrial(k):
-  return 1 - extinction_given_preindustrial(k)
+@cache
+def industrial_given_preindustrial(k, k1):
+  if k != k1:
+    # We can't transition to different civilisations from a preperils state
+    return 0
+  else:
+    return 1 - extinction_given_preindustrial(k)
 
 # if not extinction_given_preindustrial() + industrial_given_preindustrial() == 1:
 #   raise InvalidTransitionProbabilities("Transition probabilities from preindustrial must == 1")
@@ -131,6 +150,7 @@ def industrial_given_preindustrial(k):
 
 ## Transition probabilities from industrial state
 
+@cache
 def extinction_given_industrial(k):
   """I expect this to have a complex relationship with k. Initially I think it decreases with k as
   resources are preferentially used up so each civilisation has to do more with less, but after some
@@ -206,7 +226,11 @@ def extinction_given_industrial(k):
 
   return 1 - ((1 - base_annual_extinction_probability * annual_extinction_probability_multiplier) ** expected_time_in_years)
 
-def perils_given_industrial(k):
+@cache
+def perils_given_industrial(k, k1):
+  if k != k1:
+    # We can't transition to different civilisations from a preperils state
+    return 0
   return 1 - extinction_given_industrial(k)
 
 # if not extinction_given_industrial() + perils_given_industrial() == 1:
