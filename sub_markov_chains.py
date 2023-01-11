@@ -34,8 +34,6 @@ def intra_perils_markov_chain(k):
                         perils.multiplanetary_given_perils(k, p),
                         perils.interstellar_given_perils(k, p)] for p in year_range}
 
-  # pdb.set_trace()
-
   year_p_rows = [intra_transition_probabilities[p] + exit_probabilities[p] for p in year_range]
 
   probability_matrix = year_p_rows + [extinction_row,
