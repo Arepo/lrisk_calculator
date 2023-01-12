@@ -193,9 +193,10 @@ weighted_net_interstellar_from_unspecified_regress = ((net_interstellar_from_sur
                                                      + (net_interstellar_from_preindustrial * preindustrial_given_perils)
                                                      + (net_interstellar_from_industrial * industrial_given_perils)
                                                    / total_probability_of_non_extinction_milestone_regression_from_perils)
+# TODO check below half of this when more awake - output looks suspicious
+reduced_chance_of_success = (net_interstellar_from_perils - weighted_net_interstellar_from_unspecified_regress) / net_interstellar_from_perils
 
 
-# TODO check latter half of this when more awake - output looks suspicious
 print(f"""On your assumptions...
 Probability of becoming interstellar from survival = {net_interstellar_from_survival}
 Probability of becoming interstellar from preindustrial = {net_interstellar_from_preindustrial}
@@ -206,11 +207,10 @@ Probability of becoming interstellar from multiplanetary = {net_interstellar_fro
 *****
 
 Therefore, if we assume that becoming interstellar is the only concern...
-a castatrophe that put us into a survival state would reduce our chance of success by {(net_interstellar_from_perils - net_interstellar_from_survival) / net_interstellar_from_perils}
-a castatrophe that put us into a survival state would reduce our chance of success by {(net_interstellar_from_perils - net_interstellar_from_preindustrial) / net_interstellar_from_perils}
-a castatrophe that put us into a survival state would reduce our chance of success by {(net_interstellar_from_perils - net_interstellar_from_industrial) / net_interstellar_from_perils}
-a castatrophe that caused a milestone regression to one of the above states, weighted by the probability you've put on each, would reduce our chance of success by {(net_interstellar_from_perils - weighted_net_interstellar_from_unspecified_regress) / net_interstellar_from_perils}
-and if we reached a multiplanetary state, the probability of extinction before becoming interstellar would decrease by {net_interstellar_from_multiplanetary - net_interstellar_from_perils}%
+a castatrophe that put us into a survival state would reduce our chance of becoming interstellar by {(net_interstellar_from_perils - net_interstellar_from_survival) / net_interstellar_from_perils * 100}%
+a castatrophe that put us into a preindustrial state would reduce our chance of becoming interstellar by {(net_interstellar_from_perils - net_interstellar_from_preindustrial) / net_interstellar_from_perils * 100}%
+a castatrophe that put us into an industrial state would reduce our chance of becoming interstellar by {(net_interstellar_from_perils - net_interstellar_from_industrial) / net_interstellar_from_perils * 100}%
+and if we reached a multiplanetary state, it would increase our chance of becoming interstellar by {(net_interstellar_from_multiplanetary - net_interstellar_from_perils) / net_interstellar_from_perils * 100}%
 """)
 
 
