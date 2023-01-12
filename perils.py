@@ -171,23 +171,8 @@ def transition_to_year_n_given_perils(k:int, p:int, n=None):
                 + multiplanetary_given_perils(k, p)
                 + interstellar_given_perils(k, p))
 
-
   at_max_year = p == constant.MAX_PROGRESS_YEARS - 1 # The case where we've said we can't increment
   # progress years any further
-
-  if at_max_year:
-    initial_max_regression_steps = p
-  else:
-    initial_max_regression_steps = p + 1
-
-  max_regression_steps = min(
-    constant.MAX_PROGRESS_YEAR_REGRESSION_STEPS,
-    initial_max_regression_steps) # The size of regress (in progress years) beyond which we just approximate
-  # the probability to 0. Reduce large numbers to the minimum, eg regression from progress-year 1000 from progress-year
-  # 950 becomes regression from PY 50 to PY 0. This way we ensure proportions still sum to 0.
-  max_regression_distance = max_regression_steps - 1
-
-  target_year = n
 
   if (n == p + 1 and not at_max_year) or n == p and at_max_year:
     # Our catchall is either progressing one progress year or staying on the spot if we're at max
@@ -195,24 +180,35 @@ def transition_to_year_n_given_perils(k:int, p:int, n=None):
   elif n > (p + 1):
     # We only allow progress to increment by up to one.
     return 0
-  elif p - n + 1 > max_regression_steps:
+  elif p - n + 1 > constant.MAX_PROGRESS_YEAR_REGRESSION_STEPS:
     # We round to 0 when numbers get small enough,
     # so we don't have to deal with fractions like ~10^10000/2*10^10000 in the geometric sequence below
     return 0
-  elif p > max_regression_distance and at_max_year:
+
+  # If we get this far, we're setting up to calculate the division of the total probability of
+  # any_intra_perils_regression() into the specific probability of a regression to year n
+
+  if p >= constant.MAX_PROGRESS_YEAR_REGRESSION_STEPS and at_max_year:
+    # Reduce large numbers to the minimum, eg regression from progress-year 1000 from progress-year
+    # 950 becomes regression from PY 50 to PY 0. This way we ensure proportions still sum to 0.
     # In the specific case of being in the last allowed progress year, we have one fewer years to that
     # point to distribute our total probability between (since staying on the spot becomes our
     # remainder, rather than our smallest 'regression')
-    target_year = n - (p - max_regression_distance)
-    max_regression_steps -= 1
-  elif p > max_regression_distance:
+    target_year = n - p + constant.MAX_PROGRESS_YEAR_REGRESSION_STEPS + 1
+    max_regressed_states = constant.MAX_PROGRESS_YEAR_REGRESSION_STEPS - 1
+  elif p >= constant.MAX_PROGRESS_YEAR_REGRESSION_STEPS:
     # Reduce large numbers to the minimum, eg regression from progress-year 1000 from progress-year
     # 950 with max_distance 100 becomes regression from PY 100 to PY 50. This way we ensure proportions still sum to 0.
-    target_year = n - (p - max_regression_distance)
+    target_year = n - p + constant.MAX_PROGRESS_YEAR_REGRESSION_STEPS + 1
+    max_regressed_states = constant.MAX_PROGRESS_YEAR_REGRESSION_STEPS
   elif at_max_year:
-    max_regression_steps -= 1
+    target_year = n
+    max_regressed_states = p
+  else:
+    target_year = n
+    max_regressed_states = p + 1
 
-  total_probability_of_loss = any_intra_perils_regression() # How likely is it in total
+   # How likely is it in total
   # we regress any number of progress years between 0 and p inclusive?
 
   weighting_decay_rate = 1.4 # Higher gives higher probability that given such a loss we'll lose a
@@ -223,16 +219,15 @@ def transition_to_year_n_given_perils(k:int, p:int, n=None):
   # regression of 2, and looking for a probability outcome slightly below that (to account for
   # eg survivor bias, and selection effects from starting to count immediately *after* WWII).
 
-  geometric_sum_of_weightings = ( (1 - weighting_decay_rate ** (max_regression_steps))
+  geometric_sum_of_weightings = ( (1 - weighting_decay_rate ** max_regressed_states)
                                   / (1 - weighting_decay_rate))
 
   numerator_for_progress_year_n = weighting_decay_rate ** target_year # How likely is it, that given some loss,
   # that loss took us to exactly progress year n?
 
-
   # Thus numerator_for_progress_year_n / geometric_sum_of_weightings is a proportion; you can play with
   # the values at https://www.desmos.com/calculator/1pcgidwr3f
-  return total_probability_of_loss * numerator_for_progress_year_n / geometric_sum_of_weightings
+  return any_intra_perils_regression() * numerator_for_progress_year_n / geometric_sum_of_weightings
 
     # Linear version:
     # arithmetic_sequence_sum = p + 1 + (p**2 + p)/2

@@ -11,7 +11,7 @@ import preperils
 # See https://dbader.org/blog/python-memoization for a primer on caching
 
 class IntraPerilsMCWrapper():
-  def __initialize__(k):
+  def __init__(self, k):
     self.k = k
     extinction_row =     [0] * constant.MAX_PROGRESS_YEARS + [1,0,0,0,0,0]
     survival_row =       [0] * constant.MAX_PROGRESS_YEARS + [0,1,0,0,0,0]
@@ -46,7 +46,7 @@ class IntraPerilsMCWrapper():
                                         interstellar_row]
 
     numbers = [f"{num}" for num in year_range]
-
+    pdb.set_trace()
     self.mc = MarkovChain(probability_matrix, list(numbers)
                                               + ['Extinction',
                                                 'Survival',
@@ -55,37 +55,37 @@ class IntraPerilsMCWrapper():
                                                 'Perils',
                                                 'Interstellar'])
 
-  def extinction_given_perils():
+  def extinction_given_perils(self):
     return mc.hitting_probabilities([some_value])[some_other_value]
 
-  def survival_given_perils(k1):
+  def survival_given_perils(self, k1):
     if self.k + 1 == k1:
-      return mc.hitting_probabilities([some_value])[some_other_value]
+      return self.mc.absorption_probabilities()[some_value][some_other_value]
     else:
       return 0
 
-  def preindustrial_given_perils(k1):
+  def preindustrial_given_perils(self, k1):
     if self.k + 1 == k1:
-      return mc.hitting_probabilities([some_value])[some_other_value]
+      return self.mc.hitting_probabilities([some_value])[some_other_value]
     else:
       return 0
 
-  def industrial_given_perils(k1):
+  def industrial_given_perils(self, k1):
     if self.k + 1 == k1:
-      return mc.hitting_probabilities([some_value])[some_other_value]
+      return self.mc.hitting_probabilities([some_value])[some_other_value]
     else:
       return 0
 
-  def multiplanetary_given_perils(k1):
+  def multiplanetary_given_perils(self, k1):
     if self.k == k1:
-      return mc.hitting_probabilities([some_value])[some_other_value]
+      return self.mc.hitting_probabilities([some_value])[some_other_value]
     else:
       return 0
 
-  def interstellar_given_perils():
-    return mc.hitting_probabilities([some_value])[some_other_value]
+  def interstellar_given_perils(self):
+    return self.mc.hitting_probabilities([some_value])[some_other_value]
 
-
+IntraPerilsMCWrapper(3)
 
 
 

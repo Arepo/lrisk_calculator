@@ -1,3 +1,4 @@
+from functools import cache
 import pdb
 
 from pydtmc import MarkovChain
@@ -6,6 +7,7 @@ import constant
 import multiplanetary
 import perils
 import preperils
+import sub_markov_chains
 
 def full_markov_chain():
   def _zero_probabilities():
@@ -60,7 +62,11 @@ def full_markov_chain():
                        + [preperils.extinction_given_preindustrial(k)] + [0] for k in preperils_civilisation_range]
                        # ^Extinction and Interstellar respectively
 
-  perils_rows = [[sub_markov_chains.intra_perils_markov_chain(k k1) for k1 in preperils_civilisation_range]
+  @cache
+  def perils_chain(k):
+    return sub_markov_chains.IntraPerilsMCWrapper(k)
+
+  perils_rows = [[perils_chain(k).survival_given_perils(k1) for k1 in preperils_civilisation_range]
           ]
 
   # TODO: allow transition to perils k+1
@@ -83,7 +89,12 @@ def full_markov_chain():
 
   pdb.set_trace()
 
-full_markov_chain()
+@cache
+def perils_chain(k):
+  return sub_markov_chains.IntraPerilsMCWrapper(k)
+
+[perils_chain(3).survival_given_perils(k1) for k1 in range(1, constant.MAX_CIVILISATIONS)]
+# full_markov_chain()
 
 ########
 
