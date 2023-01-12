@@ -60,6 +60,9 @@ def full_markov_chain():
                        + [preperils.extinction_given_preindustrial(k)] + [0] for k in preperils_civilisation_range]
                        # ^Extinction and Interstellar respectively
 
+  perils_rows = [[sub_markov_chains.intra_perils_markov_chain(k k1) for k1 in preperils_civilisation_range]
+          ]
+
   # TODO: allow transition to perils k+1
   # perils_rows = [[sub_markov_chain.survival_given_perils(k, k1) for k1 in preperils_civilisation_range]
   #                # ^Survival states

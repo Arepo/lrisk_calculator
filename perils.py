@@ -229,11 +229,6 @@ def transition_to_year_n_given_perils(k:int, p:int, n=None):
   numerator_for_progress_year_n = weighting_decay_rate ** target_year # How likely is it, that given some loss,
   # that loss took us to exactly progress year n?
 
-  # if p == 2:
-  #   print('****')
-  #   print(n)
-  #   print('****')
-  #   pdb.set_trace()
 
   # Thus numerator_for_progress_year_n / geometric_sum_of_weightings is a proportion; you can play with
   # the values at https://www.desmos.com/calculator/1pcgidwr3f

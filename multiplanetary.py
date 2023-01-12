@@ -17,7 +17,7 @@ from graph_functions import sigmoid_curved_risk, exponentially_decaying_risk
 ## Transition probabilities from multiplanetary state
 
 @cache
-def extinction_given_multiplanetary(k, q):
+def extinction_given_multiplanetary(q):
   def single_planet_risk():
     # TODO check whether this should be single_ or two_
     return 0.12
@@ -34,25 +34,25 @@ def extinction_given_multiplanetary(k, q):
 
   return exponentially_decaying_risk(single_planet_risk(), q, decay_rate(), min_risk())
 
-def survival_given_multiplanetary(k, q):
+def survival_given_multiplanetary(q):
   """Sum of total survival exit probability over all values of q given k. I treat this as 0 on the
   grounds that it seems such a precise amount of damage that it's not worth the computation/complexity
   costs"""
   return 0
 
-def preindustrial_given_multiplanetary(k, q):
+def preindustrial_given_multiplanetary(q):
   """Sum of total preindustrial exit probability over all values of q given k. Again, while this seems
   more plausible than going directly to a survival state, it seems unlikely enough to treat as 0"""
   return 0
 
-def industrial_given_multiplanetary(k, q):
+def industrial_given_multiplanetary(q):
   """Sum of total industrial exit probability over all values of q given k. Again, while this looks
   somewhat more plausible, it still seems so much less likely than an event which either wipes out
   humanity or leaves the reaminder with some advanced technology as to be treatable as 0"""
   return 0
 
 @cache
-def transition_to_n_planets_given_multiplanetary(k, q, n):
+def transition_to_n_planets_given_multiplanetary(q, n):
   """Should be a value between 0 and 1. Lower treats events that could cause regression to a
   1-planet civilisation in a perils state as having their probability less reduced by having
   multiple settlements.
@@ -75,16 +75,16 @@ def transition_to_n_planets_given_multiplanetary(k, q, n):
   def decay_rate():
     return 0.4 # Intuition, no substantive reasoning
 
-  def any_intra_multiplanetary_regression(k, q):
+  def any_intra_multiplanetary_regression(q):
     return exponentially_decaying_risk(two_planet_risk(), q, decay_rate())
 
-  def remainder_outcome(k, q):
-    return 1 - (extinction_given_multiplanetary(k, q)
-                + survival_given_multiplanetary(k, q)
-                + preindustrial_given_multiplanetary(k, q)
-                + industrial_given_multiplanetary(k, q)
-                + any_intra_multiplanetary_regression(k, q)
-                + interstellar_given_multiplanetary(k, q)) # perils_given_multiplanetary is
+  def remainder_outcome(q):
+    return 1 - (extinction_given_multiplanetary(q)
+                + survival_given_multiplanetary(q)
+                + preindustrial_given_multiplanetary(q)
+                + industrial_given_multiplanetary(q)
+                + any_intra_multiplanetary_regression(q)
+                + interstellar_given_multiplanetary(q)) # perils_given_multiplanetary is
                                                            # implicitly included as any_intra_multiplanetary_regression
                                                            # to n = 1
 
@@ -98,16 +98,16 @@ def transition_to_n_planets_given_multiplanetary(k, q, n):
 
   if not n:
     # Allows us to check total probability sums to 1
-    return any_intra_multiplanetary_regression(k, q)
+    return any_intra_multiplanetary_regression(q)
   elif n == q + 1:
     # This is our catchall branch - the probability is whatever's left after we decide all the other
     # risks
     # pdb.set_trace()
-    return remainder_outcome(k, q)
+    return remainder_outcome(q)
 
   elif n == q and q == constant.MAX_PLANETS:
     # For simplicitym when we hit max planets, we allow looping, and make that our catchall branch
-    return remainder_outcome(k, q)
+    return remainder_outcome(q)
 
   elif n >= q:
     # We're only interested in changes to number of planets, and assume we can add max 1 at a time
@@ -115,10 +115,10 @@ def transition_to_n_planets_given_multiplanetary(k, q, n):
   else:
     # The commented return value describes the linear decrease described above
     # Uncomment the next two lines if you think this is a more reasonable treatment
-    # return any_intra_multiplanetary_regression(k, q) * ((n + 1)
+    # return any_intra_multiplanetary_regression(q) * ((n + 1)
     #                                               / (1 + (q ** 2)/2 + 3 * q / 2))
     # The commented out return values is the exponential decrease described above. TODO - where?
-    total_probability_of_loss = any_intra_multiplanetary_regression(k, q) # How likely is it in total
+    total_probability_of_loss = any_intra_multiplanetary_regression(q) # How likely is it in total
     # we lose any number of planets between 1 and (q - 1) inclusive?
     weighting_decay_rate = 1.4 # Higher gives higher probability that given such a loss we'll lose a
     # smaller number of planets
@@ -135,11 +135,11 @@ def transition_to_n_planets_given_multiplanetary(k, q, n):
 
 @cache
 def intraplanetary_regression_matrix(k):
-  return [[transition_to_n_planets_given_multiplanetary(k, q, n) for n in range(2, q-1)]
+  return [[transition_to_n_planets_given_multiplanetary(q, n) for n in range(2, q-1)]
            for q in range(2, constant.MAX_PLANETS)]
 
 @cache
-def perils_given_multiplanetary(k, q):
+def perils_given_multiplanetary(q):
   """Ideally this would have a more specific notion of where in a time of perils you expect to end
   up given this transition, but since that could get complicated fast, I'm treating it as going to
   perils year 0 for now.
@@ -148,10 +148,10 @@ def perils_given_multiplanetary(k, q):
   the existing formula for this.
 
   TODO if going to a fixed perils year, make it a later one."""
-  return transition_to_n_planets_given_multiplanetary(k, q, 1)
+  return transition_to_n_planets_given_multiplanetary(q, 1)
 
 @cache
-def interstellar_given_multiplanetary(k, q):
+def interstellar_given_multiplanetary(q):
   """Max value should get pretty close to 1, since at a certain number of planets the tech is all
   necessarily available and you've run out of extra planets to spread to.
 
