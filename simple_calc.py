@@ -20,33 +20,33 @@ class InvalidTransitionProbabilities(Exception):
   pass
 
 
-extinction_given_survival = 0.001
+extinction_given_survival = 0
 preindustrial_given_survival = 1 - extinction_given_survival
 
 if not extinction_given_survival + preindustrial_given_survival == 1:
   raise InvalidTransitionProbabilities("Transition probabilities from survival must == 1")
 
 
-extinction_given_preindustrial = 0.3
+extinction_given_preindustrial = 0
 industrial_given_preindustrial = 1 - extinction_given_preindustrial
 
 if not extinction_given_preindustrial + industrial_given_preindustrial == 1:
   raise InvalidTransitionProbabilities("Transition probabilities from preindustrial must == 1")
 
 
-extinction_given_industrial = 0.1
+extinction_given_industrial = 1/2
 perils_given_industrial = 1 - extinction_given_industrial
 
 if not extinction_given_industrial + perils_given_industrial == 1:
   raise InvalidTransitionProbabilities("Transition probabilities from industrial must == 1")
 
 
-extinction_given_perils = 0.1
-survival_given_perils = 0.01
-preindustrial_given_perils = 0.1
-industrial_given_perils = 0.15
-multiplanetary_given_perils = 0.6
-interstellar_given_perils = 1 - (extinction_given_perils
+extinction_given_perils = 1/6
+survival_given_perils = 2/6
+preindustrial_given_perils = 0
+industrial_given_perils = 0
+multiplanetary_given_perils = 2/6
+interstellar_given_perils =  1 - (extinction_given_perils
                                  + survival_given_perils
                                  + preindustrial_given_perils
                                  + industrial_given_perils
@@ -62,11 +62,11 @@ if not (extinction_given_perils
   raise InvalidTransitionProbabilities("Transition probabilities from perils must == 1")
 
 
-extinction_given_multiplanetary = 0.08
-survival_given_multiplanetary = 0.0001
-preindustrial_given_multiplanetary = 0.01
-industrial_given_multiplanetary = 0.05
-perils_given_multiplanetary = 0.4
+extinction_given_multiplanetary = 1/6
+survival_given_multiplanetary = 1/6
+preindustrial_given_multiplanetary = 0
+industrial_given_multiplanetary = 0
+perils_given_multiplanetary = 1/6
 interstellar_given_multiplanetary = 1 - (extinction_given_multiplanetary
                                          + survival_given_multiplanetary
                                          + preindustrial_given_multiplanetary
@@ -214,7 +214,6 @@ and if we reached a multiplanetary state, it would increase our chance of becomi
 """)
 
 
-# pdb.set_trace()
 
 
 
