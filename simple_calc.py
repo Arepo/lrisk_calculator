@@ -170,42 +170,64 @@ probability_of_survival_to_perils_directly = preindustrial_given_survival * prob
 
 # # TODO find out why these produce different values
 
-total_probability_of_non_extinction_milestone_regression_from_perils = survival_given_perils + preindustrial_given_perils + industrial_given_perils
+
 
 # print(f"""
-# Probability of becoming interstellar from extinction = {probability_of_interstellar_from_extinction}, {mc.hitting_probabilities([6])[0]}
-# Probability of becoming interstellar from survival = {probability_of_interstellar_from_survival}, {mc.hitting_probabilities([6])[1]}
-# Probability of becoming interstellar from preindustrial = {probability_of_interstellar_from_preindustrial}, {mc.hitting_probabilities([6])[2]}
-# Probability of becoming interstellar from industrial = {probability_of_interstellar_from_industrial}, {mc.hitting_probabilities([6])[3]}
-# Probability of becoming interstellar from perils = {probability_of_interstellar_from_perils}, {mc.hitting_probabilities([6])[4]}
-# Probability of becoming interstellar from multiplanetary = {probability_of_interstellar_from_multiplanetary}, {mc.hitting_probabilities([6])[5]}
-# Probability of becoming interstellar from interstellar = {probability_of_interstellar_from_interstellar}, {mc.hitting_probabilities([6])[6]}
+# Probability of becoming interstellar from extinction = {probability_of_interstellar_from_extinction}, {mc.absorption_probabilities([6])[0]}
+# Probability of becoming interstellar from survival = {probability_of_interstellar_from_survival}, {mc.absorption_probabilities([6])[1]}
+# Probability of becoming interstellar from preindustrial = {probability_of_interstellar_from_preindustrial}, {mc.absorption_probabilities([6])[2]}
+# Probability of becoming interstellar from industrial = {probability_of_interstellar_from_industrial}, {mc.absorption_probabilities([6])[3]}
+# Probability of becoming interstellar from perils = {probability_of_interstellar_from_perils}, {mc.absorption_probabilities([6])[4]}
+# Probability of becoming interstellar from multiplanetary = {probability_of_interstellar_from_multiplanetary}, {mc.absorption_probabilities([6])[5]}
+# Probability of becoming interstellar from interstellar = {probability_of_interstellar_from_interstellar}, {mc.absorption_probabilities([6])[6]}
 # """)
 
+net_interstellar_from_survival = mc.absorption_probabilities()[1][0]
+net_interstellar_from_preindustrial = mc.absorption_probabilities()[1][1]
+net_interstellar_from_industrial = mc.absorption_probabilities()[1][2]
+net_interstellar_from_perils = mc.absorption_probabilities()[1][3]
+net_interstellar_from_multiplanetary = mc.absorption_probabilities()[1][4]
+
+total_probability_of_non_extinction_milestone_regression_from_perils = survival_given_perils + preindustrial_given_perils + industrial_given_perils
+weighted_net_interstellar_from_unspecified_regress = ((net_interstellar_from_survival * survival_given_perils)
+                                                     + (net_interstellar_from_preindustrial * preindustrial_given_perils)
+                                                     + (net_interstellar_from_industrial * industrial_given_perils)
+                                                   / total_probability_of_non_extinction_milestone_regression_from_perils)
 
 
-
+# TODO check latter half of this when more awake - output looks suspicious
 print(f"""On your assumptions...
-Probability of becoming interstellar from extinction = {mc.hitting_probabilities([6])[0]}
-Probability of becoming interstellar from survival = {mc.hitting_probabilities([6])[1]}
-Probability of becoming interstellar from preindustrial = {mc.hitting_probabilities([6])[2]}
-Probability of becoming interstellar from industrial = {mc.hitting_probabilities([6])[3]}
-Probability of becoming interstellar from perils = {mc.hitting_probabilities([6])[4]}
-Probability of becoming interstellar from multiplanetary = {mc.hitting_probabilities([6])[5]}
-Probability of becoming interstellar from interstellar = {mc.hitting_probabilities([6])[6]}
+Probability of becoming interstellar from survival = {net_interstellar_from_survival}
+Probability of becoming interstellar from preindustrial = {net_interstellar_from_preindustrial}
+Probability of becoming interstellar from industrial = {net_interstellar_from_industrial}
+Probability of becoming interstellar from perils = {net_interstellar_from_perils}
+Probability of becoming interstellar from multiplanetary = {net_interstellar_from_multiplanetary}
 
 *****
 
 Therefore, if we assume that becoming interstellar is the only concern...
-a castatrophe that put us into a survival state would be {mc.hitting_probabilities([6])[4] - mc.hitting_probabilities([6])[1]} * as bad as extinction
-a castatrophe that put us into a preindustrial state would be {mc.hitting_probabilities([6])[4] - mc.hitting_probabilities([6])[2]} * as bad as extinction
-a castatrophe that put us into an industrial state would be {mc.hitting_probabilities([6])[4] - mc.hitting_probabilities([6])[3]} * as bad as extinction
-a castatrophe that caused a milestone regression to one of the above states, weighted by the probability you've put on each, would be {mc.hitting_probabilities([6])[4]
-                                              - mc.hitting_probabilities([6])[1] * survival_given_perils / total_probability_of_non_extinction_milestone_regression_from_perils
-                                              - mc.hitting_probabilities([6])[2] * preindustrial_given_perils / total_probability_of_non_extinction_milestone_regression_from_perils
-                                              - mc.hitting_probabilities([6])[3] * industrial_given_perils / total_probability_of_non_extinction_milestone_regression_from_perils} * as bad as extinction
-and if we reached a multiplanetary state, the probability of extinction before becoming interstellar would decrease by {(mc.hitting_probabilities([6])[5] - mc.hitting_probabilities([6])[4])}%
+a castatrophe that put us into a survival state would reduce our chance of success by {(net_interstellar_from_perils - net_interstellar_from_survival) / net_interstellar_from_perils}
+a castatrophe that put us into a survival state would reduce our chance of success by {(net_interstellar_from_perils - net_interstellar_from_preindustrial) / net_interstellar_from_perils}
+a castatrophe that put us into a survival state would reduce our chance of success by {(net_interstellar_from_perils - net_interstellar_from_industrial) / net_interstellar_from_perils}
+a castatrophe that caused a milestone regression to one of the above states, weighted by the probability you've put on each, would reduce our chance of success by {(net_interstellar_from_perils - weighted_net_interstellar_from_unspecified_regress) / net_interstellar_from_perils}
+and if we reached a multiplanetary state, the probability of extinction before becoming interstellar would decrease by {net_interstellar_from_multiplanetary - net_interstellar_from_perils}%
 """)
 
 
-pdb.set_trace()
+# pdb.set_trace()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
