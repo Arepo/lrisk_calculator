@@ -11,9 +11,10 @@ import sub_markov_chains
 
 def full_markov_chain():
   def _zero_probabilities():
-    # Represents a set of zero-probability transitions, eg all the preindustrial
-    # states' transitional probabilities from an industrial state
-    return [0] * constant.MAX_CIVILISATIONS
+    """Represents a set of zero-probability transitions, eg all the preindustrial states'
+    transitional probabilities from an industrial state. For perils and multiplanetary rows, we'll
+    need to add an extra value, since they potentially include the current civilisation"""
+    return [0] * (constant.MAX_CIVILISATIONS - 1)
 
   states_count = 5 * constant.MAX_CIVILISATIONS - 3 # 5 classes of states
   # (survival, preindustrial, industrial, perils, multiplanetary) * max civilisations, minus the three
@@ -55,7 +56,7 @@ def full_markov_chain():
                        # ^Preindustrial states
                        + _zero_probabilities()
                        # ^Other industrial states
-                       + [preperils.perils_given_industrial(k,k1) for k1 in preperils_civilisation_range]
+                       + [preperils.perils_given_industrial(k,k1) for k1 in modern_civilisation_range]
                        # ^Perils states (which include the current civilisation)
                        + _zero_probabilities() + [0]
                        # ^Multiplanetary states (which potentially include the current civilisation)
@@ -66,8 +67,22 @@ def full_markov_chain():
   def perils_chain(k):
     return sub_markov_chains.IntraPerilsMCWrapper(k)
 
-  perils_rows = [[perils_chain(k).survival_given_perils(k1) for k1 in preperils_civilisation_range]
+  perils_rows = [[perils_chain(k).survival_given_perils(k1) for k1 in modern_civilisation_range]
           ]
+
+  @cache
+  def multiplanetary_chain():
+    return sub_markov_chains.IntraMultiplanetaryMCWrapper()
+
+  multiplanetary_rows = [[multiplanetary_chain().survival_given_multiplanetary(k, k1) for k1 in range(1, constant.MAX_CIVILISATIONS)]
+                       + [multiplanetary_chain().preindustrial_given_multiplanetary(k, k1) for k1 in range(1, constant.MAX_CIVILISATIONS)]
+                       + [multiplanetary_chain().industrial_given_multiplanetary(k, k1) for k1 in range(1, constant.MAX_CIVILISATIONS)]
+                       + [multiplanetary_chain().perils_given_multiplanetary(k, k1) for k1 in range(0, constant.MAX_CIVILISATIONS)]
+                       + _zero_probabilities() + [0]
+                       # ^Multiplanetary states (which potentially include the current civilisation)
+                       + [multiplanetary_chain().extinction_given_multiplanetary()]
+                       + [multiplanetary_chain().interstellar_given_multiplanetary()] for k in range(0, constant.MAX_CIVILISATIONS)]
+
 
   # TODO: allow transition to perils k+1
   # perils_rows = [[sub_markov_chain.survival_given_perils(k, k1) for k1 in preperils_civilisation_range]
@@ -87,11 +102,38 @@ def full_markov_chain():
 
 
 
-@cache
-def perils_chain(k):
-  return sub_markov_chains.IntraPerilsMCWrapper(k)
 
-[perils_chain(3).survival_given_perils(k1) for k1 in range(1, constant.MAX_CIVILISATIONS)]
+
+# mc = multiplanetary_chain()
+
+# def _zero_probabilities():
+#   """Represents a set of zero-probability transitions, eg all the preindustrial states'
+#   transitional probabilities from an industrial state. For perils and multiplanetary rows, we'll
+#   need to add an extra value, since they potentially include the current civilisation"""
+#   return [0] * (constant.MAX_CIVILISATIONS - 1)
+
+# k = 0
+
+
+# @cache
+# def perils_chain(k):
+#   return sub_markov_chains.IntraPerilsMCWrapper(k)
+
+# perils_rows = [[perils_chain(k).survival_given_perils(k1) for k1 in modern_civilisation_range]
+#           ]
+
+# multiplanetary_rows = [[multiplanetary_chain().survival_given_multiplanetary(k, k1) for k1 in range(1, constant.MAX_CIVILISATIONS)]
+#                        + [multiplanetary_chain().preindustrial_given_multiplanetary(k, k1) for k1 in range(1, constant.MAX_CIVILISATIONS)]
+#                        + [multiplanetary_chain().industrial_given_multiplanetary(k, k1) for k1 in range(1, constant.MAX_CIVILISATIONS)]
+#                        + [multiplanetary_chain().perils_given_multiplanetary(k, k1) for k1 in range(0, constant.MAX_CIVILISATIONS)]
+#                        + _zero_probabilities() + [0]
+#                        # ^Multiplanetary states (which potentially include the current civilisation)
+#                        + [multiplanetary_chain().extinction_given_multiplanetary()]
+#                        + [multiplanetary_chain().interstellar_given_multiplanetary()] for k in range(0, constant.MAX_CIVILISATIONS)]
+
+# pdb.set_trace()
+
+
 # full_markov_chain()
 
 ########

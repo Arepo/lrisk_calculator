@@ -190,7 +190,7 @@ def transition_to_year_n_given_perils(k:int, p:int, n=None):
 
   if possible_regressions - n > constant.MAX_PROGRESS_YEAR_REGRESSION_STEPS:
     # We round to 0 when numbers get small enough,
-    # so we don't have to deal with fractions like ~10^10000/2*10^10000 in the geometric sequence below
+    # so we don't have to deal with fractions like ~a^10000/2a^10000 in the geometric sequence below
     return 0
 
   # If we get this far, we're setting up to calculate the division of the total probability of
