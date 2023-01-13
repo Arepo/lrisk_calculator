@@ -154,6 +154,17 @@ def transition_to_year_n_given_perils(k:int, p:int, n=None):
 
   # ... this function really sucks.
 
+  possible_regressions = p + 1
+
+  if possible_regressions == constant.MAX_PROGRESS_YEARS:
+    # We're at the maximum allowable number of progress years, so lose the 'regression' of  staying
+    # on the spot (which becomes our remainder)
+    possible_regressions -= 1
+
+  if n > (possible_regressions):
+    # We only allow progress to increment by up to one.
+    return 0
+
   def any_intra_perils_regression():
     return 0.026 # Might be a function of k and/or p - but for now this is a placeholder based on it
                  # roughly happening twice in 77 years on these graphs
@@ -171,42 +182,28 @@ def transition_to_year_n_given_perils(k:int, p:int, n=None):
                 + multiplanetary_given_perils(k, p)
                 + interstellar_given_perils(k, p))
 
-  at_max_year = p == constant.MAX_PROGRESS_YEARS - 1 # The case where we've said we can't increment
-  # progress years any further
 
-  if (n == p + 1 and not at_max_year) or n == p and at_max_year:
+
+  if n == possible_regressions:
     # Our catchall is either progressing one progress year or staying on the spot if we're at max
     return remainder_outcome(k, p)
-  elif n > (p + 1):
-    # We only allow progress to increment by up to one.
-    return 0
-  elif p - n + 1 > constant.MAX_PROGRESS_YEAR_REGRESSION_STEPS:
+
+  if possible_regressions - n > constant.MAX_PROGRESS_YEAR_REGRESSION_STEPS:
     # We round to 0 when numbers get small enough,
     # so we don't have to deal with fractions like ~10^10000/2*10^10000 in the geometric sequence below
     return 0
 
   # If we get this far, we're setting up to calculate the division of the total probability of
   # any_intra_perils_regression() into the specific probability of a regression to year n
-
-  if p >= constant.MAX_PROGRESS_YEAR_REGRESSION_STEPS and at_max_year:
-    # Reduce large numbers to the minimum, eg regression from progress-year 1000 from progress-year
-    # 950 becomes regression from PY 50 to PY 0. This way we ensure proportions still sum to 0.
-    # In the specific case of being in the last allowed progress year, we have one fewer years to that
-    # point to distribute our total probability between (since staying on the spot becomes our
-    # remainder, rather than our smallest 'regression')
-    target_year = n - p + constant.MAX_PROGRESS_YEAR_REGRESSION_STEPS + 1
-    max_regressed_states = constant.MAX_PROGRESS_YEAR_REGRESSION_STEPS - 1
-  elif p >= constant.MAX_PROGRESS_YEAR_REGRESSION_STEPS:
+  if possible_regressions > constant.MAX_PROGRESS_YEAR_REGRESSION_STEPS:
     # Reduce large numbers to the minimum, eg regression from progress-year 1000 from progress-year
     # 950 with max_distance 100 becomes regression from PY 100 to PY 50. This way we ensure proportions still sum to 0.
-    target_year = n - p + constant.MAX_PROGRESS_YEAR_REGRESSION_STEPS + 1
     max_regressed_states = constant.MAX_PROGRESS_YEAR_REGRESSION_STEPS
-  elif at_max_year:
-    target_year = n
-    max_regressed_states = p
+    target_year = n - (possible_regressions - constant.MAX_PROGRESS_YEAR_REGRESSION_STEPS)
   else:
+    max_regressed_states = possible_regressions
     target_year = n
-    max_regressed_states = p + 1
+
 
    # How likely is it in total
   # we regress any number of progress years between 0 and p inclusive?

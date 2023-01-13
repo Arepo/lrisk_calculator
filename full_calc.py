@@ -87,8 +87,6 @@ def full_markov_chain():
 
 
 
-  pdb.set_trace()
-
 @cache
 def perils_chain(k):
   return sub_markov_chains.IntraPerilsMCWrapper(k)

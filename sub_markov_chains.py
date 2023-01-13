@@ -46,7 +46,7 @@ class IntraPerilsMCWrapper():
                                         interstellar_row]
 
     numbers = [f"{num}" for num in year_range]
-    pdb.set_trace()
+    # pdb.set_trace()
     self.mc = MarkovChain(probability_matrix, list(numbers)
                                               + ['Extinction',
                                                 'Survival',
@@ -56,7 +56,7 @@ class IntraPerilsMCWrapper():
                                                 'Interstellar'])
 
   def extinction_given_perils(self):
-    return mc.hitting_probabilities([some_value])[some_other_value]
+    return self.mc.absorption_probabilities()[some_value][some_other_value]
 
   def survival_given_perils(self, k1):
     if self.k + 1 == k1:
@@ -66,26 +66,24 @@ class IntraPerilsMCWrapper():
 
   def preindustrial_given_perils(self, k1):
     if self.k + 1 == k1:
-      return self.mc.hitting_probabilities([some_value])[some_other_value]
+      return self.mc.absorption_probabilities()[some_value][some_other_value]
     else:
       return 0
 
   def industrial_given_perils(self, k1):
     if self.k + 1 == k1:
-      return self.mc.hitting_probabilities([some_value])[some_other_value]
+      return self.mc.absorption_probabilities()[some_value][some_other_value]
     else:
       return 0
 
   def multiplanetary_given_perils(self, k1):
     if self.k == k1:
-      return self.mc.hitting_probabilities([some_value])[some_other_value]
+      return self.mc.absorption_probabilities()[some_value][some_other_value]
     else:
       return 0
 
   def interstellar_given_perils(self):
-    return self.mc.hitting_probabilities([some_value])[some_other_value]
-
-IntraPerilsMCWrapper(3)
+    return self.mc.absorption_probabilities()[some_value][some_other_value]
 
 
 
