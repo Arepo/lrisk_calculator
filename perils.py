@@ -2,13 +2,21 @@ import pdb
 import math
 import constant
 from functools import cache
-from graph_functions import sigmoid_curved_risk, exponentially_decaying_risk
+from scipy.stats import gamma
+from graph_functions import sigmoid_curved_risk, heavy_tailed_risk, exponentially_decaying_risk
+
 
 ## Transition probabilities from time of perils state
 
 @cache
 def extinction_given_perils(k, p):
-  def x_stretch(k):
+  """This is the addition of an S-curve, representing persistent technological threats such as
+  biopandemics, to an arc representing the specific threat of AI, which I assume to be highest at
+  the point when it's developed and then, if it doesn't rapidly kill us all, to become much less
+  likely to directly do so
+  https://www.desmos.com/calculator/olllb8f61v"""
+
+  def sigmoid_x_stretch(k):
     base_x_stretch = 83 # To set the initial shape of the graph to something plausibly consistent
     # with our current perceived risk
 
@@ -18,7 +26,7 @@ def extinction_given_perils(k, p):
     reboot_multiplier = 1.5 ** k
     return base_x_stretch * reboot_multiplier
 
-  def y_stretch(k):
+  def sigmoid_y_stretch(k):
     """ I treat this as diminishing with k, since the more chances we've had to
     develop technology that might make us extinct, the less likely we should think it that that
     technology will actually do so"""
@@ -29,16 +37,52 @@ def extinction_given_perils(k, p):
     decay_rate = 0.4 # Intuition
     return exponentially_decaying_risk(max_annual_risk, k, decay_rate, min_risk, x_translation=0)
 
-  def x_translation():
+  def sigmoid_x_translation():
     # TODO I can probably subtract the lowest x_translation value from all the others to save some
     # runtime, since nothing interesting happens until we hit it
     return 15
 
-  def gradient_factor():
+  def sigmoid_sharpness():
     return 2.5 # Intuition, no substantive reasoning
 
+  non_ai_extinction_risk_by_year = sigmoid_curved_risk(p, sigmoid_x_stretch(k), sigmoid_y_stretch(k), sigmoid_x_translation(), sigmoid_sharpness())
+
+  # Using a gamma distribution as the simplest example of a long-tail distribution I could find,
+  # to represent the probability distribution of when AGI is developed conditional on us surviving
+  # Long enough in a technological state, multiplied by the probability that if it's developed in
+  # year p it wipes us out.
+  # Play with these numbers at https://www.desmos.com/calculator/sdpkzovez9
+
+  def gamma_shape():
+    """Value must be an integer.
+
+    Influenced by on Ajeya Cotra's median estimate of 2040 (https://www.lesswrong.com/posts/AfH2oPHCApdKicM4m/two-year-update-on-my-personal-ai-timelines),
+    but with substantially more uncertainty about the upper limit of how long it could take. """
+    return 2.4
+
+  def gamma_scale():
+    return 20
+
+  annual_ai_development_risk = gamma.pdf(9, gamma_shape(), loc=1, gamma_scale())
+
+
+  def ai_extinction_multiplier_decay_rate():
+    return 0.3
+
+  def ai_extinction_multiplier_x_translation():
+    return 70 # Assuming it's possible any time from nowish onward, but had zero probability earlier
+    # (ie there's no chance of subsequent times of perils fluking their way into it with from a lower)
+    # tech state
+
+  def ai_max_extinction_probability():
+    # A stretch of our max_probability graph in the y-direction
+    return 0.4
+
+  ai_extinction_multiplier_by_year = heavy_tailed_risk(p, max_probability(), decay_rate(), x_translation=0)
+
   # Graph with these values for k=0 at https://www.desmos.com/calculator/mbwoy2muin
-  return sigmoid_curved_risk(p, x_stretch(k), y_stretch(k), x_translation() ,gradient_factor())
+  return non_ai_extinction_risk_by_year + annual_ai_development_risk * ai_extinction_multiplier_by_year
+
 
 @cache
 def survival_given_perils(k, p):
@@ -72,10 +116,10 @@ def survival_given_perils(k, p):
     """When does this risk start rising above 0, pre x-stretch?"""
     return 15
 
-  def gradient_factor():
+  def sharpness():
     return 1.1 # Intuition, no substantive reasoning
 
-  return sigmoid_curved_risk(p, x_stretch(k), y_stretch(), x_translation(), gradient_factor())
+  return sigmoid_curved_risk(p, x_stretch(k), y_stretch(), x_translation(), sharpness())
 
 @cache
 def preindustrial_given_perils(k, p):
@@ -98,11 +142,11 @@ def preindustrial_given_perils(k, p):
   def x_translation():
     return 10 # About the time the world's nuclear arsenal took to reach multiple thousands
 
-  def gradient_factor():
+  def sharpness():
     return 1.3 # Intuition, no substantive reasoning, except that it should be higher early than
     # going to survival
 
-  return sigmoid_curved_risk(p, x_stretch(k), y_stretch(), x_translation(), gradient_factor())
+  return sigmoid_curved_risk(p, x_stretch(k), y_stretch(), x_translation(), sharpness())
 
 @cache
 def industrial_given_perils(k, p):
@@ -123,10 +167,10 @@ def industrial_given_perils(k, p):
   def x_translation():
     return 8 # Around the time the US would have reached 1000 nuclear warheads
 
-  def gradient_factor():
+  def sharpness():
     return 1.3
 
-  return sigmoid_curved_risk(p, x_stretch(k), y_stretch(), x_translation(), gradient_factor())
+  return sigmoid_curved_risk(p, x_stretch(k), y_stretch(), x_translation(), sharpness())
 
 @cache
 def transition_to_year_n_given_perils(k:int, p:int, n=None):
@@ -253,10 +297,10 @@ def multiplanetary_given_perils(k, p):
     return 55 # Around 10 years after the time earliest estimates for a Mars base seemed to be when
               # the Apollo program was running
 
-  def gradient_factor():
+  def sharpness():
     return 0.8
 
-  return sigmoid_curved_risk(p, x_stretch(k), y_stretch(), x_translation(), gradient_factor())
+  return sigmoid_curved_risk(p, x_stretch(k), y_stretch(), x_translation(), sharpness())
 
 @cache
 def interstellar_given_perils(k, p):
@@ -282,10 +326,10 @@ def interstellar_given_perils(k, p):
     # in about 2020 was doable by about 2050. So if Zubrin's plan had been followed enthusiastically,
     # it might in the absolute best case have got there about 25 years earlier.
 
-  def gradient_factor():
+  def sharpness():
     return 3.3
 
-  return sigmoid_curved_risk(p, x_stretch(k), y_stretch(), x_translation(), gradient_factor())
+  return sigmoid_curved_risk(p, x_stretch(k), y_stretch(), x_translation(), sharpness())
 
 @cache
 def _non_continuation_given_perils(k, p):

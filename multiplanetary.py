@@ -32,7 +32,7 @@ def extinction_given_multiplanetary(q):
     """For the very long run, if this doesn't tend to become almost 0, longtermism isn't possible"""
     return 0
 
-  return exponentially_decaying_risk(single_planet_risk(), q, decay_rate(), min_risk())
+  return exponentially_decaying_risk(single_planet_risk(), q, decay_rate(), min_risk(), x_translation=2)
 
 def survival_given_multiplanetary(q):
   """Sum of total survival exit probability over all values of q given k. I treat this as 0 on the
@@ -76,7 +76,7 @@ def transition_to_n_planets_given_multiplanetary(q, n):
     return 0.4 # Intuition, no substantive reasoning
 
   def any_intra_multiplanetary_regression(q):
-    return exponentially_decaying_risk(two_planet_risk(), q, decay_rate())
+    return exponentially_decaying_risk(two_planet_risk(), q, decay_rate(), x_translation=2)
 
   def remainder_outcome(q):
     return 1 - (extinction_given_multiplanetary(q)

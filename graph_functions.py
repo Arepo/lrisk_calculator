@@ -2,6 +2,8 @@ from functools import cache
 import math
 import pdb
 
+# TODO simplify these functions if possible
+
 @cache
 def sigmoid_curved_risk(x:int, x_stretch:float, y_stretch:float, x_translation: float, gradient_factor: float=2) -> float:
   """A stretched sigmoid the simplest intuitive trajectory I can think of to describe most risks in
@@ -36,7 +38,8 @@ def sigmoid_curved_risk(x:int, x_stretch:float, y_stretch:float, x_translation: 
 
   https://www.desmos.com/calculator/eb29bnsssr
 
-  TODO: look into failure rate functions as an alternative approach"""
+  TODO: look into failure rate functions as an alternative approach
+  TODO: look into simpler scipy implementations"""
 
   min_value = 1 / x_stretch * (x - x_translation)
 
@@ -46,7 +49,7 @@ def sigmoid_curved_risk(x:int, x_stretch:float, y_stretch:float, x_translation: 
   return y_stretch /  (1 + (min_value) ** -gradient_factor * math.e ** -(1 / x_stretch * (x - x_translation)))
 
 @cache
-def exponentially_decaying_risk(starting_value, x, decay_rate=0.5, min_value=0, x_translation=2):
+def exponentially_decaying_risk(starting_value, x, decay_rate=0.5, min_value=0, x_translation=0):
   """The simplest way I can think of to intuit the various risks given multiple interplanetary
   settlements is as an exponential decay based on the number of planets.
 
@@ -64,5 +67,10 @@ def exponentially_decaying_risk(starting_value, x, decay_rate=0.5, min_value=0, 
 
   Note that min_value is a translation on the y-axis. So if you set starting_value as 0.4 and
   min_value as 0.1, your actual starting_value will be 0.5
-  """
+
+  TODO: look into simpler scipy implementations"""
   return starting_value  * (1 - decay_rate) ** (x - x_translation) + min_value
+
+@cache
+def heavy_tailed_risk(x, y_stretch, decay_rate, x_translation=0)
+  return y_stretch * (x - x_translation) ** -(decay_rate)
