@@ -65,35 +65,35 @@ class IntraPerilsMCWrapper():
     # pdb.set_trace()
 
   def extinction_given_perils(self):
-    return self.mc.absorption_probabilities()[some_value][some_other_value]
+    return self.mc.absorption_probabilities()[0][0]
 
   def survival_given_perils(self, k1):
     if self.k + 1 == k1:
-      return self.mc.absorption_probabilities()[some_value][some_other_value]
+      # pdb.set_trace()
+      return self.mc.absorption_probabilities()[1][0]
     else:
       return 0
 
   def preindustrial_given_perils(self, k1):
     if self.k + 1 == k1:
-      return self.mc.absorption_probabilities()[some_value][some_other_value]
+      return self.mc.absorption_probabilities()[2][0]
     else:
       return 0
 
   def industrial_given_perils(self, k1):
     if self.k + 1 == k1:
-      return self.mc.absorption_probabilities()[some_value][some_other_value]
+      return self.mc.absorption_probabilities()[3][0]
     else:
       return 0
 
   def multiplanetary_given_perils(self, k1):
     if self.k == k1:
-      return self.mc.absorption_probabilities()[some_value][some_other_value]
+      return self.mc.absorption_probabilities()[4][0]
     else:
       return 0
 
   def interstellar_given_perils(self):
-    return self.mc.absorption_probabilities()[some_value][some_other_value]
-
+    return self.mc.absorption_probabilities()[5][0]
 
 
 class IntraMultiplanetaryMCWrapper():

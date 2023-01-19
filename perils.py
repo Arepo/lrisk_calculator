@@ -14,7 +14,13 @@ def extinction_given_perils(k, p):
   biopandemics, to an arc representing the specific threat of AI, which I assume to be highest at
   the point when it's developed and then, if it doesn't rapidly kill us all, to become much less
   likely to directly do so
-  https://www.desmos.com/calculator/olllb8f61v"""
+  https://www.desmos.com/calculator/olllb8f61v
+
+  It might be interesting to remove the AI arc, which bakes in a tonne of highly uncertain assumptions,
+  to compare what happens when we live in a world in which lacks either the motivation or capacity
+  to wipe us out - since unlike the other risks extinction, this is arguably somewhat predetermined,
+  such that probability estimates come from uncertainty rather than ongoing risks per year.
+  Similarly it might be interesting to compare against setting the probability of this transition to 0."""
 
   def sigmoid_x_stretch(k):
     base_x_stretch = 83 # To set the initial shape of the graph to something plausibly consistent
@@ -33,8 +39,8 @@ def extinction_given_perils(k, p):
 
     max_annual_risk = 0.04 # Based on the highest estimate for the present day
     # on the existential risks database: https://docs.google.com/spreadsheets/d/1W10B6NJjicD8O0STPiT3tNV3oFnT8YsfjmtYR8RO_RI/edit#gid=0
-    min_risk = 0.004 # Intuition, on it seeming unlikely to decrease more than 10-fold
-    decay_rate = 0.4 # Intuition
+    min_risk = 0.004 # Intuition from eyeballing Desmos, on it seeming unlikely to decrease more than 10-fold
+    decay_rate = 0.4 # Intuition from eyeballing Desmos
     return exponentially_decaying_risk(max_annual_risk, k, decay_rate, min_risk, x_translation=0)
 
   def sigmoid_x_translation():
@@ -51,7 +57,7 @@ def extinction_given_perils(k, p):
   # to represent the probability distribution of when AGI is developed conditional on us surviving
   # Long enough in a technological state, multiplied by the probability that if it's developed in
   # year p it wipes us out.
-  # Play with these numbers at https://www.desmos.com/calculator/sdpkzovez9
+  # Play with these numbers at https://www.desmos.com/calculator/6774lbip58
 
   def gamma_shape():
     """Value must be an integer.
@@ -63,22 +69,29 @@ def extinction_given_perils(k, p):
   def gamma_scale():
     return 20
 
-  annual_ai_development_risk = gamma.pdf(9, gamma_shape(), loc=1, gamma_scale())
+  def ai_x_translation():
+    return 70 # Approximately the current year - used to translate both this and the graph below. This
+    # implies the probability of having developed AI by this level of technology was basically 0
 
+  annual_ai_development_risk = gamma.pdf(9, gamma_shape(), loc=1, scale=gamma_scale())
 
   def ai_extinction_multiplier_decay_rate():
+    # This value relates to the value of AI safety work - if the per-year risk of
+    # extinction conditional on AGI being developed decrease a lot, it implies we expect such work
+    # will yield good results (although it could also just imply eg that a world in which AI is harder
+    # to develop is a world in which fast takeoff is less likely)
     return 0.3
 
-  def ai_extinction_multiplier_x_translation():
-    return 70 # Assuming it's possible any time from nowish onward, but had zero probability earlier
-    # (ie there's no chance of subsequent times of perils fluking their way into it with from a lower)
-    # tech state
+  def ai_extinction_multiplier_y_stretch():
+    # Determines the max probability that, given AI is developed in some year, it will wipe us out
+    return 0.8
 
-  def ai_max_extinction_probability():
-    # A stretch of our max_probability graph in the y-direction
-    return 0.4
+  # TODO consider an x-stretch here (It's not obvious whether we should have one, since this might be
+  # as much a social problem as a technological one. But without one, it might end up looking more
+  # likely that we become interstellar given non-extinction catastrophes - though this might not be wrong)
 
-  ai_extinction_multiplier_by_year = heavy_tailed_risk(p, max_probability(), decay_rate(), x_translation=0)
+  ai_extinction_multiplier_by_year = heavy_tailed_risk(
+    p, ai_extinction_multiplier_y_stretch(), ai_extinction_multiplier_decay_rate(), ai_x_translation())
 
   # Graph with these values for k=0 at https://www.desmos.com/calculator/mbwoy2muin
   return non_ai_extinction_risk_by_year + annual_ai_development_risk * ai_extinction_multiplier_by_year

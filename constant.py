@@ -6,7 +6,7 @@ MIN_PERILS_RISK = 8 # Set this to whatever the lowest x_translation value in the
 MAX_PLANETS = 20
 MAX_CIVILISATIONS = 5
 
-MAX_PROGRESS_YEARS = 1000
+MAX_PROGRESS_YEARS = 100
 if MAX_PROGRESS_YEARS < 2:
   raise 'Need at least two possible progress years'
 

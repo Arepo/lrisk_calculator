@@ -110,6 +110,11 @@ def full_markov_chain():
 
 k = 0
 
+def _zero_probabilities():
+  """Represents a set of zero-probability transitions, eg all the preindustrial states'
+  transitional probabilities from an industrial state. For perils and multiplanetary rows, we'll
+  need to add an extra value, since they potentially include the current civilisation"""
+  return [0] * (constant.MAX_CIVILISATIONS - 1)
 
 @cache
 def perils_chain(k):
@@ -128,9 +133,9 @@ perils_rows = [[perils_chain(k).survival_given_perils(k1) for k1 in range(1, con
                # ^Transition probabilities to perils states (which include our current civilisation)
                + [perils_chain(k).multiplanetary_given_perils(k1) for k1 in range(0, constant.MAX_CIVILISATIONS)]
                # ^Transition probabilities to multiplanetary states (which potentially include our current civilisation)
-               + [perils_chain(k).extinction_given_perils(k)]
+               + [perils_chain(k).extinction_given_perils()]
                # ^Transition probability to the Extinction state (single-element list)
-               + [perils_chain(k).interstellar_given_perils(k)]
+               + [perils_chain(k).interstellar_given_perils()]
                # ^Transition probabilities to the Interstellar state (single-element list)
                for k in range(0, constant.MAX_CIVILISATIONS)]
 pdb.set_trace()
