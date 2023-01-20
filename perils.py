@@ -1,12 +1,21 @@
 import pdb
 import math
-import constant
+import constant, parameters
 from functools import cache
 from scipy.stats import gamma
-from graph_functions import sigmoid_curved_risk, heavy_tailed_risk, exponentially_decaying_risk
+from graph_functions import sigmoid_curved_risk, power_law_risk, exponentially_decaying_risk
 
 
 ## Transition probabilities from time of perils state
+# Note on x_translations:
+# I take the start of the time of perils in some abstract sense to be 1945, but since it took
+# several years for nuclear stockpiles to build up to the point where they'd threaten any kind
+# of risk of a civilisational backslide, and since the time of perils is defined as when that
+# risk raised above 0, I'm de facto treating the start of the time of perils as shifted later
+# by an amount corresponding to the minimal period until the params specify any perils exit risk
+# as greater than 0 (this also makes testing easier, since values of p can be lower and still return
+# meaningful results). Currently this is 8.
+DE_FACTO_START_DELAY = 8
 
 @cache
 def extinction_given_perils(k, p):
@@ -46,7 +55,7 @@ def extinction_given_perils(k, p):
   def sigmoid_x_translation():
     # TODO I can probably subtract the lowest x_translation value from all the others to save some
     # runtime, since nothing interesting happens until we hit it
-    return 15
+    return 15 - DE_FACTO_START_DELAY
 
   def sigmoid_sharpness():
     return 2.5 # Intuition, no substantive reasoning
@@ -70,11 +79,14 @@ def extinction_given_perils(k, p):
     return 20
 
   def ai_x_translation():
-    return 70 # Approximately the current year - used to translate both this and the graph below. This
+    return 70 - DE_FACTO_START_DELAY # Approximately the current year - used to translate both this and the graph below. This
     # implies the probability of having developed AI by this level of technology was basically 0
 
   annual_ai_development_risk = gamma.pdf(9, gamma_shape(), loc=1, scale=gamma_scale())
 
+  # Using a power law distribution to estimate probability of AI eventually wiping us out conditional
+  # on it on it being created in year p.
+  # Play with these numbers at https://www.desmos.com/calculator/znklhoherj
   def ai_extinction_multiplier_decay_rate():
     # This value relates to the value of AI safety work - if the per-year risk of
     # extinction conditional on AGI being developed decrease a lot, it implies we expect such work
@@ -90,7 +102,7 @@ def extinction_given_perils(k, p):
   # as much a social problem as a technological one. But without one, it might end up looking more
   # likely that we become interstellar given non-extinction catastrophes - though this might not be wrong)
 
-  ai_extinction_multiplier_by_year = heavy_tailed_risk(
+  ai_extinction_multiplier_by_year = power_law_risk(
     p, ai_extinction_multiplier_y_stretch(), ai_extinction_multiplier_decay_rate(), ai_x_translation())
 
   # Graph with these values for k=0 at https://www.desmos.com/calculator/mbwoy2muin
@@ -127,7 +139,7 @@ def survival_given_perils(k, p):
 
   def x_translation():
     """When does this risk start rising above 0, pre x-stretch?"""
-    return 15
+    return 15 - DE_FACTO_START_DELAY
 
   def sharpness():
     return 1.1 # Intuition, no substantive reasoning
@@ -153,7 +165,7 @@ def preindustrial_given_perils(k, p):
     # the combined chance of getting here via any other catastrophe
 
   def x_translation():
-    return 10 # About the time the world's nuclear arsenal took to reach multiple thousands
+    return 10 - DE_FACTO_START_DELAY # About the time the world's nuclear arsenal took to reach multiple thousands
 
   def sharpness():
     return 1.3 # Intuition, no substantive reasoning, except that it should be higher early than
@@ -178,7 +190,8 @@ def industrial_given_perils(k, p):
     # and that such an event would move us to preindustrial with 0.5 probability.
 
   def x_translation():
-    return 8 # Around the time the US would have reached 1000 nuclear warheads
+    return 8 - DE_FACTO_START_DELAY # Around the time the US would have reached 1000 nuclear warheads
+    # Note - this is the min value determining the de facto start of the time of perils
 
   def sharpness():
     return 1.3
@@ -307,7 +320,7 @@ def multiplanetary_given_perils(k, p):
                 # years, given enough space to expand into
 
   def x_translation():
-    return 55 # Around 10 years after the time earliest estimates for a Mars base seemed to be when
+    return 65 - DE_FACTO_START_DELAY # Around 10 years after the time earliest estimates for a Mars base seemed to be when
               # the Apollo program was running
 
   def sharpness():
@@ -332,12 +345,14 @@ def interstellar_given_perils(k, p):
     # colonise it within about 15 years
 
   def x_translation():
-    return 80 # Robert Zubrin seems to have been the first person to make a practical proposal to settle
+    return 80 - DE_FACTO_START_DELAY # Robert Zubrin seems to have been the first person to make a practical proposal to settle
     # Mars, and that was around 1990, and somewhat similar to SpaceX's plan. In his most optimistic
     # vision, the program would have taken maybe
     # a few years to get going, but have been slower to accelerate than Musk's idea, which Musk thought
     # in about 2020 was doable by about 2050. So if Zubrin's plan had been followed enthusiastically,
     # it might in the absolute best case have got there about 25 years earlier.
+
+    # TODO - check that this and other values have a consistent interpretation of our current progress year
 
   def sharpness():
     return 3.3

@@ -72,7 +72,7 @@ def exponentially_decaying_risk(starting_value, x, decay_rate=0.5, min_value=0, 
   return starting_value  * (1 - decay_rate) ** (x - x_translation) + min_value
 
 @cache
-def heavy_tailed_risk(x, y_stretch, decay_rate, x_translation=0):
+def power_law_risk(x, y_stretch, decay_rate, x_translation=0):
   if x - x_translation < 1:
     return 0
   else:

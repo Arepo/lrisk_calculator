@@ -1,0 +1,4 @@
+perils:
+  # Params governing transitional probabilities from perils to each of the nested states
+
+  extinction: 5

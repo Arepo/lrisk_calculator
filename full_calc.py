@@ -1,4 +1,5 @@
 from functools import cache
+import yaml
 import pdb
 
 from pydtmc import MarkovChain
@@ -62,7 +63,7 @@ def full_markov_chain():
                        # ^Perils states (which include the current civilisation)
                        + _zero_probabilities() + [0]
                        # ^Multiplanetary states (which potentially include the current civilisation)
-                       + [preperils.extinction_given_preindustrial(k)] + [0]
+                       + [preperils.extinction_given_industrial(k)] + [0]
                        # ^Extinction and Interstellar respectively
                        for k in preperils_civilisation_range]
 
@@ -71,59 +72,7 @@ def full_markov_chain():
     return sub_markov_chains.IntraPerilsMCWrapper(k)
 
   # TODO: allow transition to perils k+1
-  # perils_rows = [[sub_markov_chain.survival_given_perils(k, k1) for k1 in preperils_civilisation_range]
-  #                # ^Survival states
-  #                + [sub_markov_chain.preindustrial_given_perils(k, k1) for k1 in preperils_civilisation_range]
-  #                # ^Preindustrial states
-  #                + [sub_markov_chain.industrial_given_perils(k, k1) for k1 in preperils_civilisation_range]
-  #                # ^Industrial states
-  #                + _zero_probabilities() + [0]
-  #                # ^Perils states (which include the current civilisation)
-  #                + [sub_markov_chain.multiplanetary_given_perils(k, k1) for k1 in modern_perils_civilisation_range]
-  #                # ^Multiplanetary states (which potentially include the current civilisation)
-  #                + [sub_markov_chain.extinction_given_perils(k)]
-  #                # ^Only one Extinction state
-  #                + [sub_markov_chain.interstellar_given_perils(k)]
-  #                # ^Only one Interstellar state
-  #                for k in preperils_civilisation_range]
-
-  @cache
-  def multiplanetary_chain():
-    return sub_markov_chains.IntraMultiplanetaryMCWrapper()
-
-  multiplanetary_rows = [[multiplanetary_chain().survival_given_multiplanetary(k, k1) for k1 in range(1, constant.MAX_CIVILISATIONS)]
-                         # ^Survival states
-                         + [multiplanetary_chain().preindustrial_given_multiplanetary(k, k1) for k1 in range(1, constant.MAX_CIVILISATIONS)]
-                         # ^Preindustrial states
-                         + [multiplanetary_chain().industrial_given_multiplanetary(k, k1) for k1 in range(1, constant.MAX_CIVILISATIONS)]
-                         # ^Industrial states
-                         + [multiplanetary_chain().perils_given_multiplanetary(k, k1) for k1 in range(0, constant.MAX_CIVILISATIONS)]
-                         # ^Perils states (which include the current civilisation)
-                         + _zero_probabilities() + [0]
-                         # ^Multiplanetary states (which potentially include the current civilisation)
-                         + [multiplanetary_chain().extinction_given_multiplanetary()]
-                         # ^Only one Extinction state
-                         + [multiplanetary_chain().interstellar_given_multiplanetary()]
-                         # ^Only one Interstellar state
-                         for k in range(0, constant.MAX_CIVILISATIONS)]
-
-
-k = 0
-
-def _zero_probabilities():
-  """Represents a set of zero-probability transitions, eg all the preindustrial states'
-  transitional probabilities from an industrial state. For perils and multiplanetary rows, we'll
-  need to add an extra value, since they potentially include the current civilisation"""
-  return [0] * (constant.MAX_CIVILISATIONS - 1)
-
-@cache
-def perils_chain(k):
-  return sub_markov_chains.IntraPerilsMCWrapper(k)
-
-# mc = perils_chain(1)
-
-# TODO: allow transition to perils k+1
-perils_rows = [[perils_chain(k).survival_given_perils(k1) for k1 in range(1, constant.MAX_CIVILISATIONS)]
+  perils_rows = [[perils_chain(k).survival_given_perils(k1) for k1 in range(1, constant.MAX_CIVILISATIONS)]
                # ^Transition probabilities to future survival states
                + [perils_chain(k).preindustrial_given_perils(k1) for k1 in range(1, constant.MAX_CIVILISATIONS)]
                # ^Transition probabilities to future preindustrial states
@@ -138,10 +87,53 @@ perils_rows = [[perils_chain(k).survival_given_perils(k1) for k1 in range(1, con
                + [perils_chain(k).interstellar_given_perils()]
                # ^Transition probabilities to the Interstellar state (single-element list)
                for k in range(0, constant.MAX_CIVILISATIONS)]
-pdb.set_trace()
+
+  @cache
+  def multiplanetary_chain(k):
+    return sub_markov_chains.IntraMultiplanetaryMCWrapper(k)
+
+  multiplanetary_rows = [[multiplanetary_chain(k).survival_given_multiplanetary(k1) for k1 in range(1, constant.MAX_CIVILISATIONS)]
+                         # ^Survival states
+                         + [multiplanetary_chain(k).preindustrial_given_multiplanetary(k1) for k1 in range(1, constant.MAX_CIVILISATIONS)]
+                         # ^Preindustrial states
+                         + [multiplanetary_chain(k).industrial_given_multiplanetary(k1) for k1 in range(1, constant.MAX_CIVILISATIONS)]
+                         # ^Industrial states
+                         + [multiplanetary_chain(k).perils_given_multiplanetary(k1) for k1 in range(0, constant.MAX_CIVILISATIONS)]
+                         # ^Perils states (which include the current civilisation)
+                         + _zero_probabilities() + [0]
+                         # ^Multiplanetary states (which potentially include the current civilisation)
+                         + [multiplanetary_chain(k).extinction_given_multiplanetary()]
+                         # ^Only one Extinction state
+                         + [multiplanetary_chain(k).interstellar_given_multiplanetary()]
+                         # ^Only one Interstellar state
+                         for k in range(0, constant.MAX_CIVILISATIONS)]
+
+  probability_matrix = (survival_rows
+                        + preindustrial_rows
+                        + industrial_rows
+                        + perils_rows
+                        + multiplanetary_rows
+                        + [extinction_row, interstellar_row])
+
+
+  survival_names = ['survival-' + str(index[0] + 1) for index in enumerate(survival_rows)]
+  preindustrial_names = ['preindustrial-' + str(index[0] + 1) for index in enumerate(preindustrial_rows)]
+  industrial_names = ['industrial-' + str(index[0] + 1) for index in enumerate(industrial_rows)]
+  perils_names = ['perils-' + str(index[0]) for index in enumerate(perils_rows)]
+  multiplanetary_names = ['multiplanetary-' + str(index[0]) for index in enumerate(multiplanetary_rows)]
+
+  # pdb.set_trace()
+  return MarkovChain(probability_matrix, survival_names
+                                         + preindustrial_names
+                                         + industrial_names
+                                         + perils_names
+                                         + multiplanetary_names
+                                         + ['Extinction', 'Interstellar'])
+
 
 
 # full_markov_chain()
+
 
 ########
 

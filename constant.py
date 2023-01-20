@@ -4,12 +4,14 @@ MIN_PERILS_RISK = 8 # Set this to whatever the lowest x_translation value in the
 # computational time on dealing with years with no probability of exit
 
 MAX_PLANETS = 20
-MAX_CIVILISATIONS = 5
+MAX_CIVILISATIONS = 100
 
-MAX_PROGRESS_YEARS = 100
+MAX_PROGRESS_YEARS = 1000
 if MAX_PROGRESS_YEARS < 2:
   raise 'Need at least two possible progress years'
 
 MAX_PROGRESS_YEAR_REGRESSION_STEPS = 50
 if MAX_PROGRESS_YEAR_REGRESSION_STEPS < 1:
   raise 'Need at least one possible regression'
+
+
