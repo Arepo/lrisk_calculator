@@ -3,7 +3,7 @@ from functools import cache
 
 from pydtmc import MarkovChain
 
-import constant
+import runtime_constants as constant
 import multiplanetary
 import perils
 import preperils
@@ -130,8 +130,6 @@ class IntraPerilsMCWrapper():
                                                                 # floating point error that can make
                                                                 # this <0
 
-mc = IntraPerilsMCWrapper(1)
-
 class IntraMultiplanetaryMCWrapper():
   def __init__(self, k):
     self.k = k
@@ -147,9 +145,9 @@ class IntraMultiplanetaryMCWrapper():
     intra_transition_probabilities = {q:[multiplanetary.transition_to_n_planets_given_multiplanetary(q, n) for n in planet_range]
                                       for q in planet_range}
     exit_probabilities = {q:[multiplanetary.extinction_given_multiplanetary(q),
-                             multiplanetary.survival_given_multiplanetary(q),
-                             multiplanetary.preindustrial_given_multiplanetary(q),
-                             multiplanetary.industrial_given_multiplanetary(q),
+                             multiplanetary.survival_given_multiplanetary(),
+                             multiplanetary.preindustrial_given_multiplanetary(),
+                             multiplanetary.industrial_given_multiplanetary(),
                              multiplanetary.perils_given_multiplanetary(q),
                              multiplanetary.interstellar_given_multiplanetary(q)] for q in planet_range}
 
@@ -174,6 +172,7 @@ class IntraMultiplanetaryMCWrapper():
                                                  'Industrial',
                                                  'Perils',
                                                  'Interstellar'])
+
 
   def extinction_given_multiplanetary(self):
     if self.k + 1 >= constant.MAX_CIVILISATIONS:
@@ -224,7 +223,6 @@ class IntraMultiplanetaryMCWrapper():
 
   def interstellar_given_multiplanetary(self):
     return self.mc.absorption_probabilities()[5][0]
-
 
 
 

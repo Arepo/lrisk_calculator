@@ -1,9 +1,11 @@
 from functools import cache
-import pdb
 import math
-import constant
-from graph_functions import sigmoid_curved_risk, exponentially_decaying_risk
+import pdb
 
+import yaml
+
+import runtime_constants as constant
+from graph_functions import sigmoid_curved_risk, exponentially_decaying_risk
 
 # This script prints out a series of probabilities for transition becoming interstellar based on
 # estimates of the transition probabilities of various(values are currently hardcoded placeholders)
@@ -16,40 +18,31 @@ from graph_functions import sigmoid_curved_risk, exponentially_decaying_risk
 
 ## Transition probabilities from multiplanetary state
 
+with open('params.yml', 'r') as stream:
+  PARAMS = yaml.safe_load(stream)['multiplanetary']
+
 @cache
 def extinction_given_multiplanetary(q):
-  def single_planet_risk():
-    # TODO check whether this should be single_ or two_
-    return 0.12
+  X_PARAMS = PARAMS['extinction']
 
-  def decay_rate():
-    """Should be a value between 0 and 1. Lower treats the per-planet risk reduction as lower. This
-    values is just a wild guess, though see the note on the equivalent decay_rate for the
-    perils_given_multiplanetary function for an ordering"""
-    return 0.55
+  return exponentially_decaying_risk(x=q,
+    starting_value=X_PARAMS['single_planet_risk'],
+    decay_rate=X_PARAMS['decay_rate'],
+    min_value=X_PARAMS['min_risk'],
+    x_translation=X_PARAMS['x_translation'])
+  # Translate by 2 because by definition we have at least two planets to be in this state
 
-  def min_risk():
-    """For the very long run, if this doesn't tend to become almost 0, longtermism isn't possible"""
-    return 0
+def survival_given_multiplanetary():
+  """Sum of total survival exit probability over all values of q."""
+  return PARAMS['survival']
 
-  return exponentially_decaying_risk(single_planet_risk(), q, decay_rate(), min_risk(), x_translation=2)
+def preindustrial_given_multiplanetary():
+  """Sum of total preindustrial exit probability over all values of q. """
+  return PARAMS['preindustrial']
 
-def survival_given_multiplanetary(q):
-  """Sum of total survival exit probability over all values of q given k. I treat this as 0 on the
-  grounds that it seems such a precise amount of damage that it's not worth the computation/complexity
-  costs"""
-  return 0
-
-def preindustrial_given_multiplanetary(q):
-  """Sum of total preindustrial exit probability over all values of q given k. Again, while this seems
-  more plausible than going directly to a survival state, it seems unlikely enough to treat as 0"""
-  return 0
-
-def industrial_given_multiplanetary(q):
-  """Sum of total industrial exit probability over all values of q given k. Again, while this looks
-  somewhat more plausible, it still seems so much less likely than an event which either wipes out
-  humanity or leaves the reaminder with some advanced technology as to be treatable as 0"""
-  return 0
+def industrial_given_multiplanetary():
+  """Sum of total industrial exit probability over all values of q."""
+  return PARAMS['industrial']
 
 @cache
 def transition_to_n_planets_given_multiplanetary(q, n):
@@ -68,45 +61,45 @@ def transition_to_n_planets_given_multiplanetary(q, n):
 
   So on balance I err towards making it slightly lower.
   """
-
-  def two_planet_risk():
-    return 0.2 # Intuition, no substantive reasoning
-
-  def decay_rate():
-    return 0.4 # Intuition, no substantive reasoning
+  N_PARAMS = PARAMS['n_planets']
 
   def any_intra_multiplanetary_regression(q):
-    return exponentially_decaying_risk(two_planet_risk(), q, decay_rate(), x_translation=2)
+    return exponentially_decaying_risk(x=q,
+                                       starting_value=N_PARAMS['two_planet_risk'],
+                                       decay_rate=N_PARAMS['decay_rate'],
+                                       x_translation=N_PARAMS['x_translation'])
 
   def remainder_outcome(q):
+    extinction_given_multiplanetary(q)
+    survival_given_multiplanetary()
+    preindustrial_given_multiplanetary()
+    industrial_given_multiplanetary()
+    any_intra_multiplanetary_regression(q)
+    interstellar_given_multiplanetary(q)
     return 1 - (extinction_given_multiplanetary(q)
-                + survival_given_multiplanetary(q)
-                + preindustrial_given_multiplanetary(q)
-                + industrial_given_multiplanetary(q)
+                + survival_given_multiplanetary()
+                + preindustrial_given_multiplanetary()
+                + industrial_given_multiplanetary()
                 + any_intra_multiplanetary_regression(q)
                 + interstellar_given_multiplanetary(q)) # perils_given_multiplanetary is
-                                                           # implicitly included as any_intra_multiplanetary_regression
-                                                           # to n = 1
+                                                        # implicitly included as
+                                                        # any_intra_multiplanetary_regression to
+                                                        # n = 1
 
   def min_risk():
-    """Across a Kardashev II civilisation the probability of losing at least one settlement
-    seems like it should remain significant, though given that for the foreseeable future
-    scope for expansion increases cubicly (when you include rocky bodies, and assume after a point
-    even relatively small settlements will have the technology to self-sustain), I would expect it
-    to tend to a low rate relative to the probability of adding a settlement"""
-    return 0.01
+    return N_PARAMS['min_risk']
 
   if not n:
     # Allows us to check total probability sums to 1
+    # TODO this branch prob obsolete now
     return any_intra_multiplanetary_regression(q)
   elif n == q + 1:
     # This is our catchall branch - the probability is whatever's left after we decide all the other
     # risks
-    # pdb.set_trace()
     return remainder_outcome(q)
 
   elif n == q and q == constant.MAX_PLANETS:
-    # For simplicitym when we hit max planets, we allow looping, and make that our catchall branch
+    # For simplicity, when we hit max planets, we allow looping, and make that our remainder probability
     return remainder_outcome(q)
 
   elif n >= q:
@@ -120,23 +113,17 @@ def transition_to_n_planets_given_multiplanetary(q, n):
     # The commented out return values is the exponential decrease described above. TODO - where?
     total_probability_of_loss = any_intra_multiplanetary_regression(q) # How likely is it in total
     # we lose any number of planets between 1 and (q - 1) inclusive?
-    weighting_decay_rate = 1.4 # Higher gives higher probability that given such a loss we'll lose a
-    # smaller number of planets
-    weighting_for_n_planets = weighting_decay_rate ** n # How relatively likely is it, given
+    geometric_base = N_PARAMS['geometric_base']
+
+    numerator_for_n_planets = geometric_base ** n # How relatively likely is it, given
     # some loss, that that loss took us to exactly n planets?
-    first_factor = weighting_decay_rate # for simplicity
     # TODO - see if this still matches intuitions
-    geometric_sum_of_weightings = first_factor * (1 - weighting_decay_rate ** (q - 1)) / (1 - weighting_decay_rate)
-    # Thus weighting_for_n_planets / geometric_sum_of_weightings is a proportion; you can play with
+    geometric_sum_of_weightings = geometric_base * (1 - geometric_base ** (q - 1)) / (1 - geometric_base)
+    # Thus numerator_for_n_planets / geometric_sum_of_weightings is a proportion; you can play with
     # the values at https://www.desmos.com/calculator/ku0p2iahq3
-    return total_probability_of_loss * (weighting_for_n_planets / geometric_sum_of_weightings)
+    return total_probability_of_loss * (numerator_for_n_planets / geometric_sum_of_weightings)
                                        # Brackets seem to improve floating point errors at least
                                        # when the contents should be 1
-
-@cache
-def intraplanetary_regression_matrix(k):
-  return [[transition_to_n_planets_given_multiplanetary(q, n) for n in range(2, q-1)]
-           for q in range(2, constant.MAX_PLANETS)]
 
 @cache
 def perils_given_multiplanetary(q):
@@ -158,23 +145,21 @@ def interstellar_given_multiplanetary(q):
   TODO need to specify behaviour for max value."""
 
   def x_stretch():
-    return 10 # Just intuition
+    return PARAMS['interstellar']['x_stretch'] # Just intuition
 
   def y_stretch():
     # TODO - if this asymptotes too fast, we might get invalid total probabilities. Is there a neat
     # way to guard against that?
-    return 1
+    return PARAMS['interstellar']['y_stretch']
 
   def x_translation():
-    return 1
+    return PARAMS['interstellar']['x_translation']
 
-  def gradient_factor():
-    return 4 # Just intuition
+  def sharpness():
+    return PARAMS['interstellar']['sharpness']
 
   # Graph with these values: https://www.desmos.com/calculator/vdyih29fqb
-  return sigmoid_curved_risk(q, x_stretch(), y_stretch(), x_translation(), gradient_factor())
-
-
+  return sigmoid_curved_risk(q, x_stretch(), y_stretch(), x_translation(), sharpness())
 
 # exit_probabilities = [extinction_given_multiplanetary(1,11),
 #                         survival_given_multiplanetary(1,11),
@@ -188,7 +173,6 @@ def interstellar_given_multiplanetary(q):
 # row = exit_probabilities + intra_transition_probabilities
 # # transition_to_n_planets_given_multiplanetary(1, 9, 3)
 
-# any_intra_multiplanetary_regression = exponentially_decaying_risk(0.2, 1, 0.4)
 
 # pdb.set_trace()
 

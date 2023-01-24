@@ -4,7 +4,7 @@ import pdb
 
 from pydtmc import MarkovChain
 
-import constant
+import runtime_constants as constant
 import multiplanetary
 import perils
 import preperils
@@ -132,7 +132,7 @@ def full_markov_chain():
 
 
 
-# full_markov_chain()
+full_markov_chain()
 
 
 ########
