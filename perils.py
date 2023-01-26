@@ -257,3 +257,4 @@ def interstellar_given_perils(k, p):
 
   return annual_ai_first_development_probability(p) * value_lock_in_given_ai()
 
+

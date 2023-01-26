@@ -1,9 +1,10 @@
 # The full_calc.py script implements the perils-focused model described in this essay:
 # https://forum.effectivealtruism.org/posts/YnBwoNNqe6knBJH8p/modelling-civilisation-after-a-catastrophe
-# This file contains the numeric parameters and explains the default choices. The reader is actively
-# encouraged to substitute their own parameters to test the effect. Any one of these parameters
-# could be, arguably should be - and often have been - the subject of a substantial research project.
-# In general I've set them to my best guess, which has come from some combination of the research
+# This file contains the numeric parameters for that script and explains the choices. I've put some
+# thought into making these my best guesses, but the reader is nonetheless encouraged not to take
+# them too seriously, and to substitute their own parameters to test the effect of doing so. Any one
+# of these parameters could be, arguably should be, and in some cases have been, the subject of a
+# substantial research project. In general I've set them to my best guess, which has come from some combination of the research
 # I've found on the subject and eyeballing graphs on Desmos(a browser-based graphing
 # site) to come up with an intuitively convincing value per year.
 
@@ -47,10 +48,13 @@ preperils:
     # I don't think the first two scenarios really describe a state of 'survival' for much the reasons
     # she describes. It could be much higher, given model uncertainty or its sensitivity to
     # lower numbers of surviving humans or much lower if we define the survival state more broadly.
-    # TODO - it would save a decent amount of runtime and probably not change much to set this to 0
-    # (or translate it as a multiplier on preindustrial states)
+    # TODO - it would save a decent amount of runtime and probably barely change the final outcome
+    # to treat this as 0 (or translate it as a multiplier on preindustrial states) and remove this
+    # class of states.
   preindustrial:
-    # There are various different suggested values in the comments below.
+    # There are various different suggested values in the comments below. You can play with the graph
+    # for probability of extinction given different values (where x = k) at
+    # https://www.desmos.com/calculator/zf4xtayuhm
 
     # Uncomment a value below to taste of expected time in years. The estimates of expected time to
     # recover come from Luisa Rodriguez's post,
@@ -93,7 +97,7 @@ preperils:
     # expected_time_in_years: 10_100
     # expected_time_in_years: 10_500
     # expected_time_in_years: 11_000
-    expected_time_in_years: 13_700
+    base_expected_time_in_years: 13_700
     # expected_time_in_years: 40_000
     # expected_time_in_years: 43_000
     # expected_time_in_years: 310_000
@@ -123,6 +127,11 @@ preperils:
     # extinction_probability_per_year_denominator = 870_000
     # 'Using the 2Myr origin of Homo strengthens the bound by an order of magnitude in a
     # similar way and produces annual extinction probabilities below 1 in 870,000.'
+
+    stretch_per_reboot: 1.05 # How much longer/less long would it take a typical reboot than in the
+    # previous one to develop modern technology given resource-depletion considerations. I assume a
+    # slight increase from burden of disease, and environmental damage, but substantially less of a
+    # stretch than the later transitions, which seem much more likely to be resource-limited
 
   industrial:
     # For extinction probability per year, we can start with the base rates given in the previous
@@ -154,40 +163,46 @@ preperils:
 
     # For expected time in years, we have to make some strong assumptions, so I suggest two sets of
     # values, representing a pessimistic and an optimistic scenario:
-    pessimistic:
-      # Pessimistic scenario
 
-      # In this scenario, used by default in the code, I assume all knowledge of previous civilisations' technology is either lost or
-      # made useless by different resource constraints. Thus I imagine the original ~145 years for this
-      # transition is stretched substantially by the decline in resource availability - most strongly so
-      # from the initial lack of fossil fuels in reboot 1 and from phosphorus in subsequent reboots, then
-      # somewhat more gently as rare earths etc are gradually left in unusable states.
-      first_reboot_expected_time_in_years: 1450 # I mostly arbitrarily assume ten times the duration for rebooting with no oil, much less
-      # coal that's more expensive to mine, and maybe 10% of the energy of our current civilisation
-      # embodied in landfill:
-      # https://scitechdaily.com/scientists-estimate-that-the-embodied-energy-of-waste-plastics-equates-to-12-of-u-s-industrial-energy-use/
-      # Dartnell envisions what the process might look like here:
-      # https://aeon.co/essays/could-we-reboot-a-modern-civilisation-without-fossil-fuels
-      # He gives no probability estimates, but uses phrases like 'For a society to stand any chance of
-      # industrialising under such conditions' and 'an industrial revolution without coal would be, at
-      # a minimum, very difficult', suggesting he might think it's unlikely to *ever* happen.
-      second_reboot_expected_time_in_years: 2900 # I imagine this disproportionately stretched again
-      # by the complete absence of coal and other easily depletable resources. In particular easily
-      # phosphorus accessible rock phosphorus would be gone (see discussion between John Halstead and
-      # David Denkenberger here):
-      # https://forum.effectivealtruism.org/posts/rtoGkzQkAhymErh2Q/are-we-going-to-run-out-of-phosphorous
-      stretch_per_reboot: 1.5 # How much longer/less long would it take a typical reboot than in the
-      # previous one to develop modern technology given resource-depletion considerations
-    optimistic:
-      # Optimistic scenario
+    # Pessimistic scenario
 
-      # In this scenario (needs to be manually enabled in the code - uncomment the relevant variables
-      # in the extinction_given_industrial function in preperils.py if you want to run it) I assume
-      # that the absence of fossil fuels/other resources is much less punitive and that enough
-      # knowledge from previous civilisations is retained to actually speed up this transition
-      # in the first couple of reboots
-      stretch_per_reboot: 1.2
-      base_expected_time_in_years: 100
+    # In this scenario, used by default, I assume all knowledge of previous civilisations'
+    # technology is either lost or made useless by different resource constraints. Thus I imagine
+    # the original ~145 years for this transition extends 10-fold for the first reboot due to
+    # resource scarcity - most strongly so from the initial lack of fossil fuels in reboot 1 and
+    # from phosphorus in subsequent reboots - then more gently for subsequent reboots as fossil fuels
+    # entirely deplete, and phosphorus, rare earths etc are progressively converted to unusable
+    # states (on phosphorus, see discussion between John Halstead and
+    # David Denkenberger here:
+    # https://forum.effectivealtruism.org/posts/rtoGkzQkAhymErh2Q/are-we-going-to-run-out-of-phosphorous
+    # )
+
+    # You can play with the params for this transition at either
+    # https://www.desmos.com/calculator/tbdcjmwao8 (defaulting to values for the pessimistic scenario) or
+    # https://www.desmos.com/calculator/e2bhztqsms (defaulting to values for the optimistic scenario),
+    # where the x axis represents the number of civilisational reboots, and the y-axis our probability
+    # of going extinct from this state.
+    base_expected_time_in_years: 1450 # I mostly arbitrarily assume ten times the duration for rebooting with no oil, much less
+    # coal that's more expensive to mine, and maybe 10% of the energy of our current civilisation
+    # embodied in landfill:
+    # https://scitechdaily.com/scientists-estimate-that-the-embodied-energy-of-waste-plastics-equates-to-12-of-u-s-industrial-energy-use/
+    # Dartnell envisions what the process might look like here:
+    # https://aeon.co/essays/could-we-reboot-a-modern-civilisation-without-fossil-fuels
+    # He gives no probability estimates, but uses phrases like 'For a society to stand any chance of
+    # industrialising under such conditions' and 'an industrial revolution without coal would be, at
+    # a minimum, very difficult', suggesting he might think it's unlikely to *ever* happen.
+    stretch_per_reboot: 1.5 # How much longer/less long would it take a typical reboot than in the
+    # previous one to develop modern technology given resource-depletion considerations
+
+    # Optimistic scenario
+
+    # In this scenario (uncomment the relevant variables below to try it out) I assume
+    # that the absence of fossil fuels/other resources is much less punitive and that enough
+    # knowledge from previous civilisations is retained to actually speed up this transition
+    # in the first couple of reboots
+    # base_expected_time_in_years: 100
+    # stretch_per_reboot: 1.2
+
 
 perils:
   # Parameters for nodes within 'times of perils'
@@ -221,7 +236,7 @@ perils:
     # AI-caused existential security described below.
 
     # The graph of the S-curve, the gammaoid curve, and the addition of the two with the values below
-    # is at https://www.desmos.com/calculator/ocq9eq71g4
+    # is at https://www.desmos.com/calculator/osoungenhu
 
     # It might be interesting to remove the AI arc, which bakes in a tonne of highly speculative assumptions,
     # to compare what happens when we live in a world in which lacks either the motivation or capacity
@@ -234,6 +249,7 @@ perils:
 
     # As with preperils probabilities of transition to extinction, this might evidentially diminish
     # with k, but I'm keeping that out of the priors.
+
     non_ai_causes:
       # This is the S-curve representing persistent technological threats.
       # The curve has the form A / (1 + 1 / B * (x - C)^-D * e^ -(1 / B * (x - C)))
@@ -254,10 +270,8 @@ perils:
       # Using a modified gamma distribution function as the simplest example of a long-tail
       # distribution I could find, to represent the probability distribution of when AGI is developed
       # conditional on us surviving long enough in a technological state.
-
-      # The effect of the values on the curve's shape aren't particularly intuitive (to me, at
-      # least), but you can play with them at https://www.desmos.com/calculator/6774lbip58
-      shape: 2.4 # Influenced by on Ajeya Cotra's median estimate of 2040 (https://www.lesswrong.com/posts/AfH2oPHCApdKicM4m/two-year-update-on-my-personal-ai-timelines),
+      shape: 2.4 # Influenced by on Ajeya Cotra's median estimate of 2040
+      # (https://www.lesswrong.com/posts/AfH2oPHCApdKicM4m/two-year-update-on-my-personal-ai-timelines),
       # but with substantially more uncertainty about the upper limit of how long it could take.
       scale: 20 # TODO probably multiply this by stretch_per_reboot
       x_translation: 70 # Approximately the current year - used to translate both this and the graph
@@ -265,7 +279,8 @@ perils:
       # basically 0.
     agi_threat:
       # The probability that if AI is developed in progress year x, it goes on to wipe us out
-      # Graph at https://www.desmos.com/calculator/xzmt0dkl0e
+      # Graph at https://www.desmos.com/calculator/mcnubjo06m (its values are too big to
+      # conveniently show on the above Desmos graph for this transition)
       # I've given this conditional probability as an exponential decay of the form
       # A * (1 - B)^-(x - C)
       #   Where A is the starting value after translation, represented by max_threat below
@@ -273,7 +288,9 @@ perils:
       #     threat_decay_rate below
       #   And C is the translation parallel to the x_axis, setting what value of X we think of as 'today',
       #     represented by the x_translation of agi_development above
-      max_threat: 0.8 # The probability that it would wipe us out if it were developed today
+      max_threat: 0.8 # The probability that it would wipe us out if it were developed today. Setting
+      # this value to 0 would return a 0 probability of going extinct directly from a time
+      # of perils
       threat_decay_rate: 0.02 # This value relates to the value of AI safety work - if the per-year risk of
       # extinction conditional on AGI being developed decrease a lot, it implies we expect such work
       # will yield good results (although it could also just imply eg that a world in which AI is harder
@@ -348,8 +365,8 @@ perils:
 
     # You can play with these numbers on Desmos. The green graph represents the probability of
     # regressing from progress year x to progress year n, such that 0 <= n <= x, and the red
-    # graph shows the same thing with a different x-axis - the probability of regressing from progress year m to progress year
-    # x, such that 0 <= x <= m: https://www.desmos.com/calculator/olr4mepouy
+    # graph shows the same thing with a different x-axis - the probability of regressing from progress year p to progress year
+    # x, such that 0 <= x <= p: https://www.desmos.com/calculator/olr4mepouy
 
     any_regression: 0.026 # Could be a function of k and/or p - but seems ok to treat as a constant
                  # (at any given time using all the nukes would, more or less by definition, at
@@ -375,6 +392,8 @@ perils:
     # 2050 to 2100, which is about 80%
     # (https://www.metaculus.com/questions/1432/will-humans-have-a-sustainable-off-world-presence-by-2100/)
     # on the probabilities for 2090 respectively.
+
+    # You can view the graph and adjust the values at https://www.desmos.com/calculator/7zriffon47
     base_x_stretch: 75
     x_translation: 80 # Robert Zubrin seems to have been the first person to make a practical proposal to settle
     # Mars, and that was around 1990, and somewhat similar to SpaceX's plan. In his most optimistic
@@ -397,7 +416,8 @@ perils:
     # Camp A: 'it's going to be an overwhelmingly powerful new force of nature that will very likely
     # kill us all' and Camp B: 'it's going to be a very powerful tool which doesn't fundamentally
     # change human dynamics'. On either view, this outcome seems very unlikely, though not
-    # inconceivable.
+    # inconceivable. Setting this value to 0 would return a 0 probability of going directly to
+    # interstellar from a time of perils
 
 multiplanetary:
   # Params governing transitional probabilities from multiplanetary state to each of the nested

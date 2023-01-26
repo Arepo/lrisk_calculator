@@ -30,6 +30,8 @@ def sigmoid_curved_risk(x:int, x_stretch:float, y_stretch:float, x_translation: 
   In general for my default estimates, I'm using the current time of perils, dated from 1945, as a
   template for k = 0
 
+  An example version of the graph is at https://www.desmos.com/calculator/7zriffon47
+
   I owe this interpretation of an S-curve to Nick Krempel.
 
   TODO: look into failure rate functions as an alternative approach

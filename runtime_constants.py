@@ -3,10 +3,10 @@
 # latter is bigger. So setting them higher substantially increases runtime, but will also increase
 # the accuracy of the final output.
 
-MAX_PLANETS = 2
-MAX_CIVILISATIONS = 10
+MAX_PLANETS = 20
+MAX_CIVILISATIONS = 50
 
-MAX_PROGRESS_YEARS = 100
+MAX_PROGRESS_YEARS = 1000
 if MAX_PROGRESS_YEARS < 2:
   raise 'Need at least two possible progress years'
 

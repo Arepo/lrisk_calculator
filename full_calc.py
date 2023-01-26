@@ -132,7 +132,8 @@ def full_markov_chain():
 
 
 
-full_markov_chain()
+mc = full_markov_chain()
+pdb.set_trace()
 
 
 ########
