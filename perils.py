@@ -1,12 +1,13 @@
 from functools import cache
 import math
+from scipy.stats import gamma
 import pdb
 
 import yaml
-from scipy.stats import gamma
+
 
 import runtime_constants as constant
-from graph_functions import sigmoid_curved_risk, power_law_risk, exponentially_decaying_risk
+from graph_functions import sigmoid_curved_risk, exponentially_decaying_risk
 
 
 ## Transition probabilities from time of perils state
@@ -43,10 +44,16 @@ def survival_given_perils(k, p):
   def x_translation():
     """When does this risk start rising above 0, pre x-stretch?"""
     return PARAMS['survival']['x_translation']
+
   def sharpness():
     return PARAMS['survival']['sharpness'] # Intuition, no substantive reasoning
 
-  return sigmoid_curved_risk(p, x_stretch(k), y_stretch(), x_translation(), sharpness())
+  return sigmoid_curved_risk(
+    x=p,
+    x_stretch=x_stretch(k),
+    y_stretch=y_stretch(),
+    x_translation=x_translation(),
+    sharpness=sharpness())
 
 @cache
 def preindustrial_given_perils(k, p):
@@ -67,7 +74,12 @@ def preindustrial_given_perils(k, p):
   def sharpness():
     return PARAMS['preindustrial']['sharpness']
 
-  return sigmoid_curved_risk(p, x_stretch(k), y_stretch(), x_translation(), sharpness())
+  return sigmoid_curved_risk(
+    x=p,
+    x_stretch=x_stretch(k),
+    y_stretch=y_stretch(),
+    x_translation=x_translation(),
+    sharpness=sharpness())
 
 @cache
 def industrial_given_perils(k, p):
@@ -87,34 +99,15 @@ def industrial_given_perils(k, p):
   def sharpness():
     return PARAMS['industrial']['sharpness']
 
-  return sigmoid_curved_risk(p, x_stretch(k), y_stretch(), x_translation(), sharpness())
+  return sigmoid_curved_risk(
+    x=p,
+    x_stretch=x_stretch(k),
+    y_stretch=y_stretch(),
+    x_translation=x_translation(),
+    sharpness=sharpness())
 
 @cache
 def transition_to_year_n_given_perils(k:int, p:int, n=None):
-  """The simplest intuitive way I can think of to deal with this is to assume the probability of
-  regressing decreases exponentially with the number of years we regressing, eg for p = 3, given that
-  there has been some intra-perils regression we might say the probability of that regression is 1/15,
-  2/15, 4/15, and 8/15 respectively for 'regressions' to p = 0, 1, 2, and 3.
-
-  More generally, we woud say that, given some intra-perils regression, the probability of a
-  regression to exactly progress-year n is a weighting_for_progress_year_n = <some weighting_decay_rate>**n,
-  divided by the sum of weighting_for_progress_year_n for all valid values of n.
-
-  I'm not sure this is a very convincing algorithm. Based on global GDP, we've arguably regressed
-  in about 4 calendar years since 1961, when the world bank started tracking global data and perhaps
-  5 times in the 20th century based on UK data between about 0 and 2 progress years each time, and about . For comparatively tiny
-  values of weighting_decay_rate (ie barely above 1), being limited to such small regressions looks
-  incredibly unlikely. For higher values of weighting_decay_rate, it puts the total probability of
-  regressing more than a few years at a far lower value than the probability of a milestone
-  regression - a regression to an earlier technological state - which seems wrong.
-
-  A simple alternative that errs way too much in the other direction would be a linear decrease given by
-  an arithmetic progression. This seems like a much worse fit for the data, but I include that
-  version, commented out below, as a way of getting an upper bound on the significance of regressions
-  within the time of perils."""
-
-  # ... this function really sucks.
-
   possible_regressions = p + 1
 
   if possible_regressions == constant.MAX_PROGRESS_YEARS:
@@ -159,13 +152,7 @@ def transition_to_year_n_given_perils(k:int, p:int, n=None):
     max_regressed_states = possible_regressions
     target_year = n
 
-  geometric_base = PARAMS['progress_year_n']['geometric_base'] # Higher gives higher probability that given such a loss we'll lose a
-  # smaller number of progress years: 2 would mean regressing to year n is 2x
-  # as likely as regressing to year n-1. I chose the current value fairly arbitrarily, by
-  # looking at this graph - https://data.worldbank.org/indicator/NY.GDP.MKTP.KD.ZG, treating
-  # 1975, and 1982 as a regression of 0 years, 2009 as a regression of 1, and 2020 as a
-  # regression of 2, and looking for a probability outcome slightly below that (to account for
-  # eg survivor bias, and selection effects from starting to count immediately *after* WWII).
+  geometric_base = PARAMS['progress_year_n']['geometric_base']
 
   geometric_sum_of_weightings = ( (1 - geometric_base ** max_regressed_states)
                                   / (1 - geometric_base))
@@ -173,15 +160,15 @@ def transition_to_year_n_given_perils(k:int, p:int, n=None):
   numerator_for_progress_year_n = geometric_base ** target_year # How likely is it, that given some loss,
   # that loss took us to exactly progress year n?
 
+  # Linear version:
+  # arithmetic_sequence_sum = p + 1 + (p**2 + p)/2
+  # return (n + 1) / arithmetic_sequence_sum
+  # Desmos version:
+  # https://www.desmos.com/calculator/xtlzmxvikn
+
   # Thus numerator_for_progress_year_n / geometric_sum_of_weightings is a proportion; you can play with
   # the values at https://www.desmos.com/calculator/1pcgidwr3f
   return any_intra_perils_regression() * numerator_for_progress_year_n / geometric_sum_of_weightings
-
-    # Linear version:
-    # arithmetic_sequence_sum = p + 1 + (p**2 + p)/2
-    # return (n + 1) / arithmetic_sequence_sum
-    # Desmos version:
-    # https://www.desmos.com/calculator/xtlzmxvikn
 
 @cache
 def multiplanetary_given_perils(k, p):
@@ -200,12 +187,17 @@ def multiplanetary_given_perils(k, p):
   def sharpness():
     return PARAMS['multiplanetary']['sharpness']
 
-  return sigmoid_curved_risk(p, x_stretch(k), y_stretch(), x_translation(), sharpness())
+  return sigmoid_curved_risk(
+    x=p,
+    x_stretch=x_stretch(k),
+    y_stretch=y_stretch(),
+    x_translation=x_translation(),
+    sharpness=sharpness())
 
 def _ai_x_translation():
     return PARAMS['extinction']['agi_development']['x_translation']
 
-def annual_ai_development_probability(p):
+def annual_ai_first_development_probability(p):
   def gamma_shape():
     return PARAMS['extinction']['agi_development']['shape']
 
@@ -222,14 +214,7 @@ def extinction_given_perils(k, p):
     return X_PARAMS['non_ai_causes']['base_x_stretch'] * PARAMS['stretch_per_reboot'] ** (k + 1)
 
   def sigmoid_y_stretch(k):
-    base_max_annual_risk = X_PARAMS['non_ai_causes']['y_stretch']['max']
-    min_annual_risk = X_PARAMS['non_ai_causes']['y_stretch']['min']
-    decay_rate = X_PARAMS['non_ai_causes']['y_stretch']['decay_rate']
-    return exponentially_decaying_risk(
-      x=k,
-      starting_value=base_max_annual_risk,
-      decay_rate=decay_rate,
-      min_value=min_annual_risk)
+    return X_PARAMS['non_ai_causes']['y_stretch']
 
   def sigmoid_x_translation():
     return X_PARAMS['non_ai_causes']['x_translation']
@@ -237,64 +222,38 @@ def extinction_given_perils(k, p):
   def sigmoid_sharpness():
     return X_PARAMS['non_ai_causes']['sharpness']
 
-  non_ai_extinction_risk_by_year = sigmoid_curved_risk(p, sigmoid_x_stretch(k), sigmoid_y_stretch(k), sigmoid_x_translation(), sigmoid_sharpness())
+  non_ai_extinction_risk_by_year = sigmoid_curved_risk(
+    x=p,
+    x_stretch=sigmoid_x_stretch(k),
+    y_stretch=sigmoid_y_stretch(k),
+    x_translation=sigmoid_x_translation(),
+    sharpness=sigmoid_sharpness())
 
-  # Using a power law distribution to estimate probability of AI eventually wiping us out conditional
-  # on it on it being created in year p.
-  # Play with these numbers at https://www.desmos.com/calculator/znklhoherj
   def ai_extinction_multiplier_decay_rate():
     return X_PARAMS['agi_threat']['threat_decay_rate']
 
-  def ai_extinction_multiplier_y_stretch():
-    """Determines the max probability that, given AI is developed in some year, it will wipe us out"""
+  def ai_extinction_multiplier_current_threat():
     return X_PARAMS['agi_threat']['max_threat']
 
-  # TODO consider an x-stretch for extinction multiplier (It's not obvious whether we should have one,
+  # TODO consider an x-stretch for extinction_multiplier_for_year_p (It's not obvious whether we should have one,
   # since this might be as much a social problem as a technological one. But without one, it might
   # end up looking more likely that we become interstellar given non-extinction catastrophes - though
-  # this might not be wrong)
+  # this might not be wrong). This will stop being a relevant concern if we add post-AI time of perils
+  # as a separate class of states
 
-
-
-  ai_extinction_multiplier_by_year = power_law_risk(
-    p, ai_extinction_multiplier_y_stretch(), ai_extinction_multiplier_decay_rate(), _ai_x_translation())
+  ai_extinction_multiplier_for_year_p = exponentially_decaying_risk(
+    x=p,
+    starting_value=ai_extinction_multiplier_current_threat(),
+    decay_rate=ai_extinction_multiplier_decay_rate(),
+    x_translation=_ai_x_translation())
 
   # Graph with these values for k=0 at https://www.desmos.com/calculator/mbwoy2muin
-  return annual_ai_development_probability(p) * ai_extinction_multiplier_by_year + non_ai_extinction_risk_by_year
+  return annual_ai_first_development_probability(p) * ai_extinction_multiplier_for_year_p + non_ai_extinction_risk_by_year
 
 @cache
 def interstellar_given_perils(k, p):
   def value_lock_in_given_ai():
     return PARAMS['interstellar']['value_lock_in_given_ai']
 
-  return annual_ai_development_probability(p) * value_lock_in_given_ai()
-
-@cache
-def _non_continuation_given_perils(k, p):
-  return (extinction_given_perils(k, p)
-          + survival_given_perils(k, p)
-          + preindustrial_given_perils(k, p)
-          + industrial_given_perils(k, p)
-          + transition_to_year_n_given_perils(k, p)
-          + multiplanetary_given_perils(k, p)
-          + interstellar_given_perils(k, p))
-
-# @cache
-# def perils_stasis_given_perils(k, p):
-#   """The probability that we transition to the same progress year."""
-#   if p >= constant.MAX_PROGRESS_YEARS:
-#     return 1 - _non_continuation_given_perils
-#   else:
-#     return (1 - _non_continuation_given_perils) * 1/30 # Using the same source as in regressions,
-#     # this is based on 'flattish' years appearing roughly this often for the last 60 years in World
-#     # Bank data
-#     # https://data.worldbank.org/indicator/NY.GDP.MKTP.KD.ZG
-#     # https://ourworldindata.org/grapher/world-gdp-over-the-last-two-millennia?time=1940..2015
-
-# @cache
-# def perils_progression_given_perils(k, p):
-#   if p >= constant.MAX_PROGRESS_YEARS:
-#     return 0
-#   else:
-#     return _non_continuation_given_perils - perils_stasis_given_perils(k, p)
+  return annual_ai_first_development_probability(p) * value_lock_in_given_ai()
 

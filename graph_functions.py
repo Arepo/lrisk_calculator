@@ -66,9 +66,8 @@ def exponentially_decaying_risk(x, starting_value, decay_rate, min_value=0, x_tr
   TODO: look into simpler scipy implementations"""
   return starting_value * (1 - decay_rate) ** (x - x_translation) + min_value
 
-@cache
-def power_law_risk(x, y_stretch, decay_rate, x_translation=0):
-  if x - x_translation < 1:
-    return 0
-  else:
-    return y_stretch * (x - x_translation) ** -(decay_rate)
+
+
+
+
+
