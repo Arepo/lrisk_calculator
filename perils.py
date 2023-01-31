@@ -17,15 +17,15 @@ with open('params.yml', 'r') as stream:
 
 @cache
 def survival_given_perils(k, p):
-  return parameterised_transition_probability(k, p, PARAMS['survival'])
+  return parameterised_transition_probability(k, p, 'survival')
 
 @cache
 def preindustrial_given_perils(k, p):
-  return parameterised_transition_probability(k, p, PARAMS['preindustrial'])
+  return parameterised_transition_probability(k, p, 'preindustrial')
 
 @cache
 def industrial_given_perils(k, p):
-  return parameterised_transition_probability(k, p, PARAMS['industrial'])
+  return parameterised_transition_probability(k, p, 'industrial')
 
 @cache
 def transition_to_year_n_given_perils(k:int, p:int, n=None):
@@ -93,38 +93,42 @@ def transition_to_year_n_given_perils(k:int, p:int, n=None):
 
 @cache
 def multiplanetary_given_perils(k, p):
-  return parameterised_transition_probability(k, p, PARAMS['multiplanetary'])
+  return parameterised_transition_probability(k, p, 'multiplanetary')
 
 @cache
 def extinction_given_perils(k, p):
-  return parameterised_transition_probability(k, p, PARAMS['extinction'])
+  return parameterised_transition_probability(k, p, 'extinction')
 
 @cache
 def interstellar_given_perils(k, p):
-  return parameterised_transition_probability(k, p, PARAMS['interstellar'])
+  return parameterised_transition_probability(k, p, 'interstellar')
 
-def parameterised_transition_probability(k, p, params):
-  def x_stretch(k):
-    return params['base_x_stretch'] * params['stretch_per_reboot'] ** (k + 1)
+def parameterised_transition_probability(k, p, target_state):
+  @cache
+  def x_stretch(k, target_state):
+    return PARAMS[target_state]['base_x_stretch'] * PARAMS[target_state]['stretch_per_reboot'] ** (k + 1)
 
-  def y_stretch():
+  @cache
+  def y_stretch(target_state):
     """Max probability per year of this transition"""
-    return params['y_stretch']
+    return PARAMS[target_state]['y_stretch']
 
-  def x_translation():
+  @cache
+  def x_translation(target_state):
     """How many progress years into the time of perils does this possibility rise meaningfully above
     0"""
-    return params['x_translation']
+    return PARAMS[target_state]['x_translation']
 
-  def sharpness():
-    return params['sharpness']
+  @cache
+  def sharpness(target_state):
+    return PARAMS[target_state]['sharpness']
 
   return sigmoid_curved_risk(
     x=p,
-    x_stretch=x_stretch(k),
-    y_stretch=y_stretch(),
-    x_translation=x_translation(),
-    sharpness=sharpness())
+    x_stretch=x_stretch(k, target_state),
+    y_stretch=y_stretch(target_state),
+    x_translation=x_translation(target_state),
+    sharpness=sharpness(target_state))
 
 
 # The functions below single out AI for special treatment, and will not be used in the MVP (and may
