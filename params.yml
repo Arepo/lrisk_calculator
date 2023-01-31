@@ -1,26 +1,315 @@
-# The full_calc.py script implements the perils-focused model described in this essay:
+# This file contains all the subjective parameters for full_calc.py - the script which implements
+# the perils-focused model described in this essay
 # https://forum.effectivealtruism.org/posts/YnBwoNNqe6knBJH8p/modelling-civilisation-after-a-catastrophe
-# This file contains the numeric parameters for that script and explains the choices. I've put some
-# thought into making these my best guesses, but the reader is nonetheless encouraged not to take
-# them too seriously, and to substitute their own parameters to test the effect of doing so. Any one
-# of these parameters could be, arguably should be, and in some cases have been, the subject of a
-# substantial research project. In general I've set them to my best guess, which has come from some combination of the research
-# I've found on the subject and eyeballing graphs on Desmos(a browser-based graphing
-# site) to come up with an intuitively convincing value per year.
+# - and explains the choice of each one (in some cases giving some commented out alternatives meant to
+# represent what seem to me reasonable upper and lower bounds on the value.
 
-# Substantially the most complex states are the 'time of perils' (any period in which we've developed
-# potentially civilisation-harming weaponry and before we've settled other planets) and 'multiplanetary'
-# (any period in which we've settled at least one other planet, or developed a technologically self-
-# sufficient and geographically isolated equivalent that could both survive a major war that
-# destroyed the rest of civilisation and reliably and quickly recolonise Earth afterwards)
+# In a nutshell, the model attempts to describe predictable patterns across multiple potential future
+# civilisations. At the top level it implements a Markov chain corresponding to the second in that
+# essay, which tracks the number of 'reboots' - the number of time civilisation has had to build back
+# from a premodern technological state (labelling this value 'k', both below and in the code). The
+# goal is to move questions from existential risk away from imprecise definitions about 'unrecoverable'
+# states (see https://forum.effectivealtruism.org/posts/fi3Abht55xHGQ4Pha/longtermist-terminology-has-biasing-assumptions)
+# toward probabilistic questions of how likely we would be, given catastrophes of various magnitude,
+# to reach the actual longtermist goal of becoming a benign interstellar civilisation. This calculator
+# focuses only on the probability of interstellar civilisation existing rather than its benignity
+# for simplicity - this doesn't imply that I think benignity is assured!
+
+# One of the central intuitions behind this model is that we should expect
+# each civilisation to preferentially use the lowest-hanging fruit, resource-wise, and
+# thus that - with the possible exception of reboot 1 (k=1), which will for the first time have
+# leftover tech from the previous civilisation to learn from (though by default the calculator doesn't make
+# this exception) - each civilisation will tend to take longer than the previous to reach any given
+# technology. Thus, holding other factors constant, and assuming a) that attaining a high level of
+# technology is necessary for humans to become interstellar, and b) that we have some background risk
+# of serious (including extinction level) catastrophes, each reboot will require us to spend longer in a
+# period of high risk, and thus reduces our credence that we eventually become interstellar. TODO add goal description
+
+# Another core intuition is that the states in which we consider the world should map as closely as
+# possible to those typically discussed in existing literature/public concepttion, so that we can
+# use real-world data as intuitively as possible to inform whatever credences we set.
+
+# I've put some thought into making the parameters herein my best guesses, but the reader is
+# strongly encouraged not to take them too seriously, and to substitute their own parameters to test
+# the effect of doing so. Any one of these parameters could be, arguably should be, and in some
+# cases have been, the subject of a substantial research project. My guesses come from some
+# combination of the research I've found in existential risk literature but mostly from eyeballing
+# graphs on Desmos (a browser-based graphing site) to come up with a visually convincing value per year.
+
+# By far the most complex states are 'time of perils' and 'multiplanetary', which deserve some
+# explanation here (though for a full description again see the essay above).
+
+# A time of perils is defined semi-recursively as any era of civilisation in which a) we have the
+# technology to build advanced weaponry, powerful enough to regress civilisation to a pre-time-of-
+# perils state, and b) we have yet to settle a second 'planet' (see definition below).
+
+# We divide this era into 'progress years' - stages of technological development that, to our best guess,
+# represent a) the level of technological progress we would achieve in some abstract ideal scenario,
+# after p actual years of constant development with no setbacks, and, relatedly) b) a state of
+# technology with probabilities {p1, p2, p3...} of transitioning to technological states {t1, t2, t3...}
+# within a year at that level of technology. This representation has two advantages:
+# 1) real-world data about our current era heavily tends towards annualisation. For example, we have
+# annual estimates of GDP, both at the global and country level, and the most granular existential
+# risk estimates we have are per year (see https://docs.google.com/spreadsheets/d/1W10B6NJjicD8O0STPiT3tNV3oFnT8YsfjmtYR8RO_RI/edit#gid=0)
+# This makes it easy to use such data to inform our credences below.
+# 2) thinking in terms of 'progress years' rather than actual years lets us consider scenarios
+# in which a 'minor' catastrophe sets us back, say, 50 years - a blip which would usually be
+# invisible in existential risk discussions, but of which we ideally would have some way to form an
+#  opinion on its relative badness.
+
+# In practice, I use the trajectory of our current time of perils as a blueprint for all future ones,
+# multiplying the number of progress years in our current era it took or seems likely to take to
+# reach a given level of 'technology' (where 'technology' manifests in the model as a given set of
+# probabilities of transition to some other civilisational state) by some constant, given below. By
+# default this constant is the same for all technologies, but that can be adjusted to taste.
 
 # To capture my intuitions about various risks as simply as possible without losing anything that
-# feels important, I'm using four types of graphs to describe exit probabilities from those eras.
-# I'll describe each of those graphs below alongside the first set of relevant parameters, and for
-# all sets of parameters that relate to one, I'll provide a link to a Desmos visualisation that lets
-# you easily see the results of tweaking the parameters. Note: all Desmos graphs assume k=1 - that is,
-# they give visualisations of my estimates for our current situation on which the estimates for
-# future civilisations could be based.
+# feels important, I'm treating all of the transition risks from time or perils to any other class
+# of state as having the basic form of an S-curve, implemented as
+# The curve has the form A / (1 + 1 / B * (x - C)^-D * e^ -(1 / B * (x - C)))
+#   Where x is the progress year,
+#   y is the probability for any value of x of transitioning in that way in that progress year,
+#   A is a stretch in the y-direction, representing the maximum annual probability of the transition
+#   B is a stretch in the x-direction, setting the length of curve to whatever value looks appropriate
+#     based on our current era, and then being potentially modified for future times of perils,
+#   C is a translation parallel to the x-axis, representing the first progress year where we might
+#     expect this probability to rise above 0 (which has default value 0 except for transitioning to
+#     the 'positive' states - multiplanetary and interstellar)
+#   D is a somewhat nebulous 'sharpness' parameter, which determines the steepness of the
+#     centre of the S-curve. This param might be overfitting, but makes it possible to align
+#     the curve with the actual historical growth of relevant technologies (eg nuclear arsenals)
+
+# AGI specifically would have a different trajectory, since once we develop it if it *doesn't* make
+# us all go extinct, the probability of extinction from subsequent development AI seems likely to
+# decrease dramatically (or, if it doesn't, we probably don't have any hope of an interstellar future,
+# in which case this model is irrelevant). For now I'm omitting AI as a separate consideration for
+# simplicity - if I continue working on this code, it's my next priority to include.
+
+perils:
+  # Parameters for nodes within 'times of perils'
+
+  # p is a 'progress year' - a year of real time at a certain level of technology, such that the time
+  # of perils starts at p = 0, and we generally advance by one unit per year, but can regress by 0 up
+  # to p years within the time of perils given 'minor' disasters.
+
+  # Params governing transitional probabilities from perils to each of the nested states. Ensure that
+  # the sum of the probabilities of all possible exits for any value of p is <= 1, where x=p and
+  # probability of exit = y
+
+  extinction:
+    # Desmos graph: https://www.desmos.com/calculator/osoungenhu, where x = the progress year
+    # (treating us as currently being in progress year 70), and y = the probability of going extinct
+    # via some particular cause in that progress year. Specifically, The blue line represents the
+    #  probability that <we develop AI for the first time  in that year and it ultimately destroys
+    # us>, the red line represents the probability that something other than AI destroys us, and the
+    # green line is the two added - that is, our total probability estimate of going extinct
+
+    # This is the addition of an S-curve, representing persistent technological threats such as
+    # biopandemics, to a pseudo-gamma distribution representing the probability per year of
+    # developing AI, multiplied by the probability that if it's developed at in that year it
+    # (ultimately) kills us all. The graphs are described in the relevant subsections below.
+
+    # TODO/FLAG: to properly represent the intuition that AI has one chance to be transformative
+    # and then fades as both an x-risk or as a source of existential security, I think we'd need to
+    # create an extra pair of state-classes: post-AI perils and post-AI multiplanetary. Using the
+    # current approach, that would add a fair bit of complexity to the code and give it a runtime of
+    # O(MN^3), and given that it's already chugging at O(MN^2), for now I'm using the
+    # separate-but-related pseudo-gamma-distribution graphs for AI-caused extinction and
+    # AI-caused existential security described below.
+
+    # It might be interesting to remove the AI arc, which bakes in a tonne of highly speculative assumptions,
+    # to compare what happens when we live in a world in which lacks either the motivation or capacity
+    # to wipe us out - since unlike the other risks extinction, this is arguably somewhat predetermined,
+    # such that probability estimates come from uncertainty rather than ongoing risks per year.
+    # Similarly it might be interesting to compare against setting the probability of this transition
+    # to 0, to represent a world in which AI will either be much harder to develop than we imagine,
+    # or isn't radically transformative (eg it speeds up the development of human civilisation for better
+    # or worse without changing the trajectory).
+
+    # As with preperils probabilities of transition to extinction, this might evidentially diminish
+    # with k, but I'm keeping that out of the priors.
+
+    y_stretch: 0.04 # The initial max annual risk from non-AI causes.
+      # Based on the highest estimate for the present day on the existential risks database:
+      # https://docs.google.com/spreadsheets/d/1W10B6NJjicD8O0STPiT3tNV3oFnT8YsfjmtYR8RO_RI/edit#gid=0
+    base_x_stretch: 118 # Set the initial shape of the graph to something plausibly consistent
+    # with our current perceived risk - this will be multiplied by stretch_per_reboot ** (k + 1)
+    x_translation: 15
+    sharpness: 2.5
+    stretch_per_reboot: 1.5
+
+  survival:
+    # Desmos graph:
+    # https://www.desmos.com/calculator/21twtfavxk, where x is the progress year, y is the probability
+    # of regressing to a survival state in that progress year
+
+    # In principle the y_stretch (max probability per year) of this would probably decrease with
+    # higher values of k, since they provide some evidence that we're less likely to end in states that
+    # are more likely to make us extinct. In practice, both the initial probability of ending in survival
+    # and the probability of extinction from there seem small enough that I'm treating it as a constant.
+
+    # Based on this source, nuclear weapon stockpiles started hitting the thousands after about 10
+    # years https://en.wikipedia.org/wiki/Historical_nuclear_weapons_stockpiles_and_nuclear_tests_by_country
+    # though only for the US - though until the Soviet Union had comparable numbers peaking in 1986, the
+    # risk of extremely bad outcomes was probably low. It might have kept growing under someone other
+    # than Gorbachev, and arguably has continued to grow even given declining nuclear arsenals, given the
+    # increase in biotech and environmental damage.
+
+    # Setting this to be 0 seems pretty reasonable.
+    base_x_stretch: 91 # Sets the shape of the graph before multiplying by stretch_per_reboot. This
+    # value puts us slightly above 1/2way to max risk in the present day, technology-wise
+    y_stretch: 0.000_005 # Sets the max probability per year of this transition. This seems like
+    # substantially the lowest probability perils exit, requiring a pinhead balance of maybe 99.99%
+    # killed, but not immediate extinction
+    x_translation: 0 # How many progress years into the time of perils does the risk of regressing
+    # to a survival state rise above 0?
+    sharpness: 2.4
+    stretch_per_reboot: 1.5 # How much longer/less long would it take a typical reboot than in the
+    # previous one to develop modern technology given considerations of headwinds from eg resource
+    # depletion, environmental damage, and tailwinds from knowledge left over from previous
+    # civilisations. I treat this as the same by default for each exit probability from the time
+    # of perils, but give it as a separate parameter for each to allow disagreement.
+
+  preindustrial:
+    # Desmos graph:
+    # https://www.desmos.com/calculator/xgouzeyehb where y is the progress year, y is the probability
+    # of regressing to a preindustrial state in that progress year
+
+    # I'm treating nukes as being substantially the most likely tech to cause this outcome, since
+    # they destroy far more resources than a pandemic would, making rebuilding much harder. So I expect
+    # the risk to more or less max out relatively early, as nuclear aresenals peak.
+    base_x_stretch: 20 # This value puts us slightly above 1/2way to max risk in the present day,
+    # technology-wise
+    y_stretch: 0.00045 # Sets the max probability per year of this transition. Ord's estimate of a
+    # 0.05 chance of full scale nuclear war in the next century, given at
+    # https://80000hours.org/podcast/episodes/toby-ord-the-precipice-existential-risk-future-humanity/#transcript
+    # implies a ~0.0005 average chance per year. I assume it reaches double that at peak, and that
+    # such a war would move us to preindustrial with 0.3 probability. Then I add half as much again for
+    # the combined chance of transitioning to preindustrial via any other catastrophe
+    x_translation: 0 # How many progress years into the time of perils does the risk of regressing
+    # to a preindustrial state rise above 0?
+    sharpness: 2 # A parameter determining the steepness of the centre of the S-curve. Set just by
+    # eyeballing Desmos no substantive reasoning, and intuiting that it should climb earlier than
+    # the probability of transitioning to to survival
+    stretch_per_reboot: 1.5 # As above
+
+  industrial:
+    # Desmos graph:
+    # https://www.desmos.com/calculator/nhnbxrczk0 where y is the progress year, y is the probability
+    # of regressing to a industrial state in that progress year
+
+    # I treat this as possible through any weapons tech, meaning it has the slowest incline but
+    # reaches the highest peak of the bad exits, and is generally higher per year than the others
+    base_x_stretch: 69 # Puts us approx 3/4 of the way to max annual risk, technology-wise
+    y_stretch: 0.0015 # I assume a 0.1 total chance of a catastrophe that would wipe out billions in the
+    # next century, giving a ~0.001 average chance per year. I assume it reaches triple that at peak.
+    # and that such an event would move us to preindustrial with 0.5 probability. TODO: no way this should be lower than extinction
+    x_translation: 8 #  How many progress years into the time of perils does the risk of regressing
+    # to an industrial state rise above 0? This sets it around the time the US would have reached
+    # 1000 nuclear warheads.
+    sharpness: 2
+    stretch_per_reboot: 1.5 # As above
+
+  progress_year_n:
+    # Desmos graph:
+    # https://www.desmos.com/calculator/olr4mepouy
+    # The green graph represents the probability of regressing from progress year x to progress year
+    # n, such that 0 <= n <= x, and the red graph shows the same thing with a different x-axis - the
+    # probability of regressing from progress year p to progress year x, such that 0 <= x <= p
+
+    # Parameters determining the probability of transitioning the probability of transitioning within
+    # the time of perils from progress-year p to progress-year n.
+
+    # The simplest intuitive way I can think of to deal with this is to assume the probability of
+    # regressing decreases exponentially with the number of years we regressing, eg for p = 3, given that
+    # there has been some intra-perils regression we might say the probability of that regression is 1/15,
+    # 2/15, 4/15, and 8/15 respectively for 'regressions' to p = 0, 1, 2, and 3.
+
+    # More generally, we woud say that, given some intra-perils regression, the probability of a
+    # regression to exactly progress-year n is a weighting_for_progress_year_n = <some weighting_decay_rate>**n,
+    # divided by the sum of weighting_for_progress_year_n for all valid values of n.
+
+    # I'm not sure this is a very convincing algorithm. Based on global GDP, we've arguably regressed
+    # in about 4 calendar years since 1961, when the world bank started tracking global data and perhaps
+    # 5 times in the 20th century based on UK data between about 0 and 2 progress years each time, and about . For comparatively tiny
+    # values of weighting_decay_rate (ie barely above 1), being limited to such small regressions looks
+    # incredibly unlikely. For higher values of weighting_decay_rate, it puts the total probability of
+    # regressing more than a few years at a far lower value than the probability of a milestone
+    # regression - a regression to an earlier technological state - which seems wrong.
+
+    # A simple alternative that errs way too much in the other direction would be a linear decrease given by
+    # an arithmetic progression. This seems like a much worse fit for the data, but I include that
+    # version, commented out below, as a way of getting an upper bound on the significance of regressions
+    # within the time of perils.
+
+    any_regression: 0.026 # Could be a function of k and/or p - but seems ok to treat as a constant
+                 # (at any given time using all the nukes would, more or less by definition, at
+                 # least revert us to year 0 of the time of perils). This value is based on it
+                 # roughly happening twice in 77 years on these graphs
+                 # https://data.worldbank.org/indicator/NY.GDP.MKTP.KD.ZG
+                 # https://ourworldindata.org/grapher/world-gdp-over-the-last-two-millennia?time=1940..2015
+                 # See also UK GDP, for which reliable data goes back farther but is unsurprisingly
+                 # more uneven: https://ourworldindata.org/grapher/total-gdp-in-the-uk-since-1270
+    geometric_base: 1.4 # Higher gives higher probability that given such a loss we'll lose a
+    # smaller number of progress years: 2 would mean regressing to year n is 2x
+    # as likely as regressing to year n-1. I chose the current value fairly arbitrarily, by
+    # looking at this graph - https://data.worldbank.org/indicator/NY.GDP.MKTP.KD.ZG, treating
+    # 1975, and 1982 as a regression of 0 years, 2009 as a regression of 1, and 2020 as a
+    # regression of 2, and looking for a probability outcome slightly below that (to account for
+    # eg survivor bias, and selection effects from starting to count immediately *after* WWII).
+
+  multiplanetary:
+    # Desmos graph https://www.desmos.com/calculator/7zriffon47 where x is the progres year, y is
+    # the probability of becoming 'multiplanetary' (developing the first self-sustaining
+    # technologically independent colony in that year)
+
+    # Meanwhile I also tried to get them looking somehwhat above Metaculus's 60% probability
+    # for a colony by 2100 (since that's absolute probability, whereas this is an estimate of
+    # given that we successfully continue advancing through the time of perils). For that I just
+    # looked at probability of success over 50 years at the probability given at the midpoint from
+    # 2050 to 2100, which is about 80%
+    # (https://www.metaculus.com/questions/1432/will-humans-have-a-sustainable-off-world-presence-by-2100/)
+    # on the probabilities for 2090 respectively.
+    base_x_stretch: 75
+    x_translation: 80 # Robert Zubrin seems to have been the first person to make a practical proposal to settle
+    # Mars, and that was around 1990, and somewhat similar to SpaceX's plan. In his most optimistic
+    # vision, the program would have taken maybe
+    # a few years to get going, but have been slower to accelerate than Musk's idea, which Musk thought
+    # in about 2020 was doable by about 2050. So if Zubrin's plan had been followed enthusiastically,
+    # it might in the absolute best case have got there about 25 years earlier.
+    y_stretch: 0.07 # Meaning a high tech civilisation could create a new settlement about once every 15
+                    # years, given somewhere nearby to expand to
+    sharpness: 2 # My default value when I'm not matching to historical data
+    stretch_per_reboot: 1.5 # As above
+
+  interstellar:
+    # Desmos graph: https://www.desmos.com/calculator/3jubakv9is where x is the progress year and y
+    # is the probability that in that year we both develop AI for the first time in that year and
+    # that AI becomes a benign singleton, locking in a positive future.
+
+    # TODO put in sensible values here
+
+    # My sense is that AI predictions mostly fall into
+    # Camp A: 'it's going to be an overwhelmingly powerful new force of nature that will very likely
+    # kill us all' and Camp B: 'it's going to be a very powerful tool which doesn't fundamentally
+    # change human dynamics'. On either view, this outcome seems very unlikely, though not
+    # inconceivable. Setting this value to 0 would return a 0 probability of going directly to
+    # interstellar from a time of perils
+
+    # I treat this as being possible as a direct transition only if we develop AGI which becomes
+    # a benign overseer to humanity, which will ensure our longterm flourishing. I don't have a strong
+    # intuition about how or whether this would change over time (more time to AI development might
+    # mean AI is less impressive in its abilities, or that there's a larger range of possible first
+    # movers), so I'm just treating it as a constant probability of getting enough value
+    # lock-in that our interstellar future becomes assured.
+    y_stretch: 0.02 # The initial max annual risk from non-AI causes.
+    # Based on the highest estimate for the present day on the existential risks database:
+    # https://docs.google.com/spreadsheets/d/1W10B6NJjicD8O0STPiT3tNV3oFnT8YsfjmtYR8RO_RI/edit#gid=0
+    base_x_stretch: 118 # Set the initial shape of the graph to something plausibly consistent
+    # with our current perceived risk - this will be multiplied by stretch_per_reboot ** (k + 1)
+    x_translation: 15
+    sharpness: 2.5
+    stretch_per_reboot: 1.5
 
 # An exponential decay curve of the form A(1 - B)^(x - C) + D
 #    Where A is a stretch in the Y direction (which by default determines the the y-value at x=0)
@@ -29,10 +318,75 @@
 #    D is a translation in the y-direction (determining the minimum value the risk can reduce and
 #      adding to the starting value)
 
-# A pseudo-gamma distribution, albeit with stretches and translations as above (implemented via
-# scipy: https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.gamma.html). FLAG: this
-# can't be a strict probability distribution given the possibility of revisiting progress years on
-# the x_axis
+multiplanetary:
+  # Params governing transitional probabilities from multiplanetary state to each of the nested
+  # states. Note the definition from the post above of a 'planet' as 'a self-sustaining settlement
+  # capable of continuing in an advanced enough technological state to settle other "planets" even
+  # if the others disappeared, which is physically isolated enough to be unaffected by at least one
+  # type of technological milestone catastrophe impacting the other two'.
+
+  extinction:
+    # Desmos graph:
+    # https://www.desmos.com/calculator/y7mx4pdmil where the x axis represents the number of 'planets'
+    # (technogically self-sustaining, geographically independent settlements) our civilisation has,
+    # the y-axis represents the probability of going directly extinct from that state.
+    single_planet_risk: 0.12 # TODO check whether this should be single_ or two_
+    decay_rate: 0.55 # Should be a value between 0 and 1. Lower treats the per-planet risk reduction as lower. This
+    # value is just a wild guess, though see the note on the equivalent decay_rate for the
+    # perils_given_multiplanetary function for an ordering
+    min_risk: 0 # For the very long run, if this doesn't tend to become almost 0, longtermism isn't possible
+    x_translation: 2 # Trivially, since we define a 'multiplanetary' state as having at least two
+    # planets (except for the purpose of regressing to a single planet, which follows the same logic
+    # as regressing to 2+ would)
+
+  survival: 0 # Sum of total survival exit probability over all values of q. I treat this as
+  # 0 on the grounds that it seems such a precise amount of damage that it's not worth the
+  # computation/complexity costs
+
+  preindustrial: 0 # Sum of total preindustrial exit probability over all values of q.
+  # While this seems more plausible than going directly to a survival state, it seems unlikely
+  # enough to still treat as 0
+
+  industrial: 0 # Sum of total industrial exit probability over all values of q. Again,
+  # while this looks somewhat more plausible, it still seems so much less likely than an event which either wipes out
+  # humanity or leaves the reaminder with some advanced technology as to be treatable as 0"""
+
+  n_planets:
+    # Desmos graph:
+    # https://www.desmos.com/calculator/4laiomo0jm here the x axis represents the number of 'planets'
+    # (technogically self-sustaining, geographically independent settlements) our civilisation has,
+    # the y-axis represents the probability of transitioning directly to having n planets.
+    # Parameters associated with going from any multiplanetary state to one with fewer planets.
+    two_planet_risk: 0.2 # Just from eyeballing the Desmos graph
+    decay_rate: 0.4 # Also just from eyeballing the Desmos graph
+    min_risk: 0.01 # The minimum risk of losing at least one planet before gaining one. Across a
+    # Kardashev II civilisation the probability of losing at least one settlement seems like it
+    # should remain significant, though given that for the foreseeable future scope for expansion
+    # increases cubicly (when you include rocky bodies, and assume after a point even relatively
+    # small settlements will have the technology to self-sustain), I would expect it to tend to a
+    # low rate relative to the probability of adding a planet
+    x_translation: 2 # Trivially, since we define a 'multiplanetary' state as having at least two
+    # planets (except for the purpose of regressing to a single planet, which follows the same logic
+    # as regressing to 2+ would)
+    geometric_base: 1.4 # Used for weighting different numbers of planets we might lose conditional
+    # on us losing 1 or more. Higher gives higher probability that given such a loss we'll lose a
+    # smaller number of planets
+
+  # perils is just the specific case of transitioning to n=1 planets given our assumptions about
+  # transitioning to n planets, so doesn't take any unique params
+
+  interstellar:
+    # Desmos graph: https://www.desmos.com/calculator/1wazngfpba, here the x axis represents the
+    # (technogically self-sustaining, geographically independent settlements) our civilisation has,
+    # the y-axis represents the probability of transitioning directly to having n planets number of
+    # 'planets'.
+    x_stretch: 6 # Just intuition from eyeballing the function.
+    y_stretch: 0.65 # With enough interplanetary colonies, it becomes increasingly likely that we send
+    # out interstellar colony ships, since we've proven most of the technology and might run out of
+    # space in our solar system.
+    x_translation: 1
+    sharpness: 2 # My default value when I'm not matching to historical data
+
 
 preperils:
   # Parameters for the three technological states of civilisation with pre-perils technology
@@ -43,6 +397,8 @@ preperils:
   # I don't think it's correct to include that assumption in our priors (ie this file), so most of
   # the functions informed by these parameters are very simple.
   survival:
+    # I'm using a constant for this, so no Desmos graph
+
     base_estimate: 0.0003 # I've just lifted this from one of Rodriguez's most pessimistic scenarios
     # in this post: https://forum.effectivealtruism.org/posts/GsjmufaebreiaivF7/what-is-the-likelihood-that-civilizational-collapse-would
     # I don't think the first two scenarios really describe a state of 'survival' for much the reasons
@@ -52,9 +408,9 @@ preperils:
     # to treat this as 0 (or translate it as a multiplier on preindustrial states) and remove this
     # class of states.
   preindustrial:
-    # There are various different suggested values in the comments below. You can play with the graph
-    # for probability of extinction given different values (where x = k) at
-    # https://www.desmos.com/calculator/zf4xtayuhm
+    # Desmos graph of defaults: (where x = k) at https://www.desmos.com/calculator/zf4xtayuhm, where
+    # the x axis represents the number of civilisational reboots, y the probability of going extinct
+    # from this state.
 
     # Uncomment a value below to taste of expected time in years. The estimates of expected time to
     # recover come from Luisa Rodriguez's post,
@@ -134,6 +490,11 @@ preperils:
     # stretch than the later transitions, which seem much more likely to be resource-limited
 
   industrial:
+    # Desmos graph:
+    # https://www.desmos.com/calculator/tbdcjmwao8 (defaulting to values for the pessimistic
+    # scenario below), where the x axis represents the number of civilisational reboots,
+    # y the probability of going extinct from this state.
+
     # For extinction probability per year, we can start with the base rates given in the previous
     # calculation, and then multiply them by some factor based on whether we think industry would make
     # humans more or less resilient.
@@ -177,11 +538,6 @@ preperils:
     # https://forum.effectivealtruism.org/posts/rtoGkzQkAhymErh2Q/are-we-going-to-run-out-of-phosphorous
     # )
 
-    # You can play with the params for this transition at either
-    # https://www.desmos.com/calculator/tbdcjmwao8 (defaulting to values for the pessimistic scenario) or
-    # https://www.desmos.com/calculator/e2bhztqsms (defaulting to values for the optimistic scenario),
-    # where the x axis represents the number of civilisational reboots, and the y-axis our probability
-    # of going extinct from this state.
     base_expected_time_in_years: 1450 # I mostly arbitrarily assume ten times the duration for rebooting with no oil, much less
     # coal that's more expensive to mine, and maybe 10% of the energy of our current civilisation
     # embodied in landfill:
@@ -202,281 +558,4 @@ preperils:
     # in the first couple of reboots
     # base_expected_time_in_years: 100
     # stretch_per_reboot: 1.2
-
-
-perils:
-  # Parameters for nodes within 'times of perils'
-
-  # p is a 'progress year' - a year of real time at a certain level of technology, such that the time
-  # of perils starts at p = 0, and we generally advance by one unit per year, but can regress by 0 up
-  # to p years within the time of perils given 'minor' disasters.
-
-  # Params governing transitional probabilities from perils to each of the nested states. Ensure that
-  # the sum of the probabilities of all possible exits for any value of p is <= 1, where x=p and
-  # probability of exit = y
-
-
-  stretch_per_reboot: 1.5 # How much longer/less long would it take a typical reboot than in the
-    # previous one to develop modern technology given considerations of headwinds from eg resource
-    # depletion, environmental damage, and tailwinds from knowledge left over from previous
-    # civilisations
-
-  extinction:
-    # This is the addition of an S-curve, representing persistent technological threats such as
-    # biopandemics, to a pseudo-gamma distribution representing the probability per year of
-    # developing AI, multiplied by the probability that if it's developed at in that year it
-    # (ultimately) kills us all. The graphs are described in the relevant subsections below.
-
-    # TODO/FLAG: to properly represent the intuition that AI has one chance to be transformative
-    # and then fades as both an x-risk or as a source of existential security, I think we'd need to
-    # create an extra pair of state-classes: post-AI perils and post-AI multiplanetary. Using the
-    # current approach, that would add a fair bit of complexity to the code and give it a runtime of
-    # O(MN^3), and given that it's already chugging at O(MN^2), for now I'm using the
-    # separate-but-related pseudo-gamma-distribution graphs for AI-caused extinction and
-    # AI-caused existential security described below.
-
-    # The graph of the S-curve, the gammaoid curve, and the addition of the two with the values below
-    # is at https://www.desmos.com/calculator/osoungenhu
-
-    # It might be interesting to remove the AI arc, which bakes in a tonne of highly speculative assumptions,
-    # to compare what happens when we live in a world in which lacks either the motivation or capacity
-    # to wipe us out - since unlike the other risks extinction, this is arguably somewhat predetermined,
-    # such that probability estimates come from uncertainty rather than ongoing risks per year.
-    # Similarly it might be interesting to compare against setting the probability of this transition
-    # to 0, to represent a world in which AI will either be much harder to develop than we imagine,
-    # or isn't radically transformative (eg it speeds up the development of human civilisation for better
-    # or worse without changing the trajectory).
-
-    # As with preperils probabilities of transition to extinction, this might evidentially diminish
-    # with k, but I'm keeping that out of the priors.
-
-    non_ai_causes:
-      # This is the S-curve representing persistent technological threats.
-      # The curve has the form A / (1 + 1 / B * (x - C)^-D * e^ -(1 / B * (x - C)))
-      #   Where A is a stretch in the y-direction, represented by y_stretch below
-      #   B is a stretch in the x-direction, represented by base_x_stretch below
-      #   C is a translation parallel to the x-axis, represented by x_translation below
-      #   D is a somewhat nebulous 'sharpness' parameter, which determines the steepness of the
-      #     centre of the S-curve. This param might be overfitting, but makes it possible to align
-      #     the curve with the actual historical growth of relevant technologies (eg nuclear arsenals)
-      y_stretch: 0.04 # The initial max annual risk from non-AI causes.
-        # Based on the highest estimate for the present day on the existential risks database:
-        # https://docs.google.com/spreadsheets/d/1W10B6NJjicD8O0STPiT3tNV3oFnT8YsfjmtYR8RO_RI/edit#gid=0
-      base_x_stretch: 118 # Set the initial shape of the graph to something plausibly consistent
-      # with our current perceived risk - this will be multiplied by stretch_per_reboot ** (k + 1)
-      x_translation: 15
-      sharpness: 2.5
-    agi_development:
-      # Using a modified gamma distribution function as the simplest example of a long-tail
-      # distribution I could find, to represent the probability distribution of when AGI is developed
-      # conditional on us surviving long enough in a technological state.
-      shape: 2.4 # Influenced by on Ajeya Cotra's median estimate of 2040
-      # (https://www.lesswrong.com/posts/AfH2oPHCApdKicM4m/two-year-update-on-my-personal-ai-timelines),
-      # but with substantially more uncertainty about the upper limit of how long it could take.
-      scale: 20 # TODO probably multiply this by stretch_per_reboot
-      x_translation: 70 # Approximately the current year - used to translate both this and the graph
-      # below. This implies the probability of having developed AI by this level of technology was
-      # basically 0.
-    agi_threat:
-      # The probability that if AI is developed in progress year x, it goes on to wipe us out
-      # Graph at https://www.desmos.com/calculator/mcnubjo06m (its values are too big to
-      # conveniently show on the above Desmos graph for this transition)
-      # I've given this conditional probability as an exponential decay of the form
-      # A * (1 - B)^-(x - C)
-      #   Where A is the starting value after translation, represented by max_threat below
-      #   B governs the rate at which the conditional probability decays, represented by
-      #     threat_decay_rate below
-      #   And C is the translation parallel to the x_axis, setting what value of X we think of as 'today',
-      #     represented by the x_translation of agi_development above
-      max_threat: 0.8 # The probability that it would wipe us out if it were developed today. Setting
-      # this value to 0 would return a 0 probability of going extinct directly from a time
-      # of perils
-      threat_decay_rate: 0.02 # This value relates to the value of AI safety work - if the per-year risk of
-      # extinction conditional on AGI being developed decrease a lot, it implies we expect such work
-      # will yield good results (although it could also just imply eg that a world in which AI is harder
-      # to develop is a world in which fast takeoff is less likely)
-
-  survival:
-    # You can interact with the Desmos graph with these specific values at
-    # https://www.desmos.com/calculator/21twtfavxk
-    base_x_stretch: 91 # Sets the shape of the graph before multiplying by stretch_per_reboot. This
-    # value puts us slightly above 1/2way to max risk in the present day, technology-wise
-    y_stretch: 0.000_005 # Sets the max probability per year of this transition. This seems like
-    # substantially the lowest probability perils exit, requiring a pinhead balance of maybe 99.99%
-    # killed, but not immediate extinction
-    x_translation: 0 # How many progress years into the time of perils does the risk of regressing
-    # to a survival state rise above 0?
-    sharpness: 2.4
-
-  preindustrial:
-    # You can interact with the Desmos graph for these specific values at
-    # https://www.desmos.com/calculator/xgouzeyehb
-    base_x_stretch: 20 # This value puts us slightly above 1/2way to max risk in the present day,
-    # technology-wise
-    y_stretch: 0.00045 # Sets the max probability per year of this transition. Ord's estimate of a
-    # 0.05 chance of full scale nuclear war in the next century, given at
-    # https://80000hours.org/podcast/episodes/toby-ord-the-precipice-existential-risk-future-humanity/#transcript
-    # implies a ~0.0005 average chance per year. I assume it reaches double that at peak, and that
-    # such a war would move us to preindustrial with 0.3 probability. Then I add half as much again for
-    # the combined chance of transitioning to preindustrial via any other catastrophe
-    x_translation: 0 # How many progress years into the time of perils does the risk of regressing
-    # to a preindustrial state rise above 0?
-    sharpness: 2 # A parameter determining the steepness of the centre of the S-curve. Set just by
-    # eyeballing Desmos no substantive reasoning, and intuiting that it should climb earlier than
-    # the probability of transitioning to to survival
-
-  industrial:
-    # You can interact with the Desmos graph for these specific values at
-    # https://www.desmos.com/calculator/nhnbxrczk0
-    base_x_stretch: 69 # Puts us approx 3/4 of the way to max annual risk, technology-wise
-    y_stretch: 0.0015 # I assume a 0.1 total chance of a catastrophe that would wipe out billions in the
-    # next century, giving a ~0.001 average chance per year. I assume it reaches triple that at peak.
-    # and that such an event would move us to preindustrial with 0.5 probability.
-    x_translation: 8 #  How many progress years into the time of perils does the risk of regressing
-    # to an industrial state rise above 0? This sets it around the time the US would have reached
-    # 1000 nuclear warheads.
-    sharpness: 2
-
-  progress_year_n:
-    # Parameters determining the probability of transitioning the probability of transitioning within
-    # the time of perils from progress-year p to progress-year n.
-
-    # The simplest intuitive way I can think of to deal with this is to assume the probability of
-    # regressing decreases exponentially with the number of years we regressing, eg for p = 3, given that
-    # there has been some intra-perils regression we might say the probability of that regression is 1/15,
-    # 2/15, 4/15, and 8/15 respectively for 'regressions' to p = 0, 1, 2, and 3.
-
-    # More generally, we woud say that, given some intra-perils regression, the probability of a
-    # regression to exactly progress-year n is a weighting_for_progress_year_n = <some weighting_decay_rate>**n,
-    # divided by the sum of weighting_for_progress_year_n for all valid values of n.
-
-    # I'm not sure this is a very convincing algorithm. Based on global GDP, we've arguably regressed
-    # in about 4 calendar years since 1961, when the world bank started tracking global data and perhaps
-    # 5 times in the 20th century based on UK data between about 0 and 2 progress years each time, and about . For comparatively tiny
-    # values of weighting_decay_rate (ie barely above 1), being limited to such small regressions looks
-    # incredibly unlikely. For higher values of weighting_decay_rate, it puts the total probability of
-    # regressing more than a few years at a far lower value than the probability of a milestone
-    # regression - a regression to an earlier technological state - which seems wrong.
-
-    # A simple alternative that errs way too much in the other direction would be a linear decrease given by
-    # an arithmetic progression. This seems like a much worse fit for the data, but I include that
-    # version, commented out below, as a way of getting an upper bound on the significance of regressions
-    # within the time of perils.
-
-    # You can play with these numbers on Desmos. The green graph represents the probability of
-    # regressing from progress year x to progress year n, such that 0 <= n <= x, and the red
-    # graph shows the same thing with a different x-axis - the probability of regressing from progress year p to progress year
-    # x, such that 0 <= x <= p: https://www.desmos.com/calculator/olr4mepouy
-
-    any_regression: 0.026 # Could be a function of k and/or p - but seems ok to treat as a constant
-                 # (at any given time using all the nukes would, more or less by definition, at
-                 # least revert us to year 0 of the time of perils). This value is based on it
-                 # roughly happening twice in 77 years on these graphs
-                 # https://data.worldbank.org/indicator/NY.GDP.MKTP.KD.ZG
-                 # https://ourworldindata.org/grapher/world-gdp-over-the-last-two-millennia?time=1940..2015
-                 # See also UK GDP, for which reliable data goes back farther but is unsurprisingly
-                 # more uneven: https://ourworldindata.org/grapher/total-gdp-in-the-uk-since-1270
-    geometric_base: 1.4 # Higher gives higher probability that given such a loss we'll lose a
-    # smaller number of progress years: 2 would mean regressing to year n is 2x
-    # as likely as regressing to year n-1. I chose the current value fairly arbitrarily, by
-    # looking at this graph - https://data.worldbank.org/indicator/NY.GDP.MKTP.KD.ZG, treating
-    # 1975, and 1982 as a regression of 0 years, 2009 as a regression of 1, and 2020 as a
-    # regression of 2, and looking for a probability outcome slightly below that (to account for
-    # eg survivor bias, and selection effects from starting to count immediately *after* WWII).
-
-  multiplanetary:
-    # Meanwhile I also tried to get them looking somehwhat above Metaculus's 60% probability
-    # for a colony by 2100 (since that's absolute probability, whereas this is an estimate of
-    # given that we successfully continue advancing through the time of perils). For that I just
-    # looked at probability of success over 50 years at the probability given at the midpoint from
-    # 2050 to 2100, which is about 80%
-    # (https://www.metaculus.com/questions/1432/will-humans-have-a-sustainable-off-world-presence-by-2100/)
-    # on the probabilities for 2090 respectively.
-
-    # You can view the graph and adjust the values at https://www.desmos.com/calculator/7zriffon47
-    base_x_stretch: 75
-    x_translation: 80 # Robert Zubrin seems to have been the first person to make a practical proposal to settle
-    # Mars, and that was around 1990, and somewhat similar to SpaceX's plan. In his most optimistic
-    # vision, the program would have taken maybe
-    # a few years to get going, but have been slower to accelerate than Musk's idea, which Musk thought
-    # in about 2020 was doable by about 2050. So if Zubrin's plan had been followed enthusiastically,
-    # it might in the absolute best case have got there about 25 years earlier.
-    y_stretch: 0.07 # Meaning a high tech civilisation could create a new settlement about once every 15
-                    # years, given somewhere nearby to expand to
-    sharpness: 2 # My default value when I'm not matching to historical data
-
-  interstellar:
-    # I treat this as being possible as a direct transition only if we develop AGI which becomes
-    # a benign overseer to humanity, which will ensure our longterm flourishing. I don't have a strong
-    # intuition about how or whether this would change over time (more time to AI development might
-    # mean AI is less impressive in its abilities, or that there's a larger range of possible first
-    # movers), so I'm just treating it as a constant probability of getting enough value
-    # lock-in that our interstellar future becomes assured.
-    value_lock_in_given_ai: 0.02 # My sense is that AI predictions mostly fall into
-    # Camp A: 'it's going to be an overwhelmingly powerful new force of nature that will very likely
-    # kill us all' and Camp B: 'it's going to be a very powerful tool which doesn't fundamentally
-    # change human dynamics'. On either view, this outcome seems very unlikely, though not
-    # inconceivable. Setting this value to 0 would return a 0 probability of going directly to
-    # interstellar from a time of perils
-
-multiplanetary:
-  # Params governing transitional probabilities from multiplanetary state to each of the nested
-  # states. Note the definition from the post above of a 'planet' as 'a self-sustaining settlement
-  # capable of continuing in an advanced enough technological state to settle other "planets" even
-  # if the others disappeared, which is physically isolated enough to be unaffected by at least one
-  # type of technological milestone catastrophe impacting the other two'.
-
-  extinction:
-    single_planet_risk: 0.12 # TODO check whether this should be single_ or two_
-    decay_rate: 0.55 # Should be a value between 0 and 1. Lower treats the per-planet risk reduction as lower. This
-    # value is just a wild guess, though see the note on the equivalent decay_rate for the
-    # perils_given_multiplanetary function for an ordering
-    min_risk: 0 # For the very long run, if this doesn't tend to become almost 0, longtermism isn't possible
-    x_translation: 2 # Trivially, since we define a 'multiplanetary' state as having at least two
-    # planets (except for the purpose of regressing to a single planet, which follows the same logic
-    # as regressing to 2+ would)
-
-  survival: 0 # Sum of total survival exit probability over all values of q. I treat this as
-  # 0 on the grounds that it seems such a precise amount of damage that it's not worth the
-  # computation/complexity costs
-
-  preindustrial: 0 # Sum of total preindustrial exit probability over all values of q.
-  # While this seems more plausible than going directly to a survival state, it seems unlikely
-  # enough to still treat as 0
-
-  industrial: 0 # Sum of total industrial exit probability over all values of q. Again,
-  # while this looks somewhat more plausible, it still seems so much less likely than an event which either wipes out
-  # humanity or leaves the reaminder with some advanced technology as to be treatable as 0"""
-
-  n_planets:
-    # Parameters associated with going from any multiplanetary state to one with fewer planets.
-    # You can play with these values at https://www.desmos.com/calculator/4laiomo0jm
-    two_planet_risk: 0.2 # Just from eyeballing the Desmos graph
-    decay_rate: 0.4 # Also just from eyeballing the Desmos graph
-    min_risk: 0.01 # The minimum risk of losing at least one planet before gaining one. Across a
-    # Kardashev II civilisation the probability of losing at least one settlement seems like it
-    # should remain significant, though given that for the foreseeable future scope for expansion
-    # increases cubicly (when you include rocky bodies, and assume after a point even relatively
-    # small settlements will have the technology to self-sustain), I would expect it to tend to a
-    # low rate relative to the probability of adding a planet
-    x_translation: 2 # Trivially, since we define a 'multiplanetary' state as having at least two
-    # planets (except for the purpose of regressing to a single planet, which follows the same logic
-    # as regressing to 2+ would)
-    geometric_base: 1.4 # Used for weighting different numbers of planets we might lose conditional
-    # on us losing 1 or more. Higher gives higher probability that given such a loss we'll lose a
-    # smaller number of planets
-
-  # perils is just the specific case of transitioning to n=1 planets given our assumptions about
-  # transitioning to n planets, so doesn't take any unique params
-
-  interstellar:
-    # For this we use our S-curve function. You can interact with the graph with these specific
-    # values at https://www.desmos.com/calculator/1wazngfpba
-    x_stretch: 6 # Just intuition from eyeballing the function.
-    y_stretch: 0.65 # With enough interplanetary colonies, it becomes increasingly likely that we send
-    # out interstellar colony ships, since we've proven most of the technology and might run out of
-    # space in our solar system.
-    x_translation: 1
-    sharpness: 2 # My default value when I'm not matching to historical data
-
 

@@ -17,94 +17,15 @@ with open('params.yml', 'r') as stream:
 
 @cache
 def survival_given_perils(k, p):
-  """In principle the y_stretch (max probability per year) of this would probably decrease with
-  higher values of k, since they provide some evidence that we're less likely to end in states that
-  are more likely to make us extinct. In practice, both the initial probability of ending in survival
-  and the probability of extinction from there seem small enough that I'm treating it as a constant.
-
-  Based on this source, nuclear weapon stockpiles started hitting the thousands after about 10
-  years https://en.wikipedia.org/wiki/Historical_nuclear_weapons_stockpiles_and_nuclear_tests_by_country
-  though only for the US - though until the Soviet Union had comparable numbers peaking in 1986, the
-  risk of extremely bad outcomes was probably low. It might have kept growing under someone other
-  than Gorbachev, and arguably has continued to grow even given declining nuclear arsenals, given the
-  increase in biotech and environmental damage.
-
-  Setting this to be 0 seems pretty reasonable.
-
-  Editable graph with these values: https://www.desmos.com/calculator/sghhv9sadb
-  """
-
-  def x_stretch(k):
-    return PARAMS['survival']['base_x_stretch'] * PARAMS['stretch_per_reboot'] ** (k + 1)
-
-  def y_stretch():
-    """Max probability per year of this transition."""
-    return PARAMS['survival']['y_stretch']
-
-  def x_translation():
-    """When does this risk start rising above 0, pre x-stretch?"""
-    return PARAMS['survival']['x_translation']
-
-  def sharpness():
-    return PARAMS['survival']['sharpness'] # Intuition, no substantive reasoning
-
-  return sigmoid_curved_risk(
-    x=p,
-    x_stretch=x_stretch(k),
-    y_stretch=y_stretch(),
-    x_translation=x_translation(),
-    sharpness=sharpness())
+  return parameterised_transition_probability(k, p, PARAMS['survival'])
 
 @cache
 def preindustrial_given_perils(k, p):
-  """I'm treating nukes as being substantially the most likely tech to cause this outcome, since
-  they destroy far more resources than a pandemic would, making rebuilding much harder. So I expect
-  the risk to more or less max out relatively early, as nuclear aresenals peak."""
-
-  def x_stretch(k):
-    return PARAMS['preindustrial']['base_x_stretch'] * PARAMS['stretch_per_reboot'] ** (k + 1)
-
-  def y_stretch():
-    """Max probability per year of this transition"""
-    return PARAMS['preindustrial']['y_stretch']
-
-  def x_translation():
-    return PARAMS['preindustrial']['x_translation'] # About the time the world's nuclear arsenal took to reach multiple thousands
-
-  def sharpness():
-    return PARAMS['preindustrial']['sharpness']
-
-  return sigmoid_curved_risk(
-    x=p,
-    x_stretch=x_stretch(k),
-    y_stretch=y_stretch(),
-    x_translation=x_translation(),
-    sharpness=sharpness())
+  return parameterised_transition_probability(k, p, PARAMS['preindustrial'])
 
 @cache
 def industrial_given_perils(k, p):
-  """I treat this as possible through any weapons tech, meaning it has the slowest incline but
-  reaches the highest peak of the bad exits, and is generally higher per year than the others"""
-
-  def x_stretch(k):
-    return PARAMS['industrial']['base_x_stretch'] * PARAMS['stretch_per_reboot'] ** (k + 1)
-
-  def y_stretch():
-    """Max probability per year of this transition. TODO: no way this should be lower than extinction"""
-    return PARAMS['industrial']['y_stretch']
-
-  def x_translation():
-    return PARAMS['industrial']['x_translation']
-
-  def sharpness():
-    return PARAMS['industrial']['sharpness']
-
-  return sigmoid_curved_risk(
-    x=p,
-    x_stretch=x_stretch(k),
-    y_stretch=y_stretch(),
-    x_translation=x_translation(),
-    sharpness=sharpness())
+  return parameterised_transition_probability(k, p, PARAMS['industrial'])
 
 @cache
 def transition_to_year_n_given_perils(k:int, p:int, n=None):
@@ -172,20 +93,31 @@ def transition_to_year_n_given_perils(k:int, p:int, n=None):
 
 @cache
 def multiplanetary_given_perils(k, p):
+  return parameterised_transition_probability(k, p, PARAMS['multiplanetary'])
+
+@cache
+def extinction_given_perils(k, p):
+  return parameterised_transition_probability(k, p, PARAMS['extinction'])
+
+@cache
+def interstellar_given_perils(k, p):
+  return parameterised_transition_probability(k, p, PARAMS['interstellar'])
+
+def parameterised_transition_probability(k, p, params):
   def x_stretch(k):
-    return PARAMS['multiplanetary']['base_x_stretch'] * PARAMS['stretch_per_reboot'] ** (k + 1)
+    return params['base_x_stretch'] * params['stretch_per_reboot'] ** (k + 1)
 
   def y_stretch():
     """Max probability per year of this transition"""
-    return PARAMS['multiplanetary']['y_stretch']
+    return params['y_stretch']
 
   def x_translation():
     """How many progress years into the time of perils does this possibility rise meaningfully above
     0"""
-    return PARAMS['multiplanetary']['x_translation']
+    return params['x_translation']
 
   def sharpness():
-    return PARAMS['multiplanetary']['sharpness']
+    return params['sharpness']
 
   return sigmoid_curved_risk(
     x=p,
@@ -194,67 +126,18 @@ def multiplanetary_given_perils(k, p):
     x_translation=x_translation(),
     sharpness=sharpness())
 
-def _ai_x_translation():
-    return PARAMS['extinction']['agi_development']['x_translation']
 
-def annual_ai_first_development_probability(p):
-  def gamma_shape():
-    return PARAMS['extinction']['agi_development']['shape']
+# The functions below single out AI for special treatment, and will not be used in the MVP (and may
+# become redundant afterwards).
 
-  def gamma_scale():
-    return PARAMS['extinction']['agi_development']['scale']
+# def _ai_x_translation():
+#     return PARAMS['extinction']['agi_development']['x_translation']
 
-  return gamma.pdf(p, gamma_shape(), loc=_ai_x_translation(), scale=gamma_scale())
+# def annual_ai_first_development_probability(p):
+#   def gamma_shape():
+#     return PARAMS['extinction']['agi_development']['shape']
 
-@cache
-def extinction_given_perils(k, p):
-  X_PARAMS = PARAMS['extinction']
+#   def gamma_scale():
+#     return PARAMS['extinction']['agi_development']['scale']
 
-  def sigmoid_x_stretch(k):
-    return X_PARAMS['non_ai_causes']['base_x_stretch'] * PARAMS['stretch_per_reboot'] ** (k + 1)
-
-  def sigmoid_y_stretch(k):
-    return X_PARAMS['non_ai_causes']['y_stretch']
-
-  def sigmoid_x_translation():
-    return X_PARAMS['non_ai_causes']['x_translation']
-
-  def sigmoid_sharpness():
-    return X_PARAMS['non_ai_causes']['sharpness']
-
-  non_ai_extinction_risk_by_year = sigmoid_curved_risk(
-    x=p,
-    x_stretch=sigmoid_x_stretch(k),
-    y_stretch=sigmoid_y_stretch(k),
-    x_translation=sigmoid_x_translation(),
-    sharpness=sigmoid_sharpness())
-
-  def ai_extinction_multiplier_decay_rate():
-    return X_PARAMS['agi_threat']['threat_decay_rate']
-
-  def ai_extinction_multiplier_current_threat():
-    return X_PARAMS['agi_threat']['max_threat']
-
-  # TODO consider an x-stretch for extinction_multiplier_for_year_p (It's not obvious whether we should have one,
-  # since this might be as much a social problem as a technological one. But without one, it might
-  # end up looking more likely that we become interstellar given non-extinction catastrophes - though
-  # this might not be wrong). This will stop being a relevant concern if we add post-AI time of perils
-  # as a separate class of states
-
-  ai_extinction_multiplier_for_year_p = exponentially_decaying_risk(
-    x=p,
-    starting_value=ai_extinction_multiplier_current_threat(),
-    decay_rate=ai_extinction_multiplier_decay_rate(),
-    x_translation=_ai_x_translation())
-
-  # Graph with these values for k=0 at https://www.desmos.com/calculator/mbwoy2muin
-  return annual_ai_first_development_probability(p) * ai_extinction_multiplier_for_year_p + non_ai_extinction_risk_by_year
-
-@cache
-def interstellar_given_perils(k, p):
-  def value_lock_in_given_ai():
-    return PARAMS['interstellar']['value_lock_in_given_ai']
-
-  return annual_ai_first_development_probability(p) * value_lock_in_given_ai()
-
-
+#   return gamma.pdf(p, gamma_shape(), loc=_ai_x_translation(), scale=gamma_scale())
