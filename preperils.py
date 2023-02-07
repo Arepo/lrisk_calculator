@@ -42,6 +42,11 @@ def industrial_given_preindustrial(k, k1):
 ## Transition probabilities from industrial state
 @cache
 def extinction_given_industrial(k):
+  # To allow for some inside view about the first time we reboot, we could
+  # have an explicit condition here:
+  # if k == 1:
+  #   do_something_different
+
   I_PARAMS = PARAMS['industrial']
 
   base_annual_extinction_probability = 1/I_PARAMS['base_annual_extinction_probability_denominator']

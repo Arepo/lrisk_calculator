@@ -115,7 +115,6 @@ def full_markov_chain():
                         + multiplanetary_rows
                         + [extinction_row, interstellar_row])
 
-
   survival_names = ['survival-' + str(index[0] + 1) for index in enumerate(survival_rows)]
   preindustrial_names = ['preindustrial-' + str(index[0] + 1) for index in enumerate(preindustrial_rows)]
   industrial_names = ['industrial-' + str(index[0] + 1) for index in enumerate(industrial_rows)]

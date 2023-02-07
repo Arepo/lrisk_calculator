@@ -5,7 +5,6 @@ import pdb
 
 import yaml
 
-
 import runtime_constants as constant
 from graph_functions import sigmoid_curved_risk, exponentially_decaying_risk
 
@@ -26,6 +25,55 @@ def preindustrial_given_perils(k, p):
 @cache
 def industrial_given_perils(k, p):
   return parameterised_transition_probability(k, p, 'industrial')
+
+@cache
+def multiplanetary_given_perils(k, p):
+  return parameterised_transition_probability(k, p, 'multiplanetary')
+
+@cache
+def extinction_given_perils(k, p):
+  return parameterised_transition_probability(k, p, 'extinction')
+
+@cache
+def interstellar_given_perils(k, p):
+  return parameterised_transition_probability(k, p, 'interstellar')
+
+def parameterised_transition_probability(k, p, target_state):
+  # To allow for some inside view about the first time we reboot, we could
+  # have an explicit condition here:
+  # if k == 1:
+  #   do_something_different
+
+  @cache
+  def x_stretch(k, target_state):
+    return PARAMS[target_state]['base_x_stretch'] * PARAMS[target_state]['stretch_per_reboot'] ** (k + 1)
+
+  @cache
+  def y_stretch(target_state):
+    """Max probability per year of this transition"""
+    return PARAMS[target_state]['y_stretch']
+
+  @cache
+  def x_translation(target_state):
+    """How many progress years into the time of perils does this possibility rise meaningfully above
+    0"""
+    return PARAMS[target_state]['x_translation']
+
+  @cache
+  def sharpness(target_state):
+    return PARAMS[target_state]['sharpness']
+
+  @cache
+  def background_risk(target_state):
+    return (PARAMS[target_state]['base_background_risk']
+            * PARAMS[target_state]['per_reboot_background_risk_multiplier'] ** (k + 1))
+
+  return background_risk(target_state) + sigmoid_curved_risk(
+                                                             x=p,
+                                                             x_stretch=x_stretch(k, target_state),
+                                                             y_stretch=y_stretch(target_state),
+                                                             x_translation=x_translation(target_state),
+                                                             sharpness=sharpness(target_state))
 
 @cache
 def transition_to_year_n_given_perils(k:int, p:int, n=None):
@@ -90,45 +138,6 @@ def transition_to_year_n_given_perils(k:int, p:int, n=None):
   # Thus numerator_for_progress_year_n / geometric_sum_of_weightings is a proportion; you can play with
   # the values at https://www.desmos.com/calculator/1pcgidwr3f
   return any_intra_perils_regression() * numerator_for_progress_year_n / geometric_sum_of_weightings
-
-@cache
-def multiplanetary_given_perils(k, p):
-  return parameterised_transition_probability(k, p, 'multiplanetary')
-
-@cache
-def extinction_given_perils(k, p):
-  return parameterised_transition_probability(k, p, 'extinction')
-
-@cache
-def interstellar_given_perils(k, p):
-  return parameterised_transition_probability(k, p, 'interstellar')
-
-def parameterised_transition_probability(k, p, target_state):
-  @cache
-  def x_stretch(k, target_state):
-    return PARAMS[target_state]['base_x_stretch'] * PARAMS[target_state]['stretch_per_reboot'] ** (k + 1)
-
-  @cache
-  def y_stretch(target_state):
-    """Max probability per year of this transition"""
-    return PARAMS[target_state]['y_stretch']
-
-  @cache
-  def x_translation(target_state):
-    """How many progress years into the time of perils does this possibility rise meaningfully above
-    0"""
-    return PARAMS[target_state]['x_translation']
-
-  @cache
-  def sharpness(target_state):
-    return PARAMS[target_state]['sharpness']
-
-  return sigmoid_curved_risk(
-    x=p,
-    x_stretch=x_stretch(k, target_state),
-    y_stretch=y_stretch(target_state),
-    x_translation=x_translation(target_state),
-    sharpness=sharpness(target_state))
 
 
 # The functions below single out AI for special treatment, and will not be used in the MVP (and may

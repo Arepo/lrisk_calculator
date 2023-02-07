@@ -23,26 +23,71 @@ with open('params.yml', 'r') as stream:
 
 @cache
 def extinction_given_multiplanetary(q):
-  X_PARAMS = PARAMS['extinction']
-
-  return exponentially_decaying_risk(x=q,
-    starting_value=X_PARAMS['single_planet_risk'],
-    decay_rate=X_PARAMS['decay_rate'],
-    min_value=X_PARAMS['min_risk'],
-    x_translation=X_PARAMS['x_translation'])
-  # Translate by 2 because by definition we have at least two planets to be in this state
+  return parameterised_decaying_transition_probability('extinction', q=q)
 
 def survival_given_multiplanetary():
-  """Sum of total survival exit probability over all values of q."""
-  return PARAMS['survival']
+  """Sum of total survival exit probability over all values of q. Returns 0 on default values"""
+  return parameterised_decaying_transition_probability('survival')
 
 def preindustrial_given_multiplanetary():
-  """Sum of total preindustrial exit probability over all values of q. """
-  return PARAMS['preindustrial']
+  """Sum of total preindustrial exit probability over all values of q. Returns 0 on default values"""
+  return parameterised_decaying_transition_probability('preindustrial')
 
 def industrial_given_multiplanetary():
-  """Sum of total industrial exit probability over all values of q."""
-  return PARAMS['industrial']
+  """Sum of total industrial exit probability over all values of q. Returns 0 on default values"""
+  return parameterised_decaying_transition_probability('industrial')
+
+@cache
+def interstellar_given_multiplanetary(q):
+  """Max value should get pretty close to 1, since at a certain number of planets the tech is all
+  necessarily available and you've run out of extra planets to spread to.
+
+  TODO need to specify behaviour for max value."""
+
+  def x_stretch():
+    return PARAMS['interstellar']['x_stretch'] # Just intuition
+
+  def y_stretch():
+    # TODO - if this asymptotes too fast, we might get invalid total probabilities. Is there a neat
+    # way to guard against that?
+    return PARAMS['interstellar']['y_stretch']
+
+  def x_translation():
+    return PARAMS['interstellar']['x_translation']
+
+  def sharpness():
+    return PARAMS['interstellar']['sharpness']
+
+  # Graph with these values: https://www.desmos.com/calculator/vdyih29fqb
+  return sigmoid_curved_risk(q, x_stretch(), y_stretch(), x_translation(), sharpness())
+
+@cache
+def parameterised_decaying_transition_probability(target_state, q=None):
+  if PARAMS[target_state]['two_planet_risk'] == 0:
+    return 0
+
+  @cache
+  def starting_value(target_state):
+    return PARAMS[target_state]['two_planet_risk']
+
+  @cache
+  def decay_rate(target_state):
+    return PARAMS[target_state]['decay_rate']
+
+  @cache
+  def min_risk(min_risk):
+    return PARAMS[target_state]['min_risk']
+
+  @cache
+  def x_translation(min_risk):
+    return PARAMS[target_state]['x_translation']
+
+  return exponentially_decaying_risk(
+    x=q,
+    starting_value=starting_value(target_state),
+    decay_rate=decay_rate(target_state),
+    min_probability=min_risk(target_state),
+    x_translation=x_translation(target_state))
 
 @cache
 def transition_to_n_planets_given_multiplanetary(q, n):
@@ -67,7 +112,8 @@ def transition_to_n_planets_given_multiplanetary(q, n):
     return exponentially_decaying_risk(x=q,
                                        starting_value=N_PARAMS['two_planet_risk'],
                                        decay_rate=N_PARAMS['decay_rate'],
-                                       x_translation=N_PARAMS['x_translation'])
+                                       x_translation=N_PARAMS['x_translation'],
+                                       min_probability=N_PARAMS['min_risk'])
 
   def remainder_outcome(q):
     extinction_given_multiplanetary(q)
@@ -137,29 +183,7 @@ def perils_given_multiplanetary(q):
   TODO if going to a fixed perils year, make it a later one."""
   return transition_to_n_planets_given_multiplanetary(q, 1)
 
-@cache
-def interstellar_given_multiplanetary(q):
-  """Max value should get pretty close to 1, since at a certain number of planets the tech is all
-  necessarily available and you've run out of extra planets to spread to.
 
-  TODO need to specify behaviour for max value."""
-
-  def x_stretch():
-    return PARAMS['interstellar']['x_stretch'] # Just intuition
-
-  def y_stretch():
-    # TODO - if this asymptotes too fast, we might get invalid total probabilities. Is there a neat
-    # way to guard against that?
-    return PARAMS['interstellar']['y_stretch']
-
-  def x_translation():
-    return PARAMS['interstellar']['x_translation']
-
-  def sharpness():
-    return PARAMS['interstellar']['sharpness']
-
-  # Graph with these values: https://www.desmos.com/calculator/vdyih29fqb
-  return sigmoid_curved_risk(q, x_stretch(), y_stretch(), x_translation(), sharpness())
 
 # exit_probabilities = [extinction_given_multiplanetary(1,11),
 #                         survival_given_multiplanetary(1,11),
