@@ -1,5 +1,5 @@
 # These constants determine runtime, which is something like
-# O(MAX_CIVILISATIONS*MAX_PROGRESS_YEARS^2) or O(MAX_CIVILISATIONS*MAX_PLANETS_YEARS^2) if the
+# O(MAX_CIVILISATIONS*MAX_PROGRESS_YEARS^2) or O(MAX_CIVILISATIONS*MAX_PLANETS^2) if the
 # latter is bigger. So setting them higher substantially increases runtime, but will also increase
 # the accuracy of the final output.
 

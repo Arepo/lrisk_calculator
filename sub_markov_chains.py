@@ -48,6 +48,7 @@ class IntraPerilsMCWrapper():
                                         interstellar_row]
 
     perils_years = [f"{num}" for num in year_range]
+    # pdb.set_trace()
     self.mc = MarkovChain(probability_matrix, perils_years
                                               + ['Extinction',
                                                 'Survival',

@@ -65,8 +65,10 @@ def parameterised_transition_probability(k, p, target_state):
 
   @cache
   def background_risk(target_state):
-    return (PARAMS[target_state]['base_background_risk']
-            * PARAMS[target_state]['per_reboot_background_risk_multiplier'] ** (k + 1))
+    # Exponent should be >0, since this is a probability that should be settable to 0 (and can't be
+    # if the exponent is 0)
+    return (PARAMS[target_state]['per_civilisation_background_risk_numerator'] ** (k + 1)
+            /PARAMS[target_state]['base_background_risk_denominator'])
 
   return background_risk(target_state) + sigmoid_curved_risk(
                                                              x=p,

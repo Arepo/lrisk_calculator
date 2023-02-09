@@ -12,8 +12,8 @@ perils:
     x_translation: 15
     sharpness: 2.5
     stretch_per_reboot: 1.5
-    base_background_risk: 0
-    per_reboot_background_risk_multiplier: 1
+    per_civilisation_background_risk_numerator: 1.02
+    base_background_risk_denominator: 870_000
 
   survival:
     # Desmos graph:
@@ -23,8 +23,8 @@ perils:
     x_translation: 0
     sharpness: 2.4
     stretch_per_reboot: 1.5
-    base_background_risk: 0
-    per_reboot_background_risk_multiplier: 1
+    per_civilisation_background_risk_numerator: 0
+    base_background_risk_denominator: 1
 
   preindustrial:
     # Desmos graph:
@@ -34,8 +34,8 @@ perils:
     x_translation: 0
     sharpness: 2
     stretch_per_reboot: 1.5
-    base_background_risk: 0
-    per_reboot_background_risk_multiplier: 1
+    per_civilisation_background_risk_numerator: 0
+    base_background_risk_denominator: 1
 
   industrial:
     # Desmos graph:
@@ -45,8 +45,8 @@ perils:
     x_translation: 8
     sharpness: 2
     stretch_per_reboot: 1.5 # As estimated by for all time of perils technologies
-    base_background_risk: 0
-    per_reboot_background_risk_multiplier: 1
+    per_civilisation_background_risk_numerator: 0
+    base_background_risk_denominator: 1
 
   progress_year_n:
     # Desmos graph:
@@ -66,9 +66,10 @@ perils:
     sharpness: 2
     stretch_per_reboot: 1.5
     # I'm including the subsequent two params to avoid conditionals in the code, but these should
-    # multiply to 0
-    base_background_risk: 0
-    per_reboot_background_risk_multiplier: 1
+    # remain unchanged for normal use cases
+    per_civilisation_background_risk_numerator: 0
+    base_background_risk_denominator: 1
+
 
   interstellar:
     # Desmos graph: https://www.desmos.com/calculator/3jubakv9is
@@ -80,11 +81,12 @@ perils:
     sharpness: 2.5
     stretch_per_reboot: 1.5 # As estimated by for all time of perils technologies
     # I'm including the subsequent two params to avoid conditionals in the code, but these should
-    # multiply to 0 under normal assumptions. You could set them higher to factor in the chance
+    # be 0 under normal assumptions. You could set them higher to factor in the chance
     # of an alien civilisation spreading throughout the galaxy - though then you'd need to tweak
-    # the other states to allow for that too.
-    base_background_risk: 0
-    per_reboot_background_risk_multiplier: 1
+    # the other states to allow for that too, and it would probably easier to just model separately.
+    per_civilisation_background_risk_numerator: 0
+    base_background_risk_denominator: 1
+
 
 
 
