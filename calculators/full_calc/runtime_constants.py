@@ -13,3 +13,4 @@ if MAX_PROGRESS_YEARS < 2:
 MAX_PROGRESS_YEAR_REGRESSION_STEPS = 50
 if MAX_PROGRESS_YEAR_REGRESSION_STEPS < 1:
   raise 'Need at least one possible regression'
+

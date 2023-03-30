@@ -1,5 +1,6 @@
 from functools import cache
 import yaml
+import datetime
 import pdb
 
 from pydtmc import MarkovChain
@@ -130,8 +131,9 @@ def full_markov_chain():
                                          + ['Extinction', 'Interstellar'])
 
 
-
+start = datetime.datetime.now()
 mc = full_markov_chain()
+print((datetime.datetime.now() - start).seconds)
 pdb.set_trace()
 
 
