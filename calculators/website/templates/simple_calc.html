@@ -1,21 +1,197 @@
-<!doctype html>
-<form action="action_to_perform_after_submission" method = "POST">
-    <p>Probability of extinction given survival state <input type = "text" name = "extinction_given_survival" /></p>
-    <p>Probability of extinction given preindustrial state <input type = "text" name = "extinction_given_preindustrial" /></p>
-    <p>Probability of extinction given industrial state <input type = "text" name = "extinction_given_industrial" /></p>
+{% extends 'base.html' %}
 
-    <p>Probability of extinction given perils state <input type = "text" name = "extinction_given_perils" /></p>
-    <p>Probability of survival given perils state <input type = "text" name = "survival_given_perils" /></p>
-    <p>Probability of preindustrial given perils state <input type = "text" name = "preindustrial_given_perils" /></p>
-    <p>Probability of industrial given perils state <input type = "text" name = "industrial_given_perils" /></p>
-    <p>Probability of multiplanetary given perils state <input type = "text" name = "multiplanetary_given_perils" /></p>
-    <p>Probability of interstellar given perils state <input type = "text" name = "interstellar_given_perils" /></p>
+{% block content %}
+  <h1>{% block title %} Estimate your transitional probabilities {% endblock %}</h1>
 
-    <p>Probability of extinction given multiplanetary state <input type = "text" name = "extinction_given_multiplanetary" /></p>
-    <p>Probability of survival given multiplanetary state <input type = "text" name = "survival_given_multiplanetary" /></p>
-    <p>Probability of preindustrial given multiplanetary state <input type = "text" name = "preindustrial_given_multiplanetary" /></p>
-    <p>Probability of industrial given multiplanetary state <input type = "text" name = "industrial_given_multiplanetary" /></p>
-    <p>Probability of perils given multiplanetary state <input type = "text" name = "perils_given_multiplanetary" /></p>
-    <p>Probability of interstellar given multiplanetary state <input type = "text" name = "interstellar_given_multiplanetary" /></p>
-    <p><input type = "submit" value = "submit" /></p>
-</form>
+  <form action="/" method="POST">
+      {{ form.csrf_token }}
+      <h2>{{ success }}</h2>
+      <h2>Transitions from premodern states</h2>
+      <!-- Premodern -->
+      {% if form.extinction_given_survival.errors %}
+          <ul class="errors">
+              {% for error in form.extinction_given_survival.errors %}
+                  <li>{{ error }}</li>
+              {% endfor %}
+          </ul>
+      {% endif %}
+
+      <p>
+            {{ form.extinction_given_survival.label }}
+            {{ form.extinction_given_survival() }}
+      </p>
+
+      {% if form.extinction_given_preindustrial.errors %}
+          <ul class="errors">
+              {% for error in form.extinction_given_preindustrial.errors %}
+                  <li>{{ error }}</li>
+              {% endfor %}
+          </ul>
+      {% endif %}
+
+      <p>
+            {{ form.extinction_given_preindustrial.label }}
+            {{ form.extinction_given_preindustrial() }}
+      </p>
+
+      {% if form.extinction_given_industrial.errors %}
+          <ul class="errors">
+              {% for error in form.extinction_given_industrial.errors %}
+                  <li>{{ error }}</li>
+              {% endfor %}
+          </ul>
+      {% endif %}
+
+      <p>
+            {{ form.extinction_given_industrial.label }}
+            {{ form.extinction_given_industrial() }}
+      </p>
+
+
+
+
+      <!-- Perils -->
+
+      <h2>Transitions from a time of perils</h2>
+
+      {% if form.extinction_given_perils.errors %}
+          <ul class="errors">
+              {% for error in form.extinction_given_perils.errors %}
+                  <li>{{ error }}</li>
+              {% endfor %}
+          </ul>
+      {% endif %}
+
+      <p>
+            {{ form.extinction_given_perils.label }}
+            {{ form.extinction_given_perils() }}
+      </p>
+
+
+      {% if form.survival_given_perils.errors %}
+          <ul class="errors">
+              {% for error in form.survival_given_perils.errors %}
+                  <li>{{ error }}</li>
+              {% endfor %}
+          </ul>
+      {% endif %}
+
+      <p>
+            {{ form.survival_given_perils.label }}
+            {{ form.survival_given_perils() }}
+      </p>
+
+      {% if form.preindustrial_given_perils.errors %}
+          <ul class="errors">
+              {% for error in form.preindustrial_given_perils.errors %}
+                  <li>{{ error }}</li>
+              {% endfor %}
+          </ul>
+      {% endif %}
+
+      <p>
+            {{ form.preindustrial_given_perils.label }}
+            {{ form.preindustrial_given_perils() }}
+      </p>
+
+      {% if form.industrial_given_perils.errors %}
+          <ul class="errors">
+              {% for error in form.industrial_given_perils.errors %}
+                  <li>{{ error }}</li>
+              {% endfor %}
+          </ul>
+      {% endif %}
+
+      <p>
+            {{ form.industrial_given_perils.label }}
+            {{ form.industrial_given_perils() }}
+      </p>
+
+      {% if form.multiplanetary_given_perils.errors %}
+          <ul class="errors">
+              {% for error in form.multiplanetary_given_perils.errors %}
+                  <li>{{ error }}</li>
+              {% endfor %}
+          </ul>
+      {% endif %}
+
+      <p>
+            {{ form.multiplanetary_given_perils.label }}
+            {{ form.multiplanetary_given_perils() }}
+      </p>
+
+
+
+
+      <!-- Multiplanetary -->
+      <h2>Transitions from a multiplanetary state</h2>
+
+      {% if form.extinction_given_multiplanetary.errors %}
+          <ul class="errors">
+              {% for error in form.extinction_given_multiplanetary.errors %}
+                  <li>{{ error }}</li>
+              {% endfor %}
+          </ul>
+      {% endif %}
+
+      <p>
+            {{ form.extinction_given_multiplanetary.label }}
+            {{ form.extinction_given_multiplanetary() }}
+      </p>
+
+      {% if form.survival_given_multiplanetary.errors %}
+          <ul class="errors">
+              {% for error in form.survival_given_multiplanetary.errors %}
+                  <li>{{ error }}</li>
+              {% endfor %}
+          </ul>
+      {% endif %}
+
+      <p>
+            {{ form.survival_given_multiplanetary.label }}
+            {{ form.survival_given_multiplanetary() }}
+      </p>
+
+      {% if form.preindustrial_given_multiplanetary.errors %}
+          <ul class="errors">
+              {% for error in form.preindustrial_given_multiplanetary.errors %}
+                  <li>{{ error }}</li>
+              {% endfor %}
+          </ul>
+      {% endif %}
+
+      <p>
+            {{ form.preindustrial_given_multiplanetary.label }}
+            {{ form.preindustrial_given_multiplanetary() }}
+      </p>
+
+      {% if form.industrial_given_multiplanetary.errors %}
+          <ul class="errors">
+              {% for error in form.industrial_given_multiplanetary.errors %}
+                  <li>{{ error }}</li>
+              {% endfor %}
+          </ul>
+      {% endif %}
+
+      <p>
+            {{ form.industrial_given_multiplanetary.label }}
+            {{ form.industrial_given_multiplanetary() }}
+      </p>
+
+      {% if form.perils_given_multiplanetary.errors %}
+          <ul class="errors">
+              {% for error in form.perils_given_multiplanetary.errors %}
+                  <li>{{ error }}</li>
+              {% endfor %}
+          </ul>
+      {% endif %}
+
+      <p>
+            {{ form.perils_given_multiplanetary.label }}
+            {{ form.perils_given_multiplanetary() }}
+      </p>
+
+      <p><input type="submit" value="submit" /></p>
+  </form>
+
+{% endblock %}
