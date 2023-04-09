@@ -3,6 +3,7 @@ from flask import render_template
 from flask import request
 import pdb
 
+import calculators.simple_calc.simple_calc as sc
 from forms.simple_calc import SimpleCalcForm
 
 app = Flask(__name__)
@@ -16,7 +17,7 @@ def simple_calc():
   success = ""
   if form.validate_on_submit():
     pdb.set_trace()
-    success = "Well done!"
+    success = sc.extinction_given_industrial()
   return render_template('simple_calc.html', form=form, success=success)
 
 # @app.post("/")

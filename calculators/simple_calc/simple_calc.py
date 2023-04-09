@@ -20,8 +20,8 @@ from pydtmc import MarkovChain
 
 # From survival
 
-if False:
-  raise InvalidTransitionProbabilities("Transition probabilities from multiplanetary must == 1")
+# if False:
+#   raise InvalidTransitionProbabilities("Transition probabilities from multiplanetary must == 1")
 
 def extinction_given_survival():
   return 0
@@ -186,21 +186,21 @@ def weighted_net_interstellar_from_unspecified_regress():
               / total_probability_of_non_extinction_milestone_regression_from_perils())
 
 
-print(f"""On your assumptions...
-Probability of becoming interstellar from survival = {net_interstellar_from_survival()}
-Probability of becoming interstellar from preindustrial = {net_interstellar_from_preindustrial()}
-Probability of becoming interstellar from industrial = {net_interstellar_from_industrial()}
-Probability of becoming interstellar from perils = {net_interstellar_from_perils()}
-Probability of becoming interstellar from multiplanetary = {net_interstellar_from_multiplanetary()}
+# print(f"""On your assumptions...
+# Probability of becoming interstellar from survival = {net_interstellar_from_survival()}
+# Probability of becoming interstellar from preindustrial = {net_interstellar_from_preindustrial()}
+# Probability of becoming interstellar from industrial = {net_interstellar_from_industrial()}
+# Probability of becoming interstellar from perils = {net_interstellar_from_perils()}
+# Probability of becoming interstellar from multiplanetary = {net_interstellar_from_multiplanetary()}
 
-*****
+# *****
 
-Therefore, if we assume that becoming interstellar is the only concern...
-a castatrophe that put us into a survival state would reduce our chance of becoming interstellar by {(net_interstellar_from_perils() - net_interstellar_from_survival()) / net_interstellar_from_perils() * 100}%
-a castatrophe that put us into a preindustrial state would reduce our chance of becoming interstellar by {(net_interstellar_from_perils() - net_interstellar_from_preindustrial()) / net_interstellar_from_perils() * 100}%
-a castatrophe that put us into an industrial state would reduce our chance of becoming interstellar by {(net_interstellar_from_perils() - net_interstellar_from_industrial()) / net_interstellar_from_perils() * 100}%
-and if we reached a multiplanetary state, it would increase our chance of becoming interstellar by {(net_interstellar_from_multiplanetary() - net_interstellar_from_perils()) / net_interstellar_from_perils() * 100}%
-""")
+# Therefore, if we assume that becoming interstellar is the only concern...
+# a castatrophe that put us into a survival state would reduce our chance of becoming interstellar by {(net_interstellar_from_perils() - net_interstellar_from_survival()) / net_interstellar_from_perils() * 100}%
+# a castatrophe that put us into a preindustrial state would reduce our chance of becoming interstellar by {(net_interstellar_from_perils() - net_interstellar_from_preindustrial()) / net_interstellar_from_perils() * 100}%
+# a castatrophe that put us into an industrial state would reduce our chance of becoming interstellar by {(net_interstellar_from_perils() - net_interstellar_from_industrial()) / net_interstellar_from_perils() * 100}%
+# and if we reached a multiplanetary state, it would increase our chance of becoming interstellar by {(net_interstellar_from_multiplanetary() - net_interstellar_from_perils()) / net_interstellar_from_perils() * 100}%
+# """)
 
 
 
