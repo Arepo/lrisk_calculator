@@ -9,7 +9,7 @@ from graph_functions import sigmoid_curved_risk, exponentially_decaying_risk
 
 # This script prints out a series of probabilities for transition becoming interstellar based on
 # estimates of the transition probabilities of various(values are currently hardcoded placeholders)
-# states, as in a Markov chain. The states are extinction, survival, preindustrial, industrial, time
+# states, as in a Markov chain. The states are extinction, pre_equilibrium, preindustrial, industrial, time
 # of perils, multiplanetary, and interstellar.
 #
 # A full description/explanation of the model is in the section titled The Cyclical Model in this
@@ -25,9 +25,9 @@ with open('params.yml', 'r') as stream:
 def extinction_given_multiplanetary(q):
   return parameterised_decaying_transition_probability('extinction', q=q)
 
-def survival_given_multiplanetary():
-  """Sum of total survival exit probability over all values of q. Returns 0 on default values"""
-  return parameterised_decaying_transition_probability('survival')
+def pre_equilibrium_given_multiplanetary():
+  """Sum of total pre_equilibrium exit probability over all values of q. Returns 0 on default values"""
+  return parameterised_decaying_transition_probability('pre_equilibrium')
 
 def preindustrial_given_multiplanetary():
   """Sum of total preindustrial exit probability over all values of q. Returns 0 on default values"""
@@ -117,13 +117,13 @@ def transition_to_n_planets_given_multiplanetary(q, n):
 
   def remainder_outcome(q):
     extinction_given_multiplanetary(q)
-    survival_given_multiplanetary()
+    pre_equilibrium_given_multiplanetary()
     preindustrial_given_multiplanetary()
     industrial_given_multiplanetary()
     any_intra_multiplanetary_regression(q)
     interstellar_given_multiplanetary(q)
     return 1 - (extinction_given_multiplanetary(q)
-                + survival_given_multiplanetary()
+                + pre_equilibrium_given_multiplanetary()
                 + preindustrial_given_multiplanetary()
                 + industrial_given_multiplanetary()
                 + any_intra_multiplanetary_regression(q)
@@ -186,7 +186,7 @@ def perils_given_multiplanetary(q):
 
 
 # exit_probabilities = [extinction_given_multiplanetary(1,11),
-#                         survival_given_multiplanetary(1,11),
+#                         pre_equilibrium_given_multiplanetary(1,11),
 #                         preindustrial_given_multiplanetary(1,11),
 #                         industrial_given_multiplanetary(1,11),
 #                         perils_given_multiplanetary(1,11),
@@ -203,7 +203,7 @@ def perils_given_multiplanetary(q):
 
 # TODO - consider reintroducing this checksum
 # if not 1 == (extinction_given_multiplanetary(k)
-#              + survival_given_multiplanetary(k)
+#              + pre_equilibrium_given_multiplanetary(k)
 #              + preindustrial_given_multiplanetary(k)
 #              + industrial_given_multiplanetary(k)
 #              + perils_given_multiplanetary(k)

@@ -5,18 +5,18 @@ import pdb
 with open('params.yml', 'r') as stream:
   PARAMS = yaml.safe_load(stream)['preperils']
 
-## Transition probabilities from survival state
+## Transition probabilities from pre_equilibrium state
 @cache
-def extinction_given_survival(k):
-  return PARAMS['survival']['base_estimate']
+def extinction_given_pre_equilibrium(k):
+  return PARAMS['pre_equilibrium']['base_estimate']
 
 @cache
-def preindustrial_given_survival(k, k1):
+def preindustrial_given_pre_equilibrium(k, k1):
   if k != k1:
     # We can't transition to different civilisations from a preperils state
     return 0
   else:
-    return 1 - extinction_given_survival(k)
+    return 1 - extinction_given_pre_equilibrium(k)
 
 ## Transition probabilities from preindustrial state
 @cache

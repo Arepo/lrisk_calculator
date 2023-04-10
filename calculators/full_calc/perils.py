@@ -15,8 +15,8 @@ with open('params.yml', 'r') as stream:
   PARAMS = yaml.safe_load(stream)['perils']
 
 @cache
-def survival_given_perils(k, p):
-  return parameterised_transition_probability(k, p, 'survival')
+def pre_equilibrium_given_perils(k, p):
+  return parameterised_transition_probability(k, p, 'pre_equilibrium')
 
 @cache
 def preindustrial_given_perils(k, p):
@@ -96,7 +96,7 @@ def transition_to_year_n_given_perils(k:int, p:int, n=None):
 
   def remainder_outcome(k, p):
     return 1 - (extinction_given_perils(k, p)
-                + survival_given_perils(k, p)
+                + pre_equilibrium_given_perils(k, p)
                 + preindustrial_given_perils(k, p)
                 + industrial_given_perils(k, p)
                 + any_intra_perils_regression()

@@ -24,7 +24,7 @@ class IntraPerilsMCWrapper():
                                       for p in year_range}
 
     exit_probabilities = {p:[perils.extinction_given_perils(k, p),
-                          perils.survival_given_perils(k, p),
+                          perils.pre_equilibrium_given_perils(k, p),
                           perils.preindustrial_given_perils(k, p),
                           perils.industrial_given_perils(k, p),
                           perils.multiplanetary_given_perils(k, p),
@@ -34,14 +34,14 @@ class IntraPerilsMCWrapper():
 
     # Transitional probabilities from absorbing states (ie rows of 0s, with one 1)
     extinction_row =     [0] * constant.MAX_PROGRESS_YEARS + [1,0,0,0,0,0]
-    survival_row =       [0] * constant.MAX_PROGRESS_YEARS + [0,1,0,0,0,0]
+    pre_equilibrium_row =       [0] * constant.MAX_PROGRESS_YEARS + [0,1,0,0,0,0]
     preindustrial_row =  [0] * constant.MAX_PROGRESS_YEARS + [0,0,1,0,0,0]
     industrial_row =     [0] * constant.MAX_PROGRESS_YEARS + [0,0,0,1,0,0]
     multiplanetary_row = [0] * constant.MAX_PROGRESS_YEARS + [0,0,0,0,1,0]
     interstellar_row =   [0] * constant.MAX_PROGRESS_YEARS + [0,0,0,0,0,1]
 
     probability_matrix = year_p_rows + [extinction_row,
-                                        survival_row,
+                                        pre_equilibrium_row,
                                         preindustrial_row,
                                         industrial_row,
                                         multiplanetary_row,
@@ -51,7 +51,7 @@ class IntraPerilsMCWrapper():
     # pdb.set_trace()
     self.mc = MarkovChain(probability_matrix, perils_years
                                               + ['Extinction',
-                                                'Survival',
+                                                'pre_equilibrium',
                                                 'Preindustrial',
                                                 'Industrial',
                                                 'Perils',
@@ -77,7 +77,7 @@ class IntraPerilsMCWrapper():
     else:
       return self.mc.absorption_probabilities()[0][0]
 
-  def survival_given_perils(self, k1):
+  def pre_equilibrium_given_perils(self, k1):
     if self.k + 1 >= constant.MAX_CIVILISATIONS:
       return 0
     elif self.k == 0 and k1 == 1:
@@ -86,7 +86,7 @@ class IntraPerilsMCWrapper():
     elif self.k + 1 == k1:
       return self.mc.absorption_probabilities()[1][0]
     else:
-      # The only survival state we can reach from perils_k is survival_(k+1)
+      # The only pre_equilibrium state we can reach from perils_k is pre_equilibrium_(k+1)
       return 0
 
   def preindustrial_given_perils(self, k1):
@@ -124,7 +124,7 @@ class IntraPerilsMCWrapper():
     # This approach gives a smaller floating point error than treating pydtmc's absorption
     # probabilities as summing to 1
     return max( 1 - (self.extinction_given_perils()
-                + self.survival_given_perils(self.k + 1)
+                + self.pre_equilibrium_given_perils(self.k + 1)
                 + self.preindustrial_given_perils(self.k + 1)
                 + self.industrial_given_perils(self.k + 1)
                 + self.multiplanetary_given_perils(self.k)), 0) # Max() function corrects a pydtmc
@@ -136,7 +136,7 @@ class IntraMultiplanetaryMCWrapper():
     self.k = k
 
     extinction_row =     [0] * (constant.MAX_PLANETS - 1) + [1,0,0,0,0,0]
-    survival_row =       [0] * (constant.MAX_PLANETS - 1) + [0,1,0,0,0,0]
+    pre_equilibrium_row =       [0] * (constant.MAX_PLANETS - 1) + [0,1,0,0,0,0]
     preindustrial_row =  [0] * (constant.MAX_PLANETS - 1) + [0,0,1,0,0,0]
     industrial_row =     [0] * (constant.MAX_PLANETS - 1) + [0,0,0,1,0,0]
     perils_row =         [0] * (constant.MAX_PLANETS - 1) + [0,0,0,0,1,0]
@@ -146,7 +146,7 @@ class IntraMultiplanetaryMCWrapper():
     intra_transition_probabilities = {q:[multiplanetary.transition_to_n_planets_given_multiplanetary(q, n) for n in planet_range]
                                       for q in planet_range}
     exit_probabilities = {q:[multiplanetary.extinction_given_multiplanetary(q),
-                             multiplanetary.survival_given_multiplanetary(),
+                             multiplanetary.pre_equilibrium_given_multiplanetary(),
                              multiplanetary.preindustrial_given_multiplanetary(),
                              multiplanetary.industrial_given_multiplanetary(),
                              multiplanetary.perils_given_multiplanetary(q),
@@ -158,7 +158,7 @@ class IntraMultiplanetaryMCWrapper():
     # Useful for figuring out the row corresponding to q planets, not used in code
 
     probability_matrix = qth_planet_rows + [extinction_row,
-                                            survival_row,
+                                            pre_equilibrium_row,
                                             preindustrial_row,
                                             industrial_row,
                                             perils_row,
@@ -168,7 +168,7 @@ class IntraMultiplanetaryMCWrapper():
 
     self.mc = MarkovChain(probability_matrix, planet_counts
                                               + ['Extinction',
-                                                 'Survival',
+                                                 'pre_equilibrium',
                                                  'Preindustrial',
                                                  'Industrial',
                                                  'Perils',
@@ -186,7 +186,7 @@ class IntraMultiplanetaryMCWrapper():
     else:
       return self.mc.absorption_probabilities()[0][0]
 
-  def survival_given_multiplanetary(self, k1):
+  def pre_equilibrium_given_multiplanetary(self, k1):
     if self.k + 1 >= constant.MAX_CIVILISATIONS:
       # When we hit the last civilisation, anything that would regress us means we just go extinct
       return 0
