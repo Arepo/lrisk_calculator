@@ -12,13 +12,13 @@ app.config['SECRET_KEY'] = 'seekrit' # TODO Any reason to care about this in the
 
 
 @app.route('/', methods=['GET', 'POST'])
-def simple_calc():
+def simple_calc_page():
   form = SimpleCalcForm()
-  success = ""
+  calc = ""
   if form.validate_on_submit():
-    pdb.set_trace()
-    success = sc.extinction_given_industrial()
-  return render_template('simple_calc.html', form=form, success=success)
+    calc = sc.SimpleCalc(request.form)
+    # pdb.set_trace()
+  return render_template('simple_calc_page.html', form=form, calc=calc)
 
 # @app.post("/")
 # def stuff():

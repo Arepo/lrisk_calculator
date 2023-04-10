@@ -1,11 +1,28 @@
 {% extends 'base.html' %}
 
 {% block content %}
+  {% if calc %}
+  <h2>On your assumptions...</h2>
+  <p>The probability of becoming interstellar from a survival state = {{ calc.net_interstellar_from_survival() }}</p>
+  <p>The probability of becoming interstellar from a preindustrial state = {{ calc.net_interstellar_from_preindustrial() }}</p>
+  <p>The probability of becoming interstellar from an industrial state = {{ calc.net_interstellar_from_industrial() }}</p>
+  <p>The probability of becoming interstellar from a time of perils state = {{ calc.net_interstellar_from_perils() }}</p>
+  <p>The probability of becoming interstellar from a multiplanetary state = {{ calc.net_interstellar_from_multiplanetary() }}</p>
+
+  <br>
+  <p>*****</p>
+  <br>
+  <p>Therefore...</p>
+  <p>a castatrophe that put us into a survival state would reduce our chance of becoming interstellar by {{ calc.survival_probability_reduction() }}</p>
+  <p>a castatrophe that put us into a preindustrial state would reduce our chance of becoming interstellar by {{ calc.preindustrial_probability_reduction() }}</p>
+  <p>a castatrophe that put us into an industrial state would reduce our chance of becoming interstellar by {{ calc.industrial_probability_reduction() }}</p>
+  <p>and if we reached a multiplanetary state, it would increase our chance of becoming interstellar by {{ calc.multiplanetary_probability_increase() }}</p>
+  {% endif %}
+
   <h1>{% block title %} Estimate your transitional probabilities {% endblock %}</h1>
 
   <form action="/" method="POST">
       {{ form.csrf_token }}
-      <h2>{{ success }}</h2>
       <h2>Transitions from premodern states</h2>
       <!-- Premodern -->
       {% if form.extinction_given_survival.errors %}
@@ -107,17 +124,17 @@
             {{ form.industrial_given_perils() }}
       </p>
 
-      {% if form.multiplanetary_given_perils.errors %}
+      {% if form.interstellar_given_perils.errors %}
           <ul class="errors">
-              {% for error in form.multiplanetary_given_perils.errors %}
+              {% for error in form.interstellar_given_perils.errors %}
                   <li>{{ error }}</li>
               {% endfor %}
           </ul>
       {% endif %}
 
       <p>
-            {{ form.multiplanetary_given_perils.label }}
-            {{ form.multiplanetary_given_perils() }}
+            {{ form.interstellar_given_perils.label }}
+            {{ form.interstellar_given_perils() }}
       </p>
 
 

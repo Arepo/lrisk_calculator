@@ -1,5 +1,7 @@
 from functools import cache
+import html
 import pdb
+
 from pydtmc import MarkovChain
 
 
@@ -23,184 +25,188 @@ from pydtmc import MarkovChain
 # if False:
 #   raise InvalidTransitionProbabilities("Transition probabilities from multiplanetary must == 1")
 
-def extinction_given_survival():
-  return 0
+class SimpleCalc:
+  def __init__(self, form):
+    self.form = form
 
-def preindustrial_given_survival():
-  return 1 - extinction_given_survival()
+  def extinction_given_survival(self):
+    return float(self.form['extinction_given_survival'])
 
-# From preindustrial
+  def preindustrial_given_survival(self):
+    return 1 - self.extinction_given_survival()
 
-def extinction_given_preindustrial():
-  return 0
+  # From preindustrial
 
-def industrial_given_preindustrial():
-  return 1 - extinction_given_preindustrial()
+  def extinction_given_preindustrial(self):
+    return float(self.form['extinction_given_preindustrial'])
 
-
-# From industrial
-
-def extinction_given_industrial():
-  return 1/2
-
-def perils_given_industrial():
-  return 1 - extinction_given_industrial()
-
-# From perils
-
-def extinction_given_perils():
-  return 1/6
-
-def survival_given_perils():
-  return 2/6
-
-def preindustrial_given_perils():
-  return 0
-
-def industrial_given_perils():
-  return 0
-
-def multiplanetary_given_perils():
-  return 2/6
-
-def interstellar_given_perils():
-  return 1 - (extinction_given_perils()
-              + survival_given_perils()
-              + preindustrial_given_perils()
-              + industrial_given_perils()
-              + multiplanetary_given_perils())
-
-# From mutiplanetary
-
-def extinction_given_multiplanetary():
-  return 1/6
-
-def survival_given_multiplanetary():
-  return 1/6
-
-def preindustrial_given_multiplanetary():
-  return 0
-
-def industrial_given_multiplanetary():
-  return 0
-
-def perils_given_multiplanetary():
-  return 1/6
-
-def interstellar_given_multiplanetary():
-  return 1 - (extinction_given_multiplanetary()
-              + survival_given_multiplanetary()
-              + preindustrial_given_multiplanetary()
-              + industrial_given_multiplanetary()
-              + perils_given_multiplanetary())
-
-@cache
-def markov_chain():
-  extinction_transition_probabilities =     [1, 0, 0, 0, 0, 0, 0]
-  survival_transition_probabilities =       [extinction_given_survival(),
-                                             0,
-                                             preindustrial_given_survival(),
-                                             0,
-                                             0,
-                                             0,
-                                             0]
-  preindustrial_transition_probabilities =  [extinction_given_preindustrial(),
-                                             0,
-                                             0,
-                                             industrial_given_preindustrial(),
-                                             0,
-                                             0,
-                                             0]
-  industrial_transition_probabilities =     [extinction_given_industrial(),
-                                             0,
-                                             0,
-                                             0,
-                                             perils_given_industrial(),
-                                             0,
-                                             0]
-  perils_transition_probabilties =          [extinction_given_perils(),
-                                             survival_given_perils(),
-                                             preindustrial_given_perils(),
-                                             industrial_given_perils(),
-                                             0,
-                                             multiplanetary_given_perils(),
-                                             interstellar_given_perils()]
-  multiplanetary_transition_probabilities = [extinction_given_multiplanetary(),
-                                             survival_given_multiplanetary(),
-                                             preindustrial_given_multiplanetary(),
-                                             industrial_given_multiplanetary(),
-                                             perils_given_multiplanetary(),
-                                             0,
-                                             interstellar_given_multiplanetary()]
-  interstellar_transition_probabilities =   [0, 0, 0, 0, 0, 0, 1]
-
-  transition_probability_matrix = [extinction_transition_probabilities,
-                                   survival_transition_probabilities,
-                                   preindustrial_transition_probabilities,
-                                   industrial_transition_probabilities,
-                                   perils_transition_probabilties,
-                                   multiplanetary_transition_probabilities,
-                                   interstellar_transition_probabilities]
-
-  # mini = [[0.2, 0.7, 0.0, 0.1], [0.0, 0.6, 0.3, 0.1], [0.0, 0.0, 1.0, 0.0], [0.5, 0.0, 0.5, 0.0]]
-  # mc = MarkovChain(mini, ['A', 'B', 'C', 'D'])
-
-  return MarkovChain(transition_probability_matrix, ['Extinction',
-                                                   'Survival',
-                                                   'Preindustrial',
-                                                   'Industrial',
-                                                   'Perils',
-                                                   'Multiplanetary',
-                                                   'Interstellar'])
-
-  # Shortcuts for the probability of direct-path transitions
-
-def probability_of_preindustrial_to_perils_directly():
-  return industrial_given_preindustrial() * perils_given_industrial()
-
-def probability_of_survival_to_perils_directly():
-  return preindustrial_given_survival() * probability_of_preindustrial_to_perils_directly()
-
-def net_interstellar_from_survival():
-  return markov_chain().absorption_probabilities()[1][0]
-
-def net_interstellar_from_preindustrial():
-  return markov_chain().absorption_probabilities()[1][1]
-
-def net_interstellar_from_industrial():
-  return markov_chain().absorption_probabilities()[1][2]
-
-def net_interstellar_from_perils():
-  return markov_chain().absorption_probabilities()[1][3]
-
-def net_interstellar_from_multiplanetary():
-  return markov_chain().absorption_probabilities()[1][4]
-
-def total_probability_of_non_extinction_milestone_regression_from_perils():
-  return survival_given_perils() + preindustrial_given_perils() + industrial_given_perils()
-
-def weighted_net_interstellar_from_unspecified_regress():
-  return ((net_interstellar_from_survival() * survival_given_perils())
-           + (net_interstellar_from_preindustrial() * preindustrial_given_perils())
-           + (net_interstellar_from_industrial() * industrial_given_perils())
-              / total_probability_of_non_extinction_milestone_regression_from_perils())
+  def industrial_given_preindustrial(self):
+    return 1 - self.extinction_given_preindustrial()
 
 
-# print(f"""On your assumptions...
-# Probability of becoming interstellar from survival = {net_interstellar_from_survival()}
-# Probability of becoming interstellar from preindustrial = {net_interstellar_from_preindustrial()}
-# Probability of becoming interstellar from industrial = {net_interstellar_from_industrial()}
-# Probability of becoming interstellar from perils = {net_interstellar_from_perils()}
-# Probability of becoming interstellar from multiplanetary = {net_interstellar_from_multiplanetary()}
+  # From industrial
 
-# *****
+  def extinction_given_industrial(self):
+    return float(self.form['extinction_given_industrial'])
 
-# Therefore, if we assume that becoming interstellar is the only concern...
-# a castatrophe that put us into a survival state would reduce our chance of becoming interstellar by {(net_interstellar_from_perils() - net_interstellar_from_survival()) / net_interstellar_from_perils() * 100}%
-# a castatrophe that put us into a preindustrial state would reduce our chance of becoming interstellar by {(net_interstellar_from_perils() - net_interstellar_from_preindustrial()) / net_interstellar_from_perils() * 100}%
-# a castatrophe that put us into an industrial state would reduce our chance of becoming interstellar by {(net_interstellar_from_perils() - net_interstellar_from_industrial()) / net_interstellar_from_perils() * 100}%
-# and if we reached a multiplanetary state, it would increase our chance of becoming interstellar by {(net_interstellar_from_multiplanetary() - net_interstellar_from_perils()) / net_interstellar_from_perils() * 100}%
-# """)
+  def perils_given_industrial(self):
+    return 1 - self.extinction_given_industrial()
+
+  # From perils
+
+  def extinction_given_perils(self):
+    return float(self.form['extinction_given_perils'])
+
+  def survival_given_perils(self):
+    return float(self.form['survival_given_perils'])
+
+  def preindustrial_given_perils(self):
+    return float(self.form['preindustrial_given_perils'])
+
+  def industrial_given_perils(self):
+    return float(self.form['industrial_given_perils'])
+
+  def multiplanetary_given_perils(self):
+    return float(self.form['interstellar_given_perils'])
+
+  def interstellar_given_perils(self):
+    return 1 - (self.extinction_given_perils()
+                + self.survival_given_perils()
+                + self.preindustrial_given_perils()
+                + self.industrial_given_perils()
+                + self.multiplanetary_given_perils())
+
+  # From mutiplanetary
+
+  def extinction_given_multiplanetary(self):
+    return float(self.form['extinction_given_multiplanetary'])
+
+  def survival_given_multiplanetary(self):
+    return float(self.form['survival_given_multiplanetary'])
+
+  def preindustrial_given_multiplanetary(self):
+    return float(self.form['preindustrial_given_multiplanetary'])
+
+  def industrial_given_multiplanetary(self):
+    return float(self.form['industrial_given_multiplanetary'])
+
+  def perils_given_multiplanetary(self):
+    return float(self.form['perils_given_multiplanetary'])
+
+  def interstellar_given_multiplanetary(self):
+    return 1 - (self.extinction_given_multiplanetary()
+                + self.survival_given_multiplanetary()
+                + self.preindustrial_given_multiplanetary()
+                + self.industrial_given_multiplanetary()
+                + self.perils_given_multiplanetary())
+
+  @cache
+  def markov_chain(self):
+    extinction_transition_probabilities =     [1, 0, 0, 0, 0, 0, 0]
+    survival_transition_probabilities =       [self.extinction_given_survival(),
+                                               0,
+                                               self.preindustrial_given_survival(),
+                                               0,
+                                               0,
+                                               0,
+                                               0]
+    preindustrial_transition_probabilities =  [self.extinction_given_preindustrial(),
+                                               0,
+                                               0,
+                                               self.industrial_given_preindustrial(),
+                                               0,
+                                               0,
+                                               0]
+    industrial_transition_probabilities =     [self.extinction_given_industrial(),
+                                               0,
+                                               0,
+                                               0,
+                                               self.perils_given_industrial(),
+                                               0,
+                                               0]
+    perils_transition_probabilties =          [self.extinction_given_perils(),
+                                               self.survival_given_perils(),
+                                               self.preindustrial_given_perils(),
+                                               self.industrial_given_perils(),
+                                               0,
+                                               self.multiplanetary_given_perils(),
+                                               self.interstellar_given_perils()]
+    multiplanetary_transition_probabilities = [self.extinction_given_multiplanetary(),
+                                               self.survival_given_multiplanetary(),
+                                               self.preindustrial_given_multiplanetary(),
+                                               self.industrial_given_multiplanetary(),
+                                               self.perils_given_multiplanetary(),
+                                               0,
+                                               self.interstellar_given_multiplanetary()]
+    interstellar_transition_probabilities =   [0, 0, 0, 0, 0, 0, 1]
+
+    transition_probability_matrix = [extinction_transition_probabilities,
+                                     survival_transition_probabilities,
+                                     preindustrial_transition_probabilities,
+                                     industrial_transition_probabilities,
+                                     perils_transition_probabilties,
+                                     multiplanetary_transition_probabilities,
+                                     interstellar_transition_probabilities]
+
+    # mini = [[0.2, 0.7, 0.0, 0.1], [0.0, 0.6, 0.3, 0.1], [0.0, 0.0, 1.0, 0.0], [0.5, 0.0, 0.5, 0.0]]
+    # mc = MarkovChain(mini, ['A', 'B', 'C', 'D'])
+
+    return MarkovChain(transition_probability_matrix, ['Extinction',
+                                                     'Survival',
+                                                     'Preindustrial',
+                                                     'Industrial',
+                                                     'Perils',
+                                                     'Multiplanetary',
+                                                     'Interstellar'])
+
+    # Shortcuts for the probability of direct-path transitions
+
+  def probability_of_preindustrial_to_perils_directly(self):
+    return self.industrial_given_preindustrial() * self.perils_given_industrial()
+
+  def probability_of_survival_to_perils_directly(self):
+    return self.preindustrial_given_survival() * self.probability_of_preindustrial_to_perils_directly()
+
+  def net_interstellar_from_survival(self):
+    return self.markov_chain().absorption_probabilities()[1][0]
+
+  def net_interstellar_from_preindustrial(self):
+    return self.markov_chain().absorption_probabilities()[1][1]
+
+  def net_interstellar_from_industrial(self):
+    return self.markov_chain().absorption_probabilities()[1][2]
+
+  def net_interstellar_from_perils(self):
+    return self.markov_chain().absorption_probabilities()[1][3]
+
+  def net_interstellar_from_multiplanetary(self):
+    return self.markov_chain().absorption_probabilities()[1][4]
+
+  def total_probability_of_non_extinction_milestone_regression_from_perils(self):
+    return self.survival_given_perils() + self.preindustrial_given_perils() + self.industrial_given_perils()
+
+  def weighted_net_interstellar_from_unspecified_regress(self):
+    return ((self.net_interstellar_from_survival() * self.survival_given_perils())
+             + (self.net_interstellar_from_preindustrial() * self.preindustrial_given_perils())
+             + (self.net_interstellar_from_industrial() * self.industrial_given_perils())
+                / self.total_probability_of_non_extinction_milestone_regression_from_perils())
+
+  def survival_probability_reduction(self):
+    return str((self.net_interstellar_from_perils() - self.net_interstellar_from_survival())
+                / self.net_interstellar_from_perils() * 100) + '%'
+
+  def preindustrial_probability_reduction(self):
+    return str((self.net_interstellar_from_perils() - self.net_interstellar_from_preindustrial())
+                / self.net_interstellar_from_perils() * 100) + '%'
+
+  def industrial_probability_reduction(self):
+    return str((self.net_interstellar_from_perils() - self.net_interstellar_from_industrial()) / self.net_interstellar_from_perils() * 100) + '%'
+
+  def multiplanetary_probability_increase(self):
+    return str((self.net_interstellar_from_multiplanetary() - self.net_interstellar_from_perils()) / self.net_interstellar_from_perils() * 100) + '%'
+
+
+
 
 
 
