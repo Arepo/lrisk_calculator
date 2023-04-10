@@ -64,77 +64,146 @@
             {{ form.extinction_given_industrial() }}
       </p>
 
+      <!-- Present Perils -->
 
+      <h2>Transitions from where we are in our current time of perils</h2>
 
-
-      <!-- Perils -->
-
-      <h2>Transitions from a time of perils</h2>
-
-      {% if form.extinction_given_perils.errors %}
+      {% if form.extinction_given_present_perils.errors %}
           <ul class="errors">
-              {% for error in form.extinction_given_perils.errors %}
+              {% for error in form.extinction_given_present_perils.errors %}
                   <li>{{ error }}</li>
               {% endfor %}
           </ul>
       {% endif %}
 
       <p>
-            {{ form.extinction_given_perils.label }}
-            {{ form.extinction_given_perils() }}
+            {{ form.extinction_given_present_perils.label }}
+            {{ form.extinction_given_present_perils() }}
       </p>
 
 
-      {% if form.pre_equilibrium_given_perils.errors %}
+      {% if form.pre_equilibrium_given_present_perils.errors %}
           <ul class="errors">
-              {% for error in form.pre_equilibrium_given_perils.errors %}
+              {% for error in form.pre_equilibrium_given_present_perils.errors %}
                   <li>{{ error }}</li>
               {% endfor %}
           </ul>
       {% endif %}
 
       <p>
-            {{ form.pre_equilibrium_given_perils.label }}
-            {{ form.pre_equilibrium_given_perils() }}
+            {{ form.pre_equilibrium_given_present_perils.label }}
+            {{ form.pre_equilibrium_given_present_perils() }}
       </p>
 
-      {% if form.preindustrial_given_perils.errors %}
+      {% if form.preindustrial_given_present_perils.errors %}
           <ul class="errors">
-              {% for error in form.preindustrial_given_perils.errors %}
+              {% for error in form.preindustrial_given_present_perils.errors %}
                   <li>{{ error }}</li>
               {% endfor %}
           </ul>
       {% endif %}
 
       <p>
-            {{ form.preindustrial_given_perils.label }}
-            {{ form.preindustrial_given_perils() }}
+            {{ form.preindustrial_given_present_perils.label }}
+            {{ form.preindustrial_given_present_perils() }}
       </p>
 
-      {% if form.industrial_given_perils.errors %}
+      {% if form.industrial_given_present_perils.errors %}
           <ul class="errors">
-              {% for error in form.industrial_given_perils.errors %}
+              {% for error in form.industrial_given_present_perils.errors %}
                   <li>{{ error }}</li>
               {% endfor %}
           </ul>
       {% endif %}
 
       <p>
-            {{ form.industrial_given_perils.label }}
-            {{ form.industrial_given_perils() }}
+            {{ form.industrial_given_present_perils.label }}
+            {{ form.industrial_given_present_perils() }}
       </p>
 
-      {% if form.interstellar_given_perils.errors %}
+      {% if form.interstellar_given_present_perils.errors %}
           <ul class="errors">
-              {% for error in form.interstellar_given_perils.errors %}
+              {% for error in form.interstellar_given_present_perils.errors %}
                   <li>{{ error }}</li>
               {% endfor %}
           </ul>
       {% endif %}
 
       <p>
-            {{ form.interstellar_given_perils.label }}
-            {{ form.interstellar_given_perils() }}
+            {{ form.interstellar_given_present_perils.label }}
+            {{ form.interstellar_given_present_perils() }}
+      </p>
+
+
+
+      <!-- Future Perils -->
+
+      <h2>Transitions from the beginning of a future time of perils</h2>
+
+      {% if form.extinction_given_future_perils.errors %}
+          <ul class="errors">
+              {% for error in form.extinction_given_future_perils.errors %}
+                  <li>{{ error }}</li>
+              {% endfor %}
+          </ul>
+      {% endif %}
+
+      <p>
+            {{ form.extinction_given_future_perils.label }}
+            {{ form.extinction_given_future_perils() }}
+      </p>
+
+
+      {% if form.pre_equilibrium_given_future_perils.errors %}
+          <ul class="errors">
+              {% for error in form.pre_equilibrium_given_future_perils.errors %}
+                  <li>{{ error }}</li>
+              {% endfor %}
+          </ul>
+      {% endif %}
+
+      <p>
+            {{ form.pre_equilibrium_given_future_perils.label }}
+            {{ form.pre_equilibrium_given_future_perils() }}
+      </p>
+
+      {% if form.preindustrial_given_future_perils.errors %}
+          <ul class="errors">
+              {% for error in form.preindustrial_given_future_perils.errors %}
+                  <li>{{ error }}</li>
+              {% endfor %}
+          </ul>
+      {% endif %}
+
+      <p>
+            {{ form.preindustrial_given_future_perils.label }}
+            {{ form.preindustrial_given_future_perils() }}
+      </p>
+
+      {% if form.industrial_given_future_perils.errors %}
+          <ul class="errors">
+              {% for error in form.industrial_given_future_perils.errors %}
+                  <li>{{ error }}</li>
+              {% endfor %}
+          </ul>
+      {% endif %}
+
+      <p>
+            {{ form.industrial_given_future_perils.label }}
+            {{ form.industrial_given_future_perils() }}
+      </p>
+
+      {% if form.interstellar_given_future_perils.errors %}
+          <ul class="errors">
+              {% for error in form.interstellar_given_future_perils.errors %}
+                  <li>{{ error }}</li>
+              {% endfor %}
+          </ul>
+      {% endif %}
+
+      <p>
+            {{ form.interstellar_given_future_perils.label }}
+            {{ form.interstellar_given_future_perils() }}
       </p>
 
 
@@ -195,17 +264,17 @@
             {{ form.industrial_given_multiplanetary() }}
       </p>
 
-      {% if form.perils_given_multiplanetary.errors %}
+      {% if form.future_perils_given_multiplanetary.errors %}
           <ul class="errors">
-              {% for error in form.perils_given_multiplanetary.errors %}
+              {% for error in form.future_perils_given_multiplanetary.errors %}
                   <li>{{ error }}</li>
               {% endfor %}
           </ul>
       {% endif %}
 
       <p>
-            {{ form.perils_given_multiplanetary.label }}
-            {{ form.perils_given_multiplanetary() }}
+            {{ form.future_perils_given_multiplanetary.label }}
+            {{ form.future_perils_given_multiplanetary() }}
       </p>
 
       <p><input type="submit" value="submit" /></p>

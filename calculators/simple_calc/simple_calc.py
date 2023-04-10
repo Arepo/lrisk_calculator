@@ -20,20 +20,19 @@ from pydtmc import MarkovChain
 
 # Transition probabilities
 
-# From pre_equilibrium
-
-# if False:
-#   raise InvalidTransitionProbabilities("Transition probabilities from multiplanetary must == 1")
 
 class SimpleCalc:
   def __init__(self, form):
     self.form = form
+
+  # From pre-equilibrium
 
   def extinction_given_pre_equilibrium(self):
     return float(self.form['extinction_given_pre_equilibrium'])
 
   def preindustrial_given_pre_equilibrium(self):
     return 1 - self.extinction_given_pre_equilibrium()
+
 
   # From preindustrial
 
@@ -52,29 +51,59 @@ class SimpleCalc:
   def perils_given_industrial(self):
     return 1 - self.extinction_given_industrial()
 
+
+  # From present perils
+
+  def extinction_given_present_perils(self):
+    return float(self.form['extinction_given_present_perils'])
+
+  def pre_equilibrium_given_present_perils(self):
+    return float(self.form['pre_equilibrium_given_present_perils'])
+
+  def preindustrial_given_present_perils(self):
+    return float(self.form['preindustrial_given_present_perils'])
+
+  def industrial_given_present_perils(self):
+    return float(self.form['industrial_given_present_perils'])
+
+  def future_perils_given_present_perils(self):
+    return float(self.form['future_perils_given_present_perils'])
+
+  def multiplanetary_given_present_perils(self):
+    return float(self.form['interstellar_given_present_perils'])
+
+  def interstellar_given_present_perils(self):
+    return 1 - (self.extinction_given_present_perils()
+                + self.pre_equilibrium_given_present_perils()
+                + self.preindustrial_given_present_perils()
+                + self.industrial_given_present_perils()
+                + self.multiplanetary_given_present_perils())
+
+
   # From perils
 
-  def extinction_given_perils(self):
-    return float(self.form['extinction_given_perils'])
+  def extinction_given_future_perils(self):
+    return float(self.form['extinction_given_future_perils'])
 
-  def pre_equilibrium_given_perils(self):
-    return float(self.form['pre_equilibrium_given_perils'])
+  def pre_equilibrium_given_future_perils(self):
+    return float(self.form['pre_equilibrium_given_future_perils'])
 
-  def preindustrial_given_perils(self):
-    return float(self.form['preindustrial_given_perils'])
+  def preindustrial_given_future_perils(self):
+    return float(self.form['preindustrial_given_future_perils'])
 
-  def industrial_given_perils(self):
-    return float(self.form['industrial_given_perils'])
+  def industrial_given_future_perils(self):
+    return float(self.form['industrial_given_future_perils'])
 
-  def multiplanetary_given_perils(self):
-    return float(self.form['interstellar_given_perils'])
+  def multiplanetary_given_future_perils(self):
+    return float(self.form['interstellar_given_future_perils'])
 
-  def interstellar_given_perils(self):
-    return 1 - (self.extinction_given_perils()
-                + self.pre_equilibrium_given_perils()
-                + self.preindustrial_given_perils()
-                + self.industrial_given_perils()
-                + self.multiplanetary_given_perils())
+  def interstellar_given_future_perils(self):
+    return 1 - (self.extinction_given_future_perils()
+                + self.pre_equilibrium_given_future_perils()
+                + self.preindustrial_given_future_perils()
+                + self.industrial_given_future_perils()
+                + self.multiplanetary_given_future_perils())
+
 
   # From mutiplanetary
 
@@ -124,18 +153,28 @@ class SimpleCalc:
                                                self.perils_given_industrial(),
                                                0,
                                                0]
-    perils_transition_probabilties =          [self.extinction_given_perils(),
-                                               self.pre_equilibrium_given_perils(),
-                                               self.preindustrial_given_perils(),
-                                               self.industrial_given_perils(),
+    present_perils_transition_probabilities = [self.extinction_given_present_perils(),
+                                               self.pre_equilibrium_given_present_perils(),
+                                               self.preindustrial_given_present_perils(),
+                                               self.industrial_given_present_perils(),
                                                0,
-                                               self.multiplanetary_given_perils(),
-                                               self.interstellar_given_perils()]
+                                               self.future_perils_given_present_perils(),
+                                               self.multiplanetary_given_present_perils(),
+                                               self.interstellar_given_present_perils()]
+    future_perils_transition_probabilities =   [self.extinction_given_future_perils(),
+                                               self.pre_equilibrium_given_future_perils(),
+                                               self.preindustrial_given_future_perils(),
+                                               self.industrial_given_future_perils(),
+                                               0,
+                                               0,
+                                               self.multiplanetary_given_future_perils(),
+                                               self.interstellar_given_future_perils()]
     multiplanetary_transition_probabilities = [self.extinction_given_multiplanetary(),
                                                self.pre_equilibrium_given_multiplanetary(),
                                                self.preindustrial_given_multiplanetary(),
                                                self.industrial_given_multiplanetary(),
-                                               self.perils_given_multiplanetary(),
+                                               0
+                                               self.future_perils_given_multiplanetary(),
                                                0,
                                                self.interstellar_given_multiplanetary()]
     interstellar_transition_probabilities =   [0, 0, 0, 0, 0, 0, 1]
@@ -144,7 +183,7 @@ class SimpleCalc:
                                      pre_equilibrium_transition_probabilities,
                                      preindustrial_transition_probabilities,
                                      industrial_transition_probabilities,
-                                     perils_transition_probabilties,
+                                     perils_transition_probabilities,
                                      multiplanetary_transition_probabilities,
                                      interstellar_transition_probabilities]
 

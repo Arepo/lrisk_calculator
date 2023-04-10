@@ -17,9 +17,5 @@ def simple_calc_page():
   calc = ""
   if form.validate_on_submit():
     calc = sc.SimpleCalc(request.form)
-    # pdb.set_trace()
   return render_template('simple_calc_page.html', form=form, calc=calc)
 
-# @app.post("/")
-# def stuff():
-#   return "<p>g'bye, World!</p>"
