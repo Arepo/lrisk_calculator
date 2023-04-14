@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 
 {% block content %}
+  <script src="{{url_for('static', filename='simple_calc_form.js')}}"></script>
   {% if calc %}
   <h2>On your assumptions...</h2>
   <p>The probability of becoming interstellar from a pre_equilibrium state = {{ calc.net_interstellar_from_pre_equilibrium() }}</p>
@@ -38,6 +39,11 @@
             {{ form.extinction_given_pre_equilibrium() }}
       </p>
 
+      <p>
+            {{ form.preindustrial_given_pre_equilibrium.label }}
+            {{ form.preindustrial_given_pre_equilibrium() }}
+      </p>
+
       {% if form.extinction_given_preindustrial.errors %}
           <ul class="errors">
               {% for error in form.extinction_given_preindustrial.errors %}
@@ -49,6 +55,11 @@
       <p>
             {{ form.extinction_given_preindustrial.label }}
             {{ form.extinction_given_preindustrial() }}
+      </p>
+
+      <p>
+            {{ form.industrial_given_preindustrial.label }}
+            {{ form.industrial_given_preindustrial() }}
       </p>
 
       {% if form.extinction_given_industrial.errors %}
@@ -64,9 +75,14 @@
             {{ form.extinction_given_industrial() }}
       </p>
 
+      <p>
+            {{ form.future_perils_given_industrial.label }}
+            {{ form.future_perils_given_industrial() }}
+      </p>
+
       <!-- Present Perils -->
 
-      <h2>Transitions from where we are in our current time of perils</h2>
+      <h2>Transitions from our current time of perils</h2>
 
       {% if form.extinction_given_present_perils.errors %}
           <ul class="errors">
@@ -121,6 +137,19 @@
             {{ form.industrial_given_present_perils() }}
       </p>
 
+      {% if form.future_perils_given_present_perils.errors %}
+          <ul class="errors">
+              {% for error in form.future_perils_given_present_perils.errors %}
+                  <li>{{ error }}</li>
+              {% endfor %}
+          </ul>
+      {% endif %}
+
+      <p>
+            {{ form.future_perils_given_present_perils.label }}
+            {{ form.future_perils_given_present_perils() }}
+      </p>
+
       {% if form.interstellar_given_present_perils.errors %}
           <ul class="errors">
               {% for error in form.interstellar_given_present_perils.errors %}
@@ -134,6 +163,10 @@
             {{ form.interstellar_given_present_perils() }}
       </p>
 
+      <p>
+            {{ form.multiplanetary_given_present_perils.label }}
+            {{ form.multiplanetary_given_present_perils() }}
+      </p>
 
 
       <!-- Future Perils -->
@@ -207,7 +240,10 @@
       </p>
 
 
-
+      <p>
+            {{ form.multiplanetary_given_future_perils.label }}
+            {{ form.multiplanetary_given_future_perils() }}
+      </p>
 
       <!-- Multiplanetary -->
       <h2>Transitions from a multiplanetary state</h2>
@@ -275,6 +311,11 @@
       <p>
             {{ form.future_perils_given_multiplanetary.label }}
             {{ form.future_perils_given_multiplanetary() }}
+      </p>
+
+      <p>
+            {{ form.interstellar_given_multiplanetary.label }}
+            {{ form.interstellar_given_multiplanetary() }}
       </p>
 
       <p><input type="submit" value="submit" /></p>
