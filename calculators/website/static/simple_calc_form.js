@@ -1,4 +1,4 @@
-window.addEventListener('load', function() {
+document.addEventListener("DOMContentLoaded", function(event) {
   var extinction_given_pre_equilibrium = document.getElementById('extinction_given_pre_equilibrium');
   var preindustrial_given_pre_equilibrium = document.getElementById('preindustrial_given_pre_equilibrium');
 
@@ -29,14 +29,6 @@ window.addEventListener('load', function() {
   var industrial_given_multiplanetary = document.getElementById('industrial_given_multiplanetary');
   var future_perils_given_multiplanetary = document.getElementById('future_perils_given_multiplanetary');
   var interstellar_given_multiplanetary = document.getElementById('interstellar_given_multiplanetary');
-
-
-  // preindustrial_given_pre_equilibrium.value = 1 - extinction_given_pre_equilibrium.value;
-
-  // extinction_given_pre_equilibrium.addEventListener('input', function() {
-  //   preindustrial_given_pre_equilibrium.value = 1 - extinction_given_pre_equilibrium.value;
-  // });
-
 
   function update_fields(target, sources) {
     var target = document.getElementById(target)
