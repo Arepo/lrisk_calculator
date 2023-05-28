@@ -1,4 +1,5 @@
 from functools import cache
+from flask import jsonify
 import html
 import pdb
 
@@ -255,19 +256,30 @@ class SimpleCalc:
 
 
 
+# total_probability_of_non_extinction_milestone_regression_from_present_perils = pre_equilibrium_given_present_perils() + preindustrial_given_present_perils() + industrial_given_present_perils()
+# weighted_net_interstellar_from_unspecified_regress = ((net_interstellar_from_pre_equilibrium() * pre_equilibrium_given_present_perils())
+#                                                      + (net_interstellar_from_preindustrial() * preindustrial_given_present_perils())
+#                                                      + (net_interstellar_from_industrial() * industrial_given_present_perils())
+#                                                    / total_probability_of_non_extinction_milestone_regression_from_present_perils)
+# # TODO check below half of this when more awake - output looks suspicious
+# reduced_chance_of_success = (net_interstellar_from_perils() - weighted_net_interstellar_from_unspecified_regress) / net_interstellar_from_perils()
 
 
+# conclusions = {
+#   'net_interstellar_from_pre_equilibrium': net_interstellar_from_pre_equilibrium(),
+#   'net_interstellar_from_preindustrial': net_interstellar_from_preindustrial(),
+#   'net_interstellar_from_industrial': net_interstellar_from_industrial(),
+#   'net_interstellar_from_perils': net_interstellar_from_perils(),
+#   'net_interstellar_from_multiplanetary': net_interstellar_from_multiplanetary()
+# }
 
 
-
-
-
-
-
-
-
-
-
-
+# # print(f"""
+# # Therefore, if we assume that becoming interstellar is the only concern...
+# # a castatrophe that put us into a survival state would reduce our chance of becoming interstellar by {(net_interstellar_from_perils() - net_interstellar_from_pre_equilibrium()) / net_interstellar_from_perils() * 100}%
+# # a castatrophe that put us into a preindustrial state would reduce our chance of becoming interstellar by {(net_interstellar_from_perils() - net_interstellar_from_preindustrial()) / net_interstellar_from_perils() * 100}%
+# # a castatrophe that put us into an industrial state would reduce our chance of becoming interstellar by {(net_interstellar_from_perils() - net_interstellar_from_industrial()) / net_interstellar_from_perils() * 100}%
+# # and if we reached a multiplanetary state, it would increase our chance of becoming interstellar by {(net_interstellar_from_multiplanetary() - net_interstellar_from_perils()) / net_interstellar_from_perils() * 100}%
+# # """)
 
 
