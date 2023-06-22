@@ -18,6 +18,8 @@ def full_markov_chain():
     need to add an extra value, since they potentially include the current civilisation"""
     return [0] * (constant.MAX_CIVILISATIONS - 1)
 
+
+
   states_count = 5 * constant.MAX_CIVILISATIONS - 3 # 5 classes of states
   # (pre_equilibrium, preindustrial, industrial, perils, multiplanetary) * max civilisations, minus the three
   # preperils states in our current civilisation)
@@ -131,73 +133,24 @@ def full_markov_chain():
                                          + ['Extinction', 'Interstellar'])
 
 
-# start = datetime.datetime.now()
-# mc = full_markov_chain()
-# print((datetime.datetime.now() - start).seconds)
-# pdb.set_trace()
+start = datetime.datetime.now()
+mc = full_markov_chain()
+runtime = (datetime.datetime.now() - start).seconds
+print(f"""  From this breakpoint, you can query the MarkovChain (variable name mc) object as described
+  at https://github.com/TommasoBelluzzo/PyDTMC, and in this repo's README.md
 
+  Example values of interest:
+  From our current time of perils, your parameters imply that our chance of ultimately becoming interstellar
+  is {round(mc.absorption_probabilities()[1][(constant.MAX_CIVILISATIONS - 1) * 3] * 100)}%.
 
-########
+  If we we to regress once to a preindustrial state, our chance of becoming interstellar would be
+  {round(mc.absorption_probabilities()[1][(constant.MAX_CIVILISATIONS - 1)] * 100)}%.
 
-# def extinction_transition_probabilities(k=0):
-#   return [1, 0, 0, 0, 0, 0, 0]
+  In other words, assuming 'interstellar' and 'eventual extinction before becoming interstellar'
+  were the only two outcomes of interest, such a 'non-existential' catastrophe would equate to
+  {round(mc.absorption_probabilities()[1][(constant.MAX_CIVILISATIONS - 1) * 3] * 100 - mc.absorption_probabilities()[1][(constant.MAX_CIVILISATIONS - 1)] * 100)}%
+  of the loss of value of immediate extinction.
 
-# def pre_equilibrium_transition_probabilities(k):
-#   return [extinction_given_pre_equilibrium(k),
-#           0,
-#           preindustrial_given_pre_equilibrium(k),
-#           0,
-#           0,
-#           0,
-#           0]
-
-# def preindustrial_transition_probabilities(k):
-#   return [extinction_given_preindustrial(k),
-#           0,
-#           0,
-#           industrial_given_preindustrial(k),
-#           0,
-#           0,
-#           0]
-
-# def industrial_transition_probabilities(k):
-#   return [extinction_given_industrial(k),
-#           0,
-#           0,
-#           0,
-#           perils_given_industrial(k),
-#           0,
-#           0]
-
-# def perils_transition_probabilities(k):
-#   return [extinction_given_perils(k),
-#           pre_equilibrium_given_perils(k),
-#           preindustrial_given_perils(k),
-#           industrial_given_perils(k),
-#           0,
-#           multiplanetary_given_perils(k),
-#           interstellar_given_perils(k)]
-
-# def multiplanetary_transition_probabilities(k):
-#   return [extinction_given_multiplanetary(k),
-#           pre_equilibrium_given_multiplanetary(k),
-#           preindustrial_given_multiplanetary(k),
-#           industrial_given_multiplanetary(k),
-#           perils_given_multiplanetary(k),
-#           0,
-#           interstellar_given_multiplanetary(k)]
-
-# def interstellar_transition_probabilities(k=0):
-#   return [0, 0, 0, 0, 0, 0, 1]
-
-# Planets transition matrix
-# [extinction_given_multiplanetary(k, q) for q in range(2, constant.MAX_PLANETS)]
-# [pre_equilibrium_given_multiplanetary(k, q) for q in range(2, constant.MAX_PLANETS)]
-# [preindustrial_given_multiplanetary(k, q) for q in range (2, constant.MAX_PLANETS)]
-# [industrial_given_multiplanetary(k, q) for q in range(2, constant.MAX_PLANETS)]
-# [perils_given_multiplanetary(k, q) for q in range(2, constant.MAX_PLANETS)]
-# [0 for q in range(2, constant.MAX_PLANETS)]
-# # [transition_to_n_planets_given_multiplanetary(k, q, n)]
-# [industrial_given_multiplanetary(k, q) for q in range(2, constant.MAX_PLANETS)]
-
+  (the runtime with these parameters was {runtime} seconds)""")
+pdb.set_trace()
 

@@ -3,8 +3,8 @@
 # latter is bigger. So setting them higher substantially increases runtime, but will also increase
 # the accuracy of the final output.
 
-MAX_PLANETS = 20
-MAX_CIVILISATIONS = 30
+MAX_PLANETS = 10
+MAX_CIVILISATIONS = 20
 
 MAX_PROGRESS_YEARS = 500
 if MAX_PROGRESS_YEARS < 2:

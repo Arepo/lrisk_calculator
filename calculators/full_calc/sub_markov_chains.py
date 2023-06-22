@@ -68,14 +68,14 @@ class IntraPerilsMCWrapper():
                  + self.mc.absorption_probabilities()[2][0]
                  + self.mc.absorption_probabilities()[3][0]
                  + self.mc.absorption_probabilities()[0][0], 1) # Min() function corrects a pydtmc
-                                                                # floating point that can make this
-                                                                # above 1
+                                                                # floating point error that can make
+                                                                # this above 1
     if self.k == 0:
       return self.mc.absorption_probabilities()[0][self.starting_year]
       # Assume we start from where we actually are in the current time of perils, but in future ones
       # we start from year 0
     else:
-      return self.mc.absorption_probabilities()[0][0]
+      return min(self.mc.absorption_probabilities()[0][0], 1)
 
   def pre_equilibrium_given_perils(self, k1):
     if self.k + 1 >= constant.MAX_CIVILISATIONS:
