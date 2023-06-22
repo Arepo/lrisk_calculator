@@ -6,7 +6,7 @@
 MAX_PLANETS = 20
 MAX_CIVILISATIONS = 30
 
-MAX_PROGRESS_YEARS = 100
+MAX_PROGRESS_YEARS = 500
 if MAX_PROGRESS_YEARS < 2:
   raise 'Need at least two possible progress years'
 
