@@ -141,15 +141,15 @@ print(f"""  From this breakpoint, you can query the MarkovChain (variable name m
 
   Example values of interest:
   From our current time of perils, your parameters imply that our chance of ultimately becoming interstellar
-  is {round(mc.absorption_probabilities()[1][(constant.MAX_CIVILISATIONS - 1) * 3] * 100)}%.
+  is ~{round(mc.absorption_probabilities()[1][(constant.MAX_CIVILISATIONS - 1) * 3] * 100)}%.
 
   If we we to regress once to a preindustrial state, our chance of becoming interstellar would be
-  {round(mc.absorption_probabilities()[1][(constant.MAX_CIVILISATIONS - 1)] * 100)}%.
+  ~{round(mc.absorption_probabilities()[1][(constant.MAX_CIVILISATIONS - 1)] * 100)}%.
 
   In other words, assuming 'interstellar' and 'eventual extinction before becoming interstellar'
   were the only two outcomes of interest, such a 'non-existential' catastrophe would equate to
-  {round(mc.absorption_probabilities()[1][(constant.MAX_CIVILISATIONS - 1) * 3] * 100 - mc.absorption_probabilities()[1][(constant.MAX_CIVILISATIONS - 1)] * 100)}%
-  of the loss of value of immediate extinction.
+  ~{round(mc.absorption_probabilities()[1][(constant.MAX_CIVILISATIONS - 1) * 3] * 100 - mc.absorption_probabilities()[1][(constant.MAX_CIVILISATIONS - 1)] * 100)}%
+  of the expected loss of value of immediate extinction.
 
   (the runtime with these parameters was {runtime} seconds)""")
 pdb.set_trace()
