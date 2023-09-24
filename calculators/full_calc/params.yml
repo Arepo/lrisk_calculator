@@ -154,7 +154,7 @@ preperils:
   preindustrial:
     # Desmos graph of defaults: (where x = k) at https://www.desmos.com/calculator/zf4xtayuhm
     base_expected_time_in_years: 13_700
-    extinction_probability_per_year_denominator: 87_000 # The value used in the code is 1/<some value>, but we can't do arithmetic in
+    extinction_probability_per_year_denominator: 87_000 # The value used in the code is 1/<this value>, but we can't do arithmetic in
     # Yaml, so the param is just the denominator
     stretch_per_reboot: 1.05
   industrial:

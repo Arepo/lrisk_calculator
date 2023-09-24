@@ -2,7 +2,7 @@
 
 This repo contains a functional but unfinished implementation of the models of human civilisation development described [here](https://forum.effectivealtruism.org/posts/YnBwoNNqe6knBJH8p/modelling-civilisation-beyond-a-catastrophe) (with the 'survival' state renamed less confusingly as 'pre-equilibrium'). That post is highly recommended reading if you want to use these tools, since otherwise the inputs required for each model might be opaque.
 
-The cyclical model and perils-focused models from that post correspond respectively to the 'simple calculator' and 'full calculator' in this repo. I've called them L(ongtermist)-risk calculators because get at what I think are the core intuitions behind the concept of X(istential) risk, which as a concept has various problems described [here](https://forum.effectivealtruism.org/s/gWsTMm5Nbgdxedyns/p/fi3Abht55xHGQ4Pha).
+The cyclical model and perils-focused models from that post correspond respectively to the 'simple calculator' and 'full calculator' in this repo (except that I've added an 8th state, 'future time of perils', to the cyclical one, since it seemed potentially important to distinguish between the risk of starting risk estimation from the very beginning of one and starting it from where we are now). I've called them L(ongtermist)-risk calculators because get at what I think are the core intuitions behind the concept of X(istential) risk, which as a concept has various problems described [here](https://forum.effectivealtruism.org/s/gWsTMm5Nbgdxedyns/p/fi3Abht55xHGQ4Pha).
 
 To run the simple calc, navigate to ./calculators/website, and from the command line enter
 `flask --app webapp run` - then visit http://127.0.0.1:5000/, submit your best guesses, and you'll see the results at the top of the form.
@@ -30,7 +30,7 @@ A core assumption behind this model is that we should expect each civilisation t
 * Each reboot increases the amount of time we spend in the subsequent time of perils
 * Therefore the risk of reboot should be considered in the same category as an extinction risk - a [longtermist risk](https://forum.effectivealtruism.org/posts/zuQeTaqrjveSiSMYo/a-proposed-hierarchy-of-longtermist-concepts), if you will (hence the Github repo name); more specifically a contraction risk
 
-The size of this risk could be negligible or enormous, depending on the values one assumes for the various relevant parameters.[^xparams]
+The size of this risk could be negligible or enormous, depending on the values one assumes for the various relevant parameters.
 
 It’s possible that inside-view considerations could outweigh this effect for near-term reboots – for example, post-apocalyptic civilisations being more cautious about creating or using advanced weaponry. One could straightforwardly add these to the calculator as an if statement, but by default, it treats each reboot with the same underlying logic.
 
@@ -154,7 +154,3 @@ This was just due to time restrictions - I would love to set some up.
 [^xasymptote]: strictly speaking the graph continues to rise infinitesimally forever, and, since this is a stretch, the parameter doesn’t represent a max number of years. But hopefully, by playing with it on Desmos you’ll easily get an intuition for where your value of C sets the ‘rough maximum’ to be.
 
 [^xkrempel]: I owe this formula to Nick Krempel.
-
-[^xparams]: I’ll go into detail on the current/default parameter choices values in the next post.
-
-
