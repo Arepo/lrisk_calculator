@@ -2,106 +2,106 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 
-# extinction_given_pre_equilibrium = st.slider('Extinction given Pre-equilibrium', .0, 1., step=0.001, format="%f")
+col1, col2 = st.columns(2, gap="large")
 
-# st.number_input(label="Extinction given Pre-equilibrium", )
+with col1:
+    # First Section: Preindustrial given Pre-Equilibrium
+
+    if 'preindustrial_given_pre_equilibrium' not in st.session_state:
+        st.session_state.preindustrial_given_pre_equilibrium = 0.5
+
+    def update_preequilibrium_from_slider():
+        st.session_state.preindustrial_given_pre_equilibrium = st.session_state['pre_equilibrium_slider_value']
+
+    st.slider(
+        label='Preindustrial given Pre-Equilibrium',
+        min_value=0.0,
+        max_value=1.0,
+        value=st.session_state.preindustrial_given_pre_equilibrium,
+        step=0.001,
+        format="%f",
+        on_change=update_preequilibrium_from_slider,
+        key='pre_equilibrium_slider_value')
+
+    st.slider(label='Extinction (1) given Pre-Equilibrium',
+            min_value=0.0,
+            max_value=1.0,
+            value=1 - st.session_state.preindustrial_given_pre_equilibrium,
+            disabled=True, format="%f")
 
 
+# Second Section: Industrial given Preindustrial
 
-# Initialize the session state variable if it doesn't exist
-# if 'update_number' not in st.session_state:
-#     st.session_state.update_number = False
-# if 'update_slider' not in st.session_state:
-#     st.session_state.update_slider = False
-# if 'preindustrial_given_pre_equilibrium' not in st.session_state:
-#     st.session_state.preindustrial_given_pre_equilibrium = 0.5
+with col2:
 
+    if 'industrial_given_preindustrial' not in st.session_state:
+        st.session_state.industrial_given_preindustrial = 0.5
 
-# # Define the on_change functions
-# def update_from_slider():
-#     # Update the session state
-#     st.session_state.preindustrial_given_pre_equilibrium = slider_value
+    def update_preindustrial_from_slider():
+        st.session_state.industrial_given_preindustrial = st.session_state['preindustrial_slider_value']
 
-#     # Sync the number input to match the slider value
-#     num_input.slider('Preindustrial given Pre-Equilibrium', value=slider_value)
+    def update_preindustrial_from_number():
+        st.session_state.industrial_given_preindustrial = st.session_state['preindustrial_num_input_value']
 
-# def update_from_number():
-#     # Update the session state
-#     st.session_state.preindustrial_given_pre_equilibrium = num_input_value
+    st.slider(
+        label='Industrial (Slider) given Preindustrial',
+        min_value=0.0,
+        max_value=1.0,
+        value=st.session_state.industrial_given_preindustrial,
+        step=0.001,
+        format="%f",
+        on_change=update_preindustrial_from_slider,
+        key='preindustrial_slider_value')
 
-#     # Sync the slider to match the number input value
-#     slider.slider('Preindustrial given Pre-Equilibrium', value=num_input_value)
+    st.number_input(label='Industrial (Number) given Preindustrial',
+                    value=st.session_state.industrial_given_preindustrial,
+                    min_value=0.0,
+                    max_value=1.0,
+                    step=0.000001,
+                    format="%f",
+                    on_change=update_preindustrial_from_number,
+                    key='preindustrial_num_input_value')
 
-# slider_value = st.slider(
-#     'Preindustrial given Pre-Equilibrium',
+    st.slider(label='Extinction (2) given Preindustrial',
+            min_value=0.0,
+            max_value=1.0,
+            value=1 - st.session_state.industrial_given_preindustrial,
+            disabled=True, format="%f")
+
+# if 'industrial_given_preindustrial' not in st.session_state:
+#     st.session_state.industrial_given_preindustrial = 0.5
+
+# def update_preindustrial_from_slider():
+#     st.session_state.industrial_given_preindustrial = st.session_state['preindustrial_slider_value']
+
+# def update_preindustrial_from_number():
+#     st.session_state.industrial_given_preindustrial = st.session_state['preindustrial_num_input_value']
+
+# st.slider(
+#     label='Industrial (Slider) given Preindustrial',
 #     min_value=0.0,
 #     max_value=1.0,
-#     value=st.session_state.preindustrial_given_pre_equilibrium,
+#     value=st.session_state.industrial_given_preindustrial,
 #     step=0.001,
 #     format="%f",
-#     on_change=update_number)
+#     on_change=update_preindustrial_from_slider,
+#     key='preindustrial_slider_value')
 
-# # Calculate and display 'extinction_given_pre_equilibrium' based on preindustrial_given_pre_equilibrium
-# num_input_value = st.number_input('Preindustrial given Pre-Equilibrium',
-#                                     value=st.session_state.preindustrial_given_pre_equilibrium,
-#                                     min_value=0.000000,
-#                                     step=0.000001,
-#                                     max_value=1.,
-#                                     format="%f",
-#                                     on_change=update_slider)
+# st.number_input(label='Industrial (Number) given Preindustrial',
+#                 value=st.session_state.industrial_given_preindustrial,
+#                 min_value=0.0,
+#                 max_value=1.0,
+#                 step=0.000001,
+#                 format="%f",
+#                 on_change=update_preindustrial_from_number,
+#                 key='preindustrial_num_input_value')
 
+# st.slider(label='Extinction (2) given Preindustrial',
+#         min_value=0.0,
+#         max_value=1.0,
+#         value=1 - st.session_state.industrial_given_preindustrial,
+#         disabled=True, format="%f")
 
-# # Calculate and display 'extinction_given_pre_equilibrium' based on preindustrial_given_pre_equilibrium
-# st.slider('Extinction given Pre-Equilibrium', 0.0, 1.0, 1 - st.session_state.preindustrial_given_pre_equilibrium, disabled=True, format="%f")
-
-# Initialize the session state variable if not present
-if 'preindustrial_given_pre_equilibrium' not in st.session_state:
-    st.session_state.preindustrial_given_pre_equilibrium = 0.5
-
-# Define the on_change functions
-def update_from_slider():
-    # Directly use the value from session state, which will have the updated value
-    st.session_state.preindustrial_given_pre_equilibrium = st.session_state['slider_value']
-
-def update_from_number():
-    # Directly use the value from session state, which will have the updated value
-    st.session_state.preindustrial_given_pre_equilibrium = st.session_state['num_input_value']
-
-# Define the slider
-st.slider(
-    'Preindustrial given Pre-Equilibrium',
-    min_value=0.0,
-    max_value=1.0,
-    value=st.session_state.preindustrial_given_pre_equilibrium,
-    step=0.001,
-    format="%f",
-    on_change=update_from_slider,
-    key='slider_value')  # This key will let you access the value in session state
-
-# Define the number input
-st.number_input('Preindustrial given Pre-Equilibrium',
-                            value=st.session_state.preindustrial_given_pre_equilibrium,
-                            min_value=0.000000,
-                            step=0.000001,
-                            max_value=1.,
-                            format="%f",
-                            on_change=update_from_number,
-                            key='num_input_value')  # This key will let you access the value in session state
-
-# Define the dependent slider
-st.slider('Extinction given Pre-Equilibrium', 0.0, 1.0, 1 - st.session_state.preindustrial_given_pre_equilibrium, disabled=True, format="%f")
-# # Create an input field for 'preindustrial_given_pre_equilibrium'
-# preindustrial_given_pre_equilibrium = 1 - st.session_state.extinction_given_pre_equilibrium
-# new_preindustrial = st.number_input('Preindustrial given Pre-Equilibrium',
-#                                     value=preindustrial_given_pre_equilibrium,
-#                                     min_value=0.000000,
-#                                     step=0.000001,
-#                                     max_value=1.,
-#                                     format="%f")
-
-# # Calculate 'extinction_given_pre_equilibrium' based on the entered value
-# st.session_state.extinction_given_pre_equilibrium = 1 - new_preindustrial
-# st.write(f'Extinction given Pre-Equilibrium: {st.session_state.extinction_given_pre_equilibrium}')
 
 # st.write("""
 #     On your assumptions...
