@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 
-col1, col2 = st.columns(2, gap="large")
+col1, col2, col3 = st.columns(3, gap="large")
 
 with col1:
     # First Section: Preindustrial given Pre-Equilibrium
@@ -12,6 +12,9 @@ with col1:
 
     def update_preequilibrium_from_slider():
         st.session_state.preindustrial_given_pre_equilibrium = st.session_state['pre_equilibrium_slider_value']
+
+    def update_preindustrial_from_number():
+        st.session_state.preindustrial_given_pre_equilibrium = st.session_state['pre_equilibrium_num_input_value']
 
     st.slider(
         label='Preindustrial given Pre-Equilibrium',
@@ -23,7 +26,16 @@ with col1:
         on_change=update_preequilibrium_from_slider,
         key='pre_equilibrium_slider_value')
 
-    st.slider(label='Extinction (1) given Pre-Equilibrium',
+    st.number_input(label='Preindustrial (Number) given pre-equilibrium',
+                    value=st.session_state.preindustrial_given_pre_equilibrium,
+                    min_value=0.0,
+                    max_value=1.0,
+                    step=0.001,
+                    format="%f",
+                    on_change=update_preindustrial_from_number,
+                    key='pre_equilibrium_num_input_value')
+
+    st.slider(label='Extinction given Pre-Equilibrium',
             min_value=0.0,
             max_value=1.0,
             value=1 - st.session_state.preindustrial_given_pre_equilibrium,
@@ -57,50 +69,55 @@ with col2:
                     value=st.session_state.industrial_given_preindustrial,
                     min_value=0.0,
                     max_value=1.0,
-                    step=0.000001,
+                    step=0.001,
                     format="%f",
                     on_change=update_preindustrial_from_number,
                     key='preindustrial_num_input_value')
 
-    st.slider(label='Extinction (2) given Preindustrial',
+    st.slider(label='Extinction given Preindustrial',
             min_value=0.0,
             max_value=1.0,
             value=1 - st.session_state.industrial_given_preindustrial,
             disabled=True, format="%f")
 
-# if 'industrial_given_preindustrial' not in st.session_state:
-#     st.session_state.industrial_given_preindustrial = 0.5
 
-# def update_preindustrial_from_slider():
-#     st.session_state.industrial_given_preindustrial = st.session_state['preindustrial_slider_value']
+# Third Section: Future perils given preindustrial
 
-# def update_preindustrial_from_number():
-#     st.session_state.industrial_given_preindustrial = st.session_state['preindustrial_num_input_value']
+with col3:
 
-# st.slider(
-#     label='Industrial (Slider) given Preindustrial',
-#     min_value=0.0,
-#     max_value=1.0,
-#     value=st.session_state.industrial_given_preindustrial,
-#     step=0.001,
-#     format="%f",
-#     on_change=update_preindustrial_from_slider,
-#     key='preindustrial_slider_value')
+    if 'future_perils_given_industrial' not in st.session_state:
+        st.session_state.future_perils_given_industrial = 0.5
 
-# st.number_input(label='Industrial (Number) given Preindustrial',
-#                 value=st.session_state.industrial_given_preindustrial,
-#                 min_value=0.0,
-#                 max_value=1.0,
-#                 step=0.000001,
-#                 format="%f",
-#                 on_change=update_preindustrial_from_number,
-#                 key='preindustrial_num_input_value')
+    def update_perils_from_slider():
+        st.session_state.future_perils_given_industrial = st.session_state['future_perils_slider_value']
 
-# st.slider(label='Extinction (2) given Preindustrial',
-#         min_value=0.0,
-#         max_value=1.0,
-#         value=1 - st.session_state.industrial_given_preindustrial,
-#         disabled=True, format="%f")
+    def update_perils_from_number():
+        st.session_state.future_perils_given_industrial = st.session_state['future_perils_num_input_value']
+
+    st.slider(
+        label='Future perils (slider) given industrial',
+        min_value=0.0,
+        max_value=1.0,
+        value=st.session_state.future_perils_given_industrial,
+        step=0.001,
+        format="%f",
+        on_change=update_perils_from_slider,
+        key='future_perils_slider_value')
+
+    st.number_input(label='Future perils (number) given industrial',
+                    value=st.session_state.future_perils_given_industrial,
+                    min_value=0.0,
+                    max_value=1.0,
+                    step=0.001,
+                    format="%f",
+                    on_change=update_perils_from_number,
+                    key='future_perils_num_input_value')
+
+    st.slider(label='Extinction given industrial',
+            min_value=0.0,
+            max_value=1.0,
+            value=1 - st.session_state.future_perils_given_industrial,
+            disabled=True, format="%f")
 
 
 # st.write("""
