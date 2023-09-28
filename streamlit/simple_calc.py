@@ -141,19 +141,20 @@ def multiplanetary_probability():
     return .0
 
 def remainder():
-    return 1 - st.session_state.extinction_given_present_perils - st.session_state.preindustrial_given_present_perils
+    return 1 - sum([st.session_state[transition] for transition in specifiable_transitions])
 
-# specifiable_states = [
-#     'extinction_given_present_perils',
-#     'preindustrial_given_present_perils',
-#     'industrial_given_present_perils',
-#     'future_perils_given_present_perils',
-# ]
+specifiable_transitions = [
+    'extinction_given_present_perils',
+    # 'preequilibrium_given_present_perils',
+    'preindustrial_given_present_perils',
+    # 'industrial_given_present_perils',
+    # 'future_perils_given_present_perils',
+    # 'interstellar_given_present_perils'
+]
 
-if 'extinction_given_present_perils' not in st.session_state:
-    st.session_state.extinction_given_present_perils = 0.1
-if 'preindustrial_given_present_perils' not in st.session_state:
-    st.session_state.preindustrial_given_present_perils = 0.1
+for transition in specifiable_transitions:
+    if transition not in st.session_state:
+        st.session_state[transition] = 0.1
 
 if 'remainder' not in st.session_state:
     st.session_state.remainder = remainder()
