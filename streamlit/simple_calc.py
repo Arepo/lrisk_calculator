@@ -125,17 +125,7 @@ with col3:
 
 # # Section 4: Transitions from present perils
 
-# def update_present_perils_ex_extinction_from_slider():
-#     st.session_state.extinction_given_present_perils = st.session_state['present_perils_extinction_slider_value']
-#     if remainder() < 0:
-#         st.session_state.preindustrial_given_present_perils += remainder()
-
-# def update_present_perils_ex_preindustrial_from_slider():
-#     st.session_state.preindustrial_given_present_perils = st.session_state['present_perils_preindustrial_slider_value']
-#     if remainder() < 0:
-#         st.session_state.extinction_given_present_perils += remainder()
-
-def multiplanetary_probability():
+def multiplanetary_given_present_perils():
     if remainder() >= 0:
         return remainder()
     return .0
@@ -144,12 +134,12 @@ def remainder():
     return 1 - sum([st.session_state[transition] for transition in specifiable_transitions])
 
 specifiable_transitions = [
-    'extinction_given_present_perils',
-    'preequilibrium_given_present_perils',
-    'preindustrial_given_present_perils',
-    'industrial_given_present_perils',
-    'future_perils_given_present_perils',
-    'interstellar_given_present_perils'
+    'Extinction given present perils',
+    'Preequilibrium given present perils',
+    'Preindustrial given present perils',
+    'Industrial given present perils',
+    'Future perils given present perils',
+    'Interstellar given present perils'
 ]
 
 for transition in specifiable_transitions:
@@ -175,8 +165,8 @@ def update_transitions_given_present_perils_from_slider(transition_name):
             st.session_state[transition] = .0
         # If excess_probability is negative or 0, it will be added to the multiplanetary transition probability
 
-
-def make_on_change_callback(transition_name):
+def make_on_change_present_perils_callback(transition_name):
+    # Create a function to allow us to pass the transition name to the callback
     def callback():
         update_transitions_given_present_perils_from_slider(transition_name)
     return callback
@@ -189,269 +179,22 @@ for transition in specifiable_transitions:
     value=st.session_state[transition],
     step=0.001,
     format="%f",
-    on_change=make_on_change_callback(transition),
+    on_change=make_on_change_present_perils_callback(transition),
     key=transition + '_slider_value')
 
 multiplanetary = st.slider(
     label='Multiplanetary given present perils',
     min_value=0.0,
     max_value=1.0,
-    value=multiplanetary_probability(),
+    value=multiplanetary_given_present_perils(),
     disabled=True, format="%f")
 
-# st.slider(
-#     label='Extinction (slider) given present perils',
-#     min_value=0.0,
-#     max_value=1.0,
-#     value=st.session_state.extinction_given_present_perils,
-#     step=0.001,
-#     format="%f",
-#     on_change=update_present_perils_ex_extinction_from_slider,
-#     key='present_perils_extinction_slider_value')
 
-# st.slider(
-#     label='Preindustrial (slider) given present perils',
-#     min_value=0.0,
-#     max_value=1.0,
-#     value=st.session_state.preindustrial_given_present_perils,
-#     step=0.001,
-#     format="%f",
-#     on_change=update_present_perils_ex_preindustrial_from_slider,
-#     key='present_perils_preindustrial_slider_value')
+
+# Section 5
 
 
 
-
-
-
-# Initialization of slider values if not present
-# keys = [
-#     'extinction',
-#     'preequilibrium',
-#     'preindustrial',
-#     'industrial',
-#     'future_perils',
-#     'interstellar'
-# ]
-
-# for key in keys:
-#     if key not in st.session_state:
-#         st.session_state[key] = 0.1
-
-# def adjust_sliders(exclude_key):
-#     available_balance = 1 - st.session_state[exclude_key]
-#     for key in keys:
-#         if key != exclude_key:
-#             if st.session_state[key] > available_balance:
-#                 st.session_state[key] = available_balance
-#             available_balance -= st.session_state[key]
-
-# # Save previous states to detect which slider was changed
-# previous_states = {key: st.session_state[key] for key in keys}
-
-# # Display sliders
-# for key in keys:
-#     st.session_state[key] = st.slider(
-#         label=f'{key.capitalize()} given present perils',
-#         min_value=0.0,
-#         max_value=1.0,
-#         value=st.session_state[key],
-#         step=0.001,
-#         format="%f"
-#     )
-
-# # Determine the last adjusted slider
-# last_adjusted = next((key for key in keys if st.session_state[key] != previous_states[key]), None)
-
-# if last_adjusted:
-#     adjust_sliders(last_adjusted)
-
-# # Display the total
-# total = sum(st.session_state[key] for key in keys)
-# st.write(f"Total of sliders: {total:.3f}")
-
-# # Calculate and display the multiplanetary slider value
-# multiplanetary = 1 - total
-# st.slider(label='Multiplanetary given present perils',
-#          min_value=0.0,
-#          max_value=1.0,
-#          value=multiplanetary,
-#          disabled=True, format="%f")
-
-
-
-
-
-
-
-
-# # Manual input version
-
-# # Initialization
-# slider_labels = [
-#     'Extinction given present perils',
-#     'Preequilibrium given present perils',
-#     'Preindustrial given present perils',
-#     'Industrial given present perils',
-#     'Future perils given present perils',
-#     'Interstellar given present perils'
-# ]
-
-# slider_keys = [
-#     'extinction',
-#     'preequilibrium',
-#     'preindustrial',
-#     'industrial',
-#     'future_perils',
-#     'interstellar'
-# ]
-
-# for key in slider_keys:
-#     if key not in st.session_state:
-#         st.session_state[key] = 0.1
-
-# # Display sliders
-# for label, key in zip(slider_labels, slider_keys):
-#     st.session_state[key] = st.slider(
-#         label=label,
-#         min_value=0.0,
-#         max_value=1.0,
-#         value=st.session_state[key],
-#         step=0.001,
-#         format="%f"
-#     )
-
-# # Display the total
-# total = sum(st.session_state[key] for key in slider_keys)
-# st.write(f"Total of sliders: {total:.3f}")
-
-# # Warning and auto-adjust proposal if total exceeds 1
-# if total > 1:
-#     st.warning("The total exceeds 1. Adjust the sliders or see the proposed adjustments below.")
-#     if st.button("Show proposed adjustments"):
-#         excess = total - 1
-#         decrease_per_slider = excess / len(slider_keys)
-#         for key, label in zip(slider_keys, slider_labels):
-#             proposed_value = max(0, st.session_state[key] - decrease_per_slider)
-#             st.write(f"Proposed value for {label}: {proposed_value:.3f}")
-
-# # Calculate and display the multiplanetary slider value
-# multiplanetary = 1 - total
-# st.slider(label='Multiplanetary given present perils',
-#          min_value=0.0,
-#          max_value=1.0,
-#          value=multiplanetary,
-#          disabled=True, format="%f")
-
-
-
-
-
-
-# if 'extinction_given_present_perils' not in st.session_state:
-#     st.session_state.extinction_given_present_perils = 0.5
-
-# if 'pre_equilibrium_given_present_perils' not in st.session_state:
-#     st.session_state.pre_equilibrium_given_present_perils = 0.5
-
-# if 'preindustrial_given_present_perils' not in st.session_state:
-#     st.session_state.preindustrial_given_present_perils = 0.5
-
-# if 'industrial_given_present_perils' not in st.session_state:
-#     st.session_state.industrial_given_present_perils = 0.5
-
-# if 'future_perils_given_present_perils' not in st.session_state:
-#     st.session_state.future_perils_given_present_perils = 0.5
-
-# if 'interstellar_given_present_perils' not in st.session_state:
-#     st.session_state.interstellar_given_present_perils = 0.5
-
-# if 'multiplanetary_given_present_perils' not in st.session_state:
-#     st.session_state.multiplanetary_given_present_perils = 0.5
-
-
-# def update_present_perils_from_slider():
-#     pass
-#     # st.session_state.future_perils_given_industrial = st.session_state['future_perils_slider_value']
-
-# def update_present_perils_from_number():
-#     pass
-#     # st.session_state.future_perils_given_industrial = st.session_state['future_perils_num_input_value']
-
-# st.slider(
-#     label='Extinction (slider) given present perils',
-#     min_value=0.0,
-#     max_value=1.0,
-#     value=st.session_state.extinction_given_present_perils,
-#     step=0.001,
-#     format="%f",
-#     # on_change=update_present_perils_from_slider,
-#     key='extinction_given_present_perils_slider_value')
-
-# st.slider(
-#     label='Preequilibrium (slider) given present perils',
-#     min_value=0.0,
-#     max_value=1.0,
-#     value=st.session_state.pre_equilibrium_given_present_perils,
-#     step=0.001,
-#     format="%f",
-#     # on_change=update_present_perils_from_slider,
-#     key='pre_equilibrium_given_present_perils_slider_value')
-
-# st.slider(
-#     label='Preindustrial (slider) given present perils',
-#     min_value=0.0,
-#     max_value=1.0,
-#     value=st.session_state.preindustrial_given_present_perils,
-#     step=0.001,
-#     format="%f",
-#     # on_change=update_present_perils_from_slider,
-#     key='preindustrial_given_present_perils_slider_value')
-
-# st.slider(
-#     label='Industrial (slider) given present perils',
-#     min_value=0.0,
-#     max_value=1.0,
-#     value=st.session_state.industrial_given_present_perils,
-#     step=0.001,
-#     format="%f",
-#     # on_change=update_present_perils_from_slider,
-#     key='industrial_given_present_perils_slider_value')
-
-# st.slider(
-#     label='Future perils (slider) given present perils',
-#     min_value=0.0,
-#     max_value=1.0,
-#     value=st.session_state.future_perils_given_present_perils,
-#     step=0.001,
-#     format="%f",
-#     # on_change=update_present_perils_from_slider,
-#     key='future_perils_given_present_perils_slider_value')
-
-# st.slider(
-#     label='Interstellar (slider) given present perils',
-#     min_value=0.0,
-#     max_value=1.0,
-#     value=st.session_state.future_perils_given_present_perils,
-#     step=0.001,
-#     format="%f",
-#     # on_change=update_present_perils_from_slider,
-#     key='interstellar_given_present_perils_slider_value')
-
-# st.slider(label='Multiplanetary given present perils',
-#         min_value=0.0,
-#         max_value=1.0,
-#         value=1 - st.session_state.multiplanetary_given_present_perils,
-#         disabled=True, format="%f")
-
-# st.number_input(label='Future perils (number) given industrial',
-#                 value=st.session_state.future_perils_given_industrial,
-#                 min_value=0.0,
-#                 max_value=1.0,
-#                 step=0.001,
-#                 format="%f",
-#                 on_change=update_perils_from_number,
-#                 key='future_perils_num_input_value')
 
 
 # st.write("""
