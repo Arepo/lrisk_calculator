@@ -1,8 +1,4 @@
 from functools import cache
-from flask import jsonify
-import html
-import pdb
-
 from pydtmc import MarkovChain
 
 
@@ -281,5 +277,3 @@ class SimpleCalc:
 # # a castatrophe that put us into an industrial state would reduce our chance of becoming interstellar by {(net_interstellar_from_perils() - net_interstellar_from_industrial()) / net_interstellar_from_perils() * 100}%
 # # and if we reached a multiplanetary state, it would increase our chance of becoming interstellar by {(net_interstellar_from_multiplanetary() - net_interstellar_from_perils()) / net_interstellar_from_perils() * 100}%
 # # """)
-
-
