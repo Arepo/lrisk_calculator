@@ -5,7 +5,17 @@ from calculators.simple_calc.simple_calc import SimpleCalc
 
 # calc = SimpleCalc()
 
-col1, col2, col3 = st.columns(3, gap="large")
+
+# Make values percentages
+
+# TODO Reword headers as questions. What is the probability of getting to preindustrial from prequilibrium? Eg. what is the probability of getting to industrial from preindustrial?
+
+# TODO Decide how to select starting values? Is the value of making it look intuitive worth the cost of priming?
+
+st.write("""**Adjust the sliders to see how the probability of human descendants becoming interstellar changes based on your credences.**
+         """)
+
+col1, col2, col3 = st.columns(3)
 
 with col1:
     # First Section: Preindustrial given Pre-Equilibrium
@@ -13,20 +23,20 @@ with col1:
     if 'preindustrial_given_pre_equilibrium' not in st.session_state:
         st.session_state.preindustrial_given_pre_equilibrium = 0.5
 
-    def update_preequilibrium_from_slider():
+    def update_pre_equilibrium_from_slider():
         st.session_state.preindustrial_given_pre_equilibrium = st.session_state['pre_equilibrium_slider_value']
 
     def update_preindustrial_from_number():
         st.session_state.preindustrial_given_pre_equilibrium = st.session_state['pre_equilibrium_num_input_value']
 
     st.slider(
-        label='Preindustrial given Pre-Equilibrium',
+        label='Preindustrial (slider) given Pre-Equilibrium',
         min_value=0.0,
         max_value=1.0,
         value=st.session_state.preindustrial_given_pre_equilibrium,
         step=0.001,
         format="%f",
-        on_change=update_preequilibrium_from_slider,
+        on_change=update_pre_equilibrium_from_slider,
         key='pre_equilibrium_slider_value')
 
     st.number_input(label='Preindustrial (Number) given pre-equilibrium',
@@ -143,7 +153,7 @@ def present_perils_remainder():
 
 specifiable_transitions_from_present_perils = [
     'Extinction given present perils',
-    'Preequilibrium given present perils',
+    'Pre_equilibrium given present perils',
     'Preindustrial given present perils',
     'Industrial given present perils',
     'Future perils given present perils',
@@ -217,7 +227,7 @@ def future_perils_remainder():
 
 specifiable_transitions_from_future_perils = [
     'Extinction given future perils',
-    'Preequilibrium given future perils',
+    'Pre_equilibrium given future perils',
     'Preindustrial given future perils',
     'Industrial given future perils',
     'Interstellar given future perils'
@@ -290,7 +300,7 @@ def multiplanetary_remainder():
 
 specifiable_transitions_from_multiplanetary = [
     'Extinction given multiplanetary',
-    'Preequilibrium given multiplanetary',
+    'Pre_equilibrium given multiplanetary',
     'Preindustrial given multiplanetary',
     'Industrial given multiplanetary',
     'Future perils given multiplanetary',
@@ -343,19 +353,67 @@ st.slider(
     value=interstellar_given_multiplanetary(),
     disabled=True, format="%f")
 
-# st.write("""
+
+
+all_transition_probabilities = {
+    'extinction_given_pre_equilibrium': 1 - st.session_state.preindustrial_given_pre_equilibrium,
+    'extinction_given_preindustrial': 1 - st.session_state.industrial_given_preindustrial,
+    'extinction_given_industrial': 1 - st.session_state.future_perils_given_industrial,
+
+    'extinction_given_present_perils': st.session_state['Extinction given present perils'],
+    'pre_equilibrium_given_present_perils': st.session_state['Pre_equilibrium given present perils'],
+    'preindustrial_given_present_perils': st.session_state['Preindustrial given present perils'],
+    'industrial_given_present_perils': st.session_state['Industrial given present perils'],
+    'future_perils_given_present_perils': st.session_state['Future perils given present perils'],
+    'interstellar_given_present_perils': st.session_state['Interstellar given present perils'],
+
+    'extinction_given_future_perils': st.session_state['Extinction given future perils'],
+    'pre_equilibrium_given_future_perils': st.session_state['Pre_equilibrium given future perils'],
+    'preindustrial_given_future_perils': st.session_state['Preindustrial given future perils'],
+    'industrial_given_future_perils': st.session_state['Industrial given future perils'],
+    'interstellar_given_future_perils': st.session_state['Interstellar given future perils'],
+
+    'extinction_given_multiplanetary': st.session_state['Extinction given multiplanetary'],
+    'pre_equilibrium_given_multiplanetary': st.session_state['Pre_equilibrium given multiplanetary'],
+    'preindustrial_given_multiplanetary': st.session_state['Preindustrial given multiplanetary'],
+    'industrial_given_multiplanetary': st.session_state['Industrial given multiplanetary'],
+    'future_perils_given_multiplanetary': st.session_state['Future perils given multiplanetary'],
+}
+
+calc = SimpleCalc(**all_transition_probabilities)
+mc = calc.markov_chain()
+success_probabilities = mc.absorption_probabilities()[1]
+data = dict(zip(mc.transient_states, success_probabilities))
+# breakpoint()
+st.bar_chart(data)
+
+# string = f"""
 #     On your assumptions...
-#     The probability of becoming interstellar from a pre_equilibrium state = {{ calc.net_interstellar_from_pre_equilibrium() }}
-#     The probability of becoming interstellar from a preindustrial state = {{ calc.net_interstellar_from_preindustrial() }}
-#     The probability of becoming interstellar from an industrial state = {{ calc.net_interstellar_from_industrial() }}
-#     The probability of becoming interstellar from a time of perils state = {{ calc.net_interstellar_from_perils() }}</p>
-#     The probability of becoming interstellar from a multiplanetary state = {{ calc.net_interstellar_from_multiplanetary() }}</p>
+#     The probability of becoming interstellar from a pre_equilibrium state = { calc.net_interstellar_from_pre_equilibrium() }
+#     The probability of becoming interstellar from a preindustrial state = { calc.net_interstellar_from_preindustrial() }
+#     The probability of becoming interstellar from an industrial state = { calc.net_interstellar_from_industrial() }
+#     The probability of becoming interstellar from a time of perils state = { calc.net_interstellar_from_perils() }</p>
+#     The probability of becoming interstellar from a multiplanetary state = { calc.net_interstellar_from_multiplanetary() }</p>
 
 #     *****
 
 #     Therefore, if we consider eventual extinction and interstellar colonisation the only two outcomes...
-#     a castatrophe that put us into a pre-equilibrium state would be {{ calc.pre_equilibrium_probability_reduction() }} as bad as an extinction event
-#     a castatrophe that put us into a preindustrial state would be {{ calc.preindustrial_probability_reduction() }} as bad as an extinction event
-#     a castatrophe that put us into an industrial state would be {{ calc.industrial_probability_reduction() }} as bad as an extinction event
-#     and if we reached a multiplanetary state, it would increase our chance of becoming interstellar by {{ calc.multiplanetary_probability_increase() }}
-# """)
+#     a castatrophe that put us into a pre-equilibrium state would be { calc.pre_equilibrium_probability_reduction() } as bad as an extinction event
+#     a castatrophe that put us into a preindustrial state would be { calc.preindustrial_probability_reduction() } as bad as an extinction event
+#     a castatrophe that put us into an industrial state would be { calc.industrial_probability_reduction() } as bad as an extinction event
+#     and if we reached a multiplanetary state, it would increase our chance of becoming interstellar by { calc.multiplanetary_probability_increase() }
+# """
+
+# breakpoint()
+
+st.write(f"""
+    On your assumptions...
+
+    *****
+
+    Therefore, if we consider eventual extinction and interstellar colonisation the only two outcomes...
+    a castatrophe that put us into a pre-equilibrium state would be { calc.pre_equilibrium_probability_reduction() } as bad as an extinction event
+    a castatrophe that put us into a preindustrial state would be { calc.preindustrial_probability_reduction() } as bad as an extinction event
+    a castatrophe that put us into an industrial state would be { calc.industrial_probability_reduction() } as bad as an extinction event
+    and if we reached a multiplanetary state, it would increase our chance of becoming interstellar by { calc.multiplanetary_probability_increase() }
+""")
