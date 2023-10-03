@@ -12,7 +12,7 @@ from calculators.simple_calc.simple_calc import SimpleCalc
 
 # TODO Decide how to select starting values? Is the value of making it look intuitive worth the cost of priming?
 
-st.write("""**Adjust the sliders to see how the probability of human descendants becoming interstellar changes based on your credences.**
+st.write("""**Adjust the values to see how the probability of human descendants becoming interstellar changes based on your credences.**
          """)
 
 col1, col2, col3 = st.columns(3)
@@ -23,36 +23,23 @@ with col1:
     if 'preindustrial_given_pre_equilibrium' not in st.session_state:
         st.session_state.preindustrial_given_pre_equilibrium = 0.5
 
-    def update_pre_equilibrium_from_slider():
-        st.session_state.preindustrial_given_pre_equilibrium = st.session_state['pre_equilibrium_slider_value']
+    def update_preindustrial():
+        st.session_state.preindustrial_given_pre_equilibrium = round(st.session_state['pre_equilibrium_input_value'], 5)
 
-    def update_preindustrial_from_number():
-        st.session_state.preindustrial_given_pre_equilibrium = st.session_state['pre_equilibrium_num_input_value']
-
-    st.slider(
-        label='Preindustrial (slider) given Pre-Equilibrium',
-        min_value=0.0,
-        max_value=1.0,
-        value=st.session_state.preindustrial_given_pre_equilibrium,
-        step=0.001,
-        format="%f",
-        on_change=update_pre_equilibrium_from_slider,
-        key='pre_equilibrium_slider_value')
-
-    st.number_input(label='Preindustrial (Number) given pre-equilibrium',
+    st.number_input(label='What is the probability of getting to preindustrial from prequilibrium?',
                     value=st.session_state.preindustrial_given_pre_equilibrium,
                     min_value=0.0,
                     max_value=1.0,
-                    step=0.001,
-                    format="%f",
-                    on_change=update_preindustrial_from_number,
-                    key='pre_equilibrium_num_input_value')
+                    step=0.05,
+                    format="%.3f",
+                    on_change=update_preindustrial,
+                    key='pre_equilibrium_input_value')
 
-    st.slider(label='Extinction given Pre-Equilibrium',
-            min_value=0.0,
-            max_value=1.0,
-            value=1 - st.session_state.preindustrial_given_pre_equilibrium,
-            disabled=True, format="%f")
+    st.number_input(label='Extinction given Pre-Equilibrium',
+                    min_value=0.0,
+                    max_value=1.0,
+                    value=round(1 - st.session_state.preindustrial_given_pre_equilibrium, 5),
+                    disabled=True, format="%f")
 
 
 # Second Section: Industrial given Preindustrial
@@ -62,37 +49,24 @@ with col2:
     if 'industrial_given_preindustrial' not in st.session_state:
         st.session_state.industrial_given_preindustrial = 0.5
 
-    def update_preindustrial_from_slider():
-        st.session_state.industrial_given_preindustrial = st.session_state['preindustrial_slider_value']
+    def update_preindustrial():
+        st.session_state.industrial_given_preindustrial = round(st.session_state['preindustrial_input_value'], 5)
 
-    def update_preindustrial_from_number():
-        st.session_state.industrial_given_preindustrial = st.session_state['preindustrial_num_input_value']
-
-    st.slider(
-        label='Industrial (Slider) given Preindustrial',
-        min_value=0.0,
-        max_value=1.0,
-        value=st.session_state.industrial_given_preindustrial,
-        step=0.001,
-        format="%f",
-        on_change=update_preindustrial_from_slider,
-        key='preindustrial_slider_value')
-
-    st.number_input(label='Industrial (Number) given Preindustrial',
+    st.number_input(label='Industrial given Preindustrial',
                     value=st.session_state.industrial_given_preindustrial,
                     min_value=0.0,
                     max_value=1.0,
-                    step=0.001,
-                    format="%f",
-                    on_change=update_preindustrial_from_number,
-                    key='preindustrial_num_input_value')
+                    step=0.05,
+                    format="%.3f",
+                    on_change=update_preindustrial,
+                    key='preindustrial_input_value')
 
-    st.slider(label='Extinction given Preindustrial',
-            min_value=0.0,
-            max_value=1.0,
-            value=1 - st.session_state.industrial_given_preindustrial,
-            disabled=True, format="%f")
-
+    st.number_input(label='Extinction given Preindustrial',
+                    min_value=0.0,
+                    max_value=1.0,
+                    value=round(1 - st.session_state.industrial_given_preindustrial, 5),
+                    disabled=True,
+                    format="%.3f")
 
 # Third Section: Future perils given preindustrial
 
@@ -101,39 +75,24 @@ with col3:
     if 'future_perils_given_industrial' not in st.session_state:
         st.session_state.future_perils_given_industrial = 0.5
 
-    def update_perils_from_slider():
-        st.session_state.future_perils_given_industrial = st.session_state['future_perils_slider_value']
-
     def update_perils_from_number():
-        st.session_state.future_perils_given_industrial = st.session_state['future_perils_num_input_value']
+        st.session_state.future_perils_given_industrial = round(st.session_state['future_perils_num_input_value'], 5)
 
-    st.slider(
-        label='Future perils (slider) given industrial',
-        min_value=0.0,
-        max_value=1.0,
-        value=st.session_state.future_perils_given_industrial,
-        step=0.001,
-        format="%f",
-        on_change=update_perils_from_slider,
-        key='future_perils_slider_value')
-
-    st.number_input(label='Future perils (number) given industrial',
+    st.number_input(label='Future perils given Industrial',
                     value=st.session_state.future_perils_given_industrial,
                     min_value=0.0,
                     max_value=1.0,
-                    step=0.001,
-                    format="%f",
+                    step=0.05,
+                    format="%.3f",
                     on_change=update_perils_from_number,
                     key='future_perils_num_input_value')
 
-    st.slider(label='Extinction given industrial',
-            min_value=0.0,
-            max_value=1.0,
-            value=1 - st.session_state.future_perils_given_industrial,
-            disabled=True, format="%f")
-
-
-
+    st.number_input(label='Extinction given Industrial',
+                    min_value=0.0,
+                    max_value=1.0,
+                    value=round(1 - st.session_state.future_perils_given_industrial, 5),
+                    disabled=True,
+                    format="%.3f")
 
 
 # # Section 4: Transitions from present perils
@@ -149,7 +108,8 @@ def multiplanetary_given_present_perils():
     return .0
 
 def present_perils_remainder():
-    return 1 - sum([st.session_state[transition] for transition in specifiable_transitions_from_present_perils])
+    return round(1 - sum([st.session_state[transition] for transition in specifiable_transitions_from_present_perils]),
+                 5)
 
 specifiable_transitions_from_present_perils = [
     'Extinction given present perils',
@@ -164,48 +124,50 @@ for transition in specifiable_transitions_from_present_perils:
     if transition not in st.session_state:
         st.session_state[transition] = 0.1
 
-if 'present_perils_remainder' not in st.session_state:
-    st.session_state.present_perils_remainder = present_perils_remainder()
-
-def update_transitions_given_present_perils_from_slider(transition_name):
+def update_transitions_given_present_perils(transition_name):
     other_transitions = [transition for transition in specifiable_transitions_from_present_perils if transition != transition_name]
-    st.session_state[transition_name] = st.session_state[transition_name + '_slider_value']
+    st.session_state[transition_name] = round(st.session_state[transition_name + '_value'], 5)
     # Reduce the values of the other transitions as much as need be to ensure that the sum of all transitions is 1
     excess_probability = -present_perils_remainder()
     for transition in reversed(other_transitions):
         if excess_probability > 0 and excess_probability <= st.session_state[transition]:
             # The difference is low enough to be absorbed by this transition, so we're done adjusting sliders
-            st.session_state[transition] += present_perils_remainder()
+            st.session_state[transition] += round(present_perils_remainder(), 5)
             break
         elif excess_probability > 0:
             # Reduce this transition to 0 and continue to the next
-            excess_probability -= st.session_state[transition]
+            excess_probability -= round(st.session_state[transition], 5)
             st.session_state[transition] = .0
         # If excess_probability is negative or 0, it will be added to the multiplanetary transition probability
 
 def make_on_change_present_perils_callback(transition_name):
     # Create a function to allow us to pass the transition name to the callback
     def callback():
-        update_transitions_given_present_perils_from_slider(transition_name)
+        update_transitions_given_present_perils(transition_name)
     return callback
 
-for transition in specifiable_transitions_from_present_perils:
-    st.slider(
-    label=transition,
-    min_value=0.0,
-    max_value=1.0,
-    value=st.session_state[transition],
-    step=0.001,
-    format="%f",
-    on_change=make_on_change_present_perils_callback(transition),
-    key=transition + '_slider_value')
+if 'present_perils_remainder' not in st.session_state:
+    st.session_state.present_perils_remainder = present_perils_remainder()
 
-st.slider(
-    label='Multiplanetary given present perils',
-    min_value=0.0,
-    max_value=1.0,
-    value=multiplanetary_given_present_perils(),
-    disabled=True, format="%f")
+for transition in specifiable_transitions_from_present_perils:
+    st.number_input(
+        label=transition,
+        value=st.session_state[transition],
+        min_value=0.0,
+        max_value=1.0,
+        step=0.05,
+        format="%.3f",
+        on_change=make_on_change_present_perils_callback(transition),
+        key=transition + '_value'
+        )
+
+st.number_input(label=f'Multiplanetary given present perils',
+        value=multiplanetary_given_present_perils(),
+        min_value=0.0,
+        max_value=1.0,
+        format="%.3f",
+        disabled = True
+        )
 
 
 
@@ -223,7 +185,8 @@ def multiplanetary_given_future_perils():
     return .0
 
 def future_perils_remainder():
-    return 1 - sum([st.session_state[transition] for transition in specifiable_transitions_from_future_perils])
+    return round(1 - sum([st.session_state[transition] for transition in specifiable_transitions_from_future_perils]),
+                 5)
 
 specifiable_transitions_from_future_perils = [
     'Extinction given future perils',
@@ -237,50 +200,50 @@ for transition in specifiable_transitions_from_future_perils:
     if transition not in st.session_state:
         st.session_state[transition] = 0.1
 
-if 'future_perils_remainder' not in st.session_state:
-    st.session_state.future_perils_remainder = future_perils_remainder()
-
-def update_transitions_given_future_perils_from_slider(transition_name):
+def update_transitions_given_future_perils(transition_name):
     other_transitions = [transition for transition in specifiable_transitions_from_future_perils if transition != transition_name]
-    st.session_state[transition_name] = st.session_state[transition_name + '_slider_value']
+    st.session_state[transition_name] = round(st.session_state[transition_name + '_value'], 5)
     # Reduce the values of the other transitions as much as need be to ensure that the sum of all transitions is 1
     excess_probability = -future_perils_remainder()
     for transition in reversed(other_transitions):
         if excess_probability > 0 and excess_probability <= st.session_state[transition]:
             # The difference is low enough to be absorbed by this transition, so we're done adjusting sliders
-            st.session_state[transition] += future_perils_remainder()
+            st.session_state[transition] += round(future_perils_remainder(), 5)
             break
         elif excess_probability > 0:
             # Reduce this transition to 0 and continue to the next
-            excess_probability -= st.session_state[transition]
+            excess_probability -= round(st.session_state[transition], 5)
             st.session_state[transition] = .0
         # If excess_probability is negative or 0, it will be added to the multiplanetary transition probability
 
 def make_on_change_future_perils_callback(transition_name):
     # Create a function to allow us to pass the transition name to the callback
     def callback():
-        update_transitions_given_future_perils_from_slider(transition_name)
+        update_transitions_given_future_perils(transition_name)
     return callback
 
+if 'future_perils_remainder' not in st.session_state:
+    st.session_state.future_perils_remainder = future_perils_remainder()
+
 for transition in specifiable_transitions_from_future_perils:
-    st.slider(
-    label=transition,
-    min_value=0.0,
-    max_value=1.0,
-    value=st.session_state[transition],
-    step=0.001,
-    format="%f",
-    on_change=make_on_change_future_perils_callback(transition),
-    key=transition + '_slider_value')
+    st.number_input(
+        label=transition,
+        value=st.session_state[transition],
+        min_value=0.0,
+        max_value=1.0,
+        step=0.05,
+        format="%.3f",
+        on_change=make_on_change_future_perils_callback(transition),
+        key=transition + '_value'
+        )
 
-st.slider(
-    label='Multiplanetary given future perils',
-    min_value=0.0,
-    max_value=1.0,
-    value=multiplanetary_given_future_perils(),
-    disabled=True, format="%f")
-
-
+st.number_input(label=f'Multiplanetary given future perils',
+        value=multiplanetary_given_future_perils(),
+        min_value=0.0,
+        max_value=1.0,
+        format="%.3f",
+        disabled = True
+        )
 
 
 # Section 6 Transitional probabilities from multiplanetary states
@@ -296,7 +259,8 @@ def interstellar_given_multiplanetary():
     return .0
 
 def multiplanetary_remainder():
-    return 1 - sum([st.session_state[transition] for transition in specifiable_transitions_from_multiplanetary])
+    return round(1 - sum([st.session_state[transition] for transition in specifiable_transitions_from_multiplanetary]),
+                 5)
 
 specifiable_transitions_from_multiplanetary = [
     'Extinction given multiplanetary',
@@ -310,22 +274,19 @@ for transition in specifiable_transitions_from_multiplanetary:
     if transition not in st.session_state:
         st.session_state[transition] = 0.1
 
-if 'multiplanetary_remainder' not in st.session_state:
-    st.session_state.multiplanetary_remainder = multiplanetary_remainder()
-
 def update_multiplanetary_transitions(transition_name):
     other_transitions = [transition for transition in specifiable_transitions_from_multiplanetary if transition != transition_name]
-    st.session_state[transition_name] = st.session_state[transition_name + '_slider_value']
+    st.session_state[transition_name] = round(st.session_state[transition_name + '_value'], 5)
     # Reduce the values of the other transitions as much as need be to ensure that the sum of all transitions is 1
-    excess_probability = -multiplanetary_remainder()
+    excess_probability = round(-multiplanetary_remainder(), 5)
     for transition in reversed(other_transitions):
         if excess_probability > 0 and excess_probability <= st.session_state[transition]:
             # The difference is low enough to be absorbed by this transition, so we're done adjusting sliders
-            st.session_state[transition] += multiplanetary_remainder()
+            st.session_state[transition] += round(multiplanetary_remainder(), 5)
             break
         elif excess_probability > 0:
             # Reduce this transition to 0 and continue to the next
-            excess_probability -= st.session_state[transition]
+            excess_probability -= round(st.session_state[transition], 5)
             st.session_state[transition] = .0
         # If excess_probability is negative or 0, it will be added to the multiplanetary transition probability
 
@@ -335,23 +296,36 @@ def make_on_change_multiplanetary_callback(transition_name):
         update_multiplanetary_transitions(transition_name)
     return callback
 
-for transition in specifiable_transitions_from_multiplanetary:
-    st.slider(
-    label=transition,
-    min_value=0.0,
-    max_value=1.0,
-    value=st.session_state[transition],
-    step=0.001,
-    format="%f",
-    on_change=make_on_change_multiplanetary_callback(transition),
-    key=transition + '_slider_value')
+if 'multiplanetary_remainder' not in st.session_state:
+    st.session_state.multiplanetary_remainder = multiplanetary_remainder()
 
-st.slider(
-    label='Interstellar given multiplanetary',
-    min_value=0.0,
-    max_value=1.0,
-    value=interstellar_given_multiplanetary(),
-    disabled=True, format="%f")
+for transition in specifiable_transitions_from_multiplanetary:
+    st.number_input(
+        label=transition,
+        value=st.session_state[transition],
+        min_value=0.0,
+        max_value=1.0,
+        step=0.05,
+        format="%.3f",
+        on_change=make_on_change_multiplanetary_callback(transition),
+        key=transition + '_value'
+        )
+
+st.number_input(label=f'Interstellar given multiplanetary',
+        value=interstellar_given_multiplanetary(),
+        min_value=0.0,
+        max_value=1.0,
+        format="%.3f",
+        disabled = True
+        )
+
+
+
+
+
+
+
+
 
 
 
