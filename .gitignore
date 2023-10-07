@@ -2,4 +2,4 @@ calculators/__pycache__/
 calculators/full_calc/__pycache__/
 calculators/simple_calc/__pycache__/
 calculators/website/__pycache__
-.DS_Store
+*.DS_Store
