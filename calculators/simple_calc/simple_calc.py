@@ -1,6 +1,7 @@
 from functools import cache
 from pydtmc import MarkovChain
 from collections import OrderedDict
+import numpy as np
 
 # This script prints out a series of probabilities for transition becoming interstellar based on
 # estimates of the transition probabilities of various(values are currently hardcoded placeholders)
@@ -304,11 +305,21 @@ class SimpleCalc:
                 / self.net_interstellar_from_present_perils() * 100) + '%'
 
   def probability_proportion_differences(self):
-    return OrderedDict([
-      ('Extinction', self.extinction_probability_proportion()),
-      ('Preindustrial', self.preindustrial_probability_proportion()),
-      ('Industrial', self.industrial_probability_proportion()),
-      ('Future perils', self.future_perils_probability_proportion()),
-      ('Multiplanetary', self.multiplanetary_probability_proportion()),
-      ('Interstellar', self.interstellar_probability_proportion())
-    ])
+    if self.net_interstellar_from_present_perils():
+      return OrderedDict([
+        ('Extinction', self.extinction_probability_proportion()),
+        ('Preindustrial', self.preindustrial_probability_proportion()),
+        ('Industrial', self.industrial_probability_proportion()),
+        ('Future perils', self.future_perils_probability_proportion()),
+        ('Multiplanetary', self.multiplanetary_probability_proportion()),
+        ('Interstellar', self.interstellar_probability_proportion())
+      ])
+    else:
+      return OrderedDict([
+        ('Extinction', np.nan),
+        ('Preindustrial', np.nan),
+        ('Industrial', np.nan),
+        ('Future perils', np.nan),
+        ('Multiplanetary', np.nan),
+        ('Interstellar', np.nan)
+      ])

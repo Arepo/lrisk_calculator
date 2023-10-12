@@ -58,27 +58,28 @@ common_form_values = {
     'format': "%.3f",
 }
 
-def update_transitions(transition_name, current_state, remainder_function):
+def update_transitions(transition_name, current_state):
     other_transitions = [transition for transition in all_transitions[current_state] if transition != transition_name]
-    st.session_state[transition_name] = round(st.session_state[transition_name + '_value'], 5)
-    # Reduce the values of the other transitions as much as need be to ensure that the sum of all transitions is 1
-    excess_probability = -remainder_function()
+    st.session_state[transition_name] = st.session_state[transition_name + '_value']
+
+    # Given the change, determine how much we need to adjust other transitional probabilities to ensure they sum to 1
+    excess_probability = sum([st.session_state[transition] for transition in all_transitions[current_state]]) - 1
 
     for transition in other_transitions:
         # If excess_probability is positive that means we've lowered the value of the transition we're updating, and need to raise another
         if excess_probability > 0 and excess_probability <= st.session_state[transition]:
             # The difference is low enough to be absorbed by this transition, so we're done adjusting sliders
-            st.session_state[transition] += round(remainder_function(), 5)
+            st.session_state[transition] += -excess_probability
             break
         elif excess_probability > 0:
             # Reduce this transition to 0 and continue to the next
-            excess_probability -= round(st.session_state[transition], 5)
+            excess_probability -= st.session_state[transition]
             st.session_state[transition] = .0
     # If excess_probability is negative or 0, we add the difference it to extinction unless it's extinction we modified, then we add it to the next-most regressed state)
     if excess_probability < 0 and transition_name.startswith('Extinction'):
-        st.session_state[all_transitions[current_state][1]] -= round(excess_probability, 5)
+        st.session_state[all_transitions[current_state][1]] -= excess_probability
     elif excess_probability < 0:
-        st.session_state[all_transitions[current_state][0]] -= round(excess_probability, 5)
+        st.session_state[all_transitions[current_state][0]] -= excess_probability
 
 def get_remainder_value(remainder_function):
     return max(remainder_function(), .0)
@@ -107,14 +108,10 @@ col1, col2 = st.columns(2, gap="large")
 # First Section: Industrial given Preindustrial
 
 with col1:
-    def preindustrial_remainder():
-        return round(1 - sum([st.session_state[transition] for transition in all_transitions['from_preindustrial']]),
-                    5)
-
     def make_on_change_preindustrial_callback(transition_name):
         # Create a function to allow us to pass the transition name to the callback
         def callback():
-            update_transitions(transition_name, 'from_preindustrial', preindustrial_remainder)
+            update_transitions(transition_name, 'from_preindustrial')
         return callback
 
     for transition in all_transitions['from_preindustrial']:
@@ -170,14 +167,10 @@ with col1:
 # Second Section: Future perils given preindustrial
 
 with col2:
-    def industrial_remainder():
-        return round(1 - sum([st.session_state[transition] for transition in all_transitions['from_industrial']]),
-                    5)
-
     def make_on_change_industrial_callback(transition_name):
         # Create a function to allow us to pass the transition name to the callback
         def callback():
-            update_transitions(transition_name, 'from_industrial', industrial_remainder)
+            update_transitions(transition_name, 'from_industrial')
         return callback
 
     for transition in all_transitions['from_industrial']:
@@ -209,14 +202,10 @@ with col2:
 st.markdown("""## Transitional probabilities from present perils states
 """)
 
-def present_perils_remainder():
-    return round(1 - sum([st.session_state[transition] for transition in all_transitions['from_present_perils']]),
-                 5)
-
 def make_on_change_present_perils_callback(transition_name):
     # Create a function to allow us to pass the transition name to the callback
     def callback():
-        update_transitions(transition_name, 'from_present_perils', present_perils_remainder)
+        update_transitions(transition_name, 'from_present_perils')
     return callback
 
 # for transition in transitions['from_present_perils']:
@@ -248,14 +237,10 @@ for transition in all_transitions['from_present_perils']:
 st.markdown("""## Transitional probabilities from future perils states
 """)
 
-def future_perils_remainder():
-    return round(1 - sum([st.session_state[transition] for transition in all_transitions['from_future_perils']]),
-                 5)
-
 def make_on_change_future_perils_callback(transition_name):
     # Create a function to allow us to pass the transition name to the callback
     def callback():
-        update_transitions(transition_name, 'from_future_perils', future_perils_remainder)
+        update_transitions(transition_name, 'from_future_perils')
     return callback
 
 # for transition in transitions['from_future_perils']:
@@ -288,14 +273,10 @@ for transition in all_transitions['from_future_perils']:
 st.markdown("""## Transitional probabilities from multiplanetary states
 """)
 
-def multiplanetary_remainder():
-    return round(1 - sum([st.session_state[transition] for transition in all_transitions['from_multiplanetary']]),
-                 5)
-
 def make_on_change_multiplanetary_callback(transition_name):
     # Create a function to allow us to pass the transition name to the callback
     def callback():
-        update_transitions(transition_name, 'from_multiplanetary', multiplanetary_remainder)
+        update_transitions(transition_name, 'from_multiplanetary')
     return callback
 
 # for transition in transitions['from_multiplanetary']:
@@ -416,14 +397,10 @@ expected value of that event.""")
 
 # Section 6 - Transitional probabilities from abstract events
 
-def abstract_event_remainder():
-    return round(1 - sum([st.session_state[state] for state in all_transitions['from_abstract_state']]),
-                 5)
-
 def make_on_change_abstract_transition_callback(state_name):
     # Create a function to allow us to pass the state name to the callback
     def callback():
-        update_transitions(state_name, 'from_abstract_state', abstract_event_remainder)
+        update_transitions(state_name, 'from_abstract_state')
     return callback
 
 col1, col2, col3 = st.columns(3, gap="small")
@@ -478,7 +455,7 @@ array2 = np.array([st.session_state[state] for state in all_transitions['from_ab
 result = np.round(np.dot(array1, array2), 3)
 
 if calc.net_interstellar_from_present_perils():
-    result2 = str(- np.round(result / calc.net_interstellar_from_present_perils(), 3)) + 'x'
+    result2 = "${0}$ x".format(- np.round(result / calc.net_interstellar_from_present_perils(), 3))
     st.markdown("The expected value of the event is ${0}V$, or {1} "\
             "as bad as extinction".format(result, result2))
 else:
