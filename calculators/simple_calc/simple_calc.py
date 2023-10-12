@@ -257,6 +257,9 @@ class SimpleCalc:
   def industrial_probability_difference(self):
     return self.net_interstellar_from_industrial() - self.net_interstellar_from_present_perils()
 
+  def present_perils_probability_difference(self):
+    return 0
+
   def future_perils_probability_difference(self):
     return self.net_interstellar_from_future_perils() - self.net_interstellar_from_present_perils()
 
@@ -271,6 +274,7 @@ class SimpleCalc:
       ('Extinction', self.extinction_probability_difference()),
       ('Preindustrial', self.preindustrial_probability_difference()),
       ('Industrial', self.industrial_probability_difference()),
+      ('Present perils', self.present_perils_probability_difference()),
       ('Future perils', self.future_perils_probability_difference()),
       ('Multiplanetary', self.multiplanetary_probability_difference()),
       ('Interstellar', self.interstellar_probability_difference())
