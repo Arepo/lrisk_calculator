@@ -54,7 +54,7 @@ remainders = ['present_perils_remainder', 'future_perils_remainder', 'multiplane
 common_form_values = {
     'min_value': 0.0,
     'max_value': 1.0,
-    'step': 0.05,
+    'step': 0.01,
     'format': "%.3f",
 }
 
