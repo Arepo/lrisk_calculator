@@ -55,7 +55,7 @@ common_form_values = {
     'min_value': 0.0,
     'max_value': 1.0,
     'step': 0.01,
-    'format': "%.3f",
+    'format': "%.2f",
 }
 
 def update_transitions(transition_name, current_state):
