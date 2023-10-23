@@ -16,6 +16,8 @@ import numpy as np
 
 # TODO Might want this model to still have two ToP-states - the current one, and all future ones
 
+# TODO Nia's comments: https://github.com/niajane/lrisk_calc_comments/pull/1/files
+
 # Transition probabilities
 
 def rounded(func):

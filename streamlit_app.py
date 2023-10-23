@@ -3,6 +3,10 @@ import plotly.express as px
 import numpy as np
 import pandas as pd
 from calculators.simple_calc.simple_calc import SimpleCalc
+st.set_page_config(
+        page_title="My Page Title",
+)
+
 
 all_transitions = {
     'from_preindustrial': [
@@ -46,10 +50,10 @@ all_transitions = {
     ]
 }
 
+last_listed_transitions = [transitions[-1] for transitions in all_transitions.values()]
+
 # Get a flattened list of all transitions
 target_states = [target_state for target_state_list in all_transitions.values() for target_state in target_state_list]
-
-remainders = ['present_perils_remainder', 'future_perils_remainder', 'multiplanetary_remainder']
 
 common_form_values = {
     'min_value': 0.0,
@@ -59,7 +63,7 @@ common_form_values = {
 }
 
 def update_transitions(transition_name, current_state):
-    other_transitions = [transition for transition in all_transitions[current_state] if transition != transition_name]
+    other_transitions = [transition for transition in all_transitions[current_state] if transition != transition_name][::-1]
     st.session_state[transition_name] = st.session_state[transition_name + '_value']
 
     # Given the change, determine how much we need to adjust other transitional probabilities to ensure they sum to 1
@@ -76,20 +80,20 @@ def update_transitions(transition_name, current_state):
             excess_probability -= st.session_state[transition]
             st.session_state[transition] = .0
     # If excess_probability is negative or 0, we add the difference it to extinction unless it's extinction we modified, then we add it to the next-most regressed state)
-    if excess_probability < 0 and transition_name.startswith('Extinction'):
-        st.session_state[all_transitions[current_state][1]] -= excess_probability
+    if excess_probability < 0 and transition_name in last_listed_transitions:
+        st.session_state[all_transitions[current_state][-2]] -= excess_probability
     elif excess_probability < 0:
-        st.session_state[all_transitions[current_state][0]] -= excess_probability
+        st.session_state[all_transitions[current_state][-1]] -= excess_probability
 
 def get_remainder_value(remainder_function):
     return max(remainder_function(), .0)
 
-for session_value in (target_states +
-                      remainders):
-    if session_value not in st.session_state and not session_value.startswith('Extinction'):
-        st.session_state[session_value] = .0
-    elif session_value not in st.session_state and session_value.startswith('Extinction'):
+for session_value in (target_states):
+    if session_value not in st.session_state and session_value in last_listed_transitions:
+
         st.session_state[session_value] = 1.0
+    elif session_value not in st.session_state:
+        st.session_state[session_value] = .0
 
 
 
