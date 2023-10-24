@@ -1,4 +1,7 @@
-# pylint: disable=line-too-long
+# pylint: disable=line-too-long, invalid-name, redefined-outer-name, no-else-break
+# pylint: disable=fixme, pointless-string-statement, consider-using-f-string
+
+"""Main page of the Streamlit app."""
 
 import streamlit as st
 import plotly.express as px
@@ -68,6 +71,7 @@ common_form_values = {
 }
 
 def update_transitions(transition_name, current_state):
+    """For every transitional probability from the current state, update the value of the slider"""
     other_transitions = [transition for transition in all_transitions[current_state]
                          if transition != transition_name][::-1]
     st.session_state[transition_name + " " + current_state] = st.session_state[
@@ -75,12 +79,12 @@ def update_transitions(transition_name, current_state):
 
     # Given the change, determine how much we need to adjust other transitional probabilities to
     # ensure they sum to 1
-    excess_probability = sum([st.session_state[transition + " " + current_state] for transition in all_transitions[current_state]]) - 1
+    excess_probability = sum(st.session_state[transition + ' ' + current_state] for transition in all_transitions[current_state]) - 1
 
     for transition in other_transitions:
         # If excess_probability is positive that means we've lowered the value of the transition
         # we're updating, and need to raise another
-        if excess_probability > 0 and excess_probability <= st.session_state[transition  + " " + current_state]:
+        if 0 < excess_probability <= st.session_state[transition  + " " + current_state]:
             # The difference is low enough to be absorbed by this transition, so we're done
             # adjusting sliders
             st.session_state[transition + " " + current_state] += -excess_probability
@@ -96,9 +100,6 @@ def update_transitions(transition_name, current_state):
     elif excess_probability < 0:
         st.session_state[all_transitions[current_state][-1] + " " + current_state] -= excess_probability
 
-def get_remainder_value(remainder_function):
-    return max(remainder_function(), .0)
-
 for session_value in target_states:
     if session_value not in st.session_state and session_value in last_listed_transitions:
 
@@ -106,15 +107,13 @@ for session_value in target_states:
     elif session_value not in st.session_state:
         st.session_state[session_value] = .0
 
-
+def make_on_change_callback(transition_name, origin_state):
+    """Create a function to allow us to pass the transition name to the callback"""
+    def callback():
+        update_transitions(transition_name, origin_state)
+    return callback
 
 # Make values percentages
-
-# TODO Reword headers as questions. What is the probability of getting to preindustrial from
-# prequilibrium? Eg. what is the probability of getting to industrial from preindustrial?
-
-# TODO Decide how to select starting values? Is the value of making it look intuitive worth the cost
-# of priming?
 
 st.write("#### Adjust the values to see how the probability of human descendants becoming interstellar"\
          "changes based on your credences.")
@@ -129,17 +128,11 @@ with col1:
              that it directly transitions to either of the following states (assuming those are the
              only possible outcomes)?**""")
 
-    def make_on_change_preindustrial_callback(transition_name):
-        # Create a function to allow us to pass the transition name to the callback
-        def callback():
-            update_transitions(transition_name, 'from preindustrial')
-        return callback
-
     for transition in all_transitions['from preindustrial']:
         st.slider(
             label=transition,
             value=st.session_state[transition + " " +  'from preindustrial'],
-            on_change=make_on_change_preindustrial_callback(transition),
+            on_change=make_on_change_callback(transition, 'from preindustrial'),
             key=transition + " " + 'from preindustrial' + "_from_input",
             **common_form_values)
 
@@ -192,17 +185,11 @@ with col2:
              state that it directly transitions to
              either of the following states (assuming those are the only possible outcomes)?**""")
 
-    def make_on_change_industrial_callback(transition_name):
-        # Create a function to allow us to pass the transition name to the callback
-        def callback():
-            update_transitions(transition_name, 'from industrial')
-        return callback
-
     for transition in all_transitions['from industrial']:
         st.slider(
             label=transition,
             value=st.session_state[transition + " " + 'from industrial'],
-            on_change=make_on_change_industrial_callback(transition),
+            on_change=make_on_change_callback(transition,  'from industrial'),
             key=transition + " " + 'from industrial' + "_from_input",
             **common_form_values)
 
@@ -232,7 +219,8 @@ st.write("""**From our current state (postindustrial, dependent on a single plan
          (assuming those are the only possible outcomes)?**""")
 
 def make_on_change_present_perils_callback(transition_name):
-    # Create a function to allow us to pass the transition name to the callback
+    """Create a function to allow us to pass the transition name to the callback, and to update the
+    probabilities of abstract state to match"""
     def callback():
         update_transitions(transition_name, 'from present perils')
         for state in all_transitions['from present perils']:
@@ -274,12 +262,6 @@ st.write("""**If future civilisations ever regain technology resembling our curr
          that they will transitions directly to the following states?
          (assuming those are the only possible outcomes)?**""")
 
-def make_on_change_future_perils_callback(transition_name):
-    # Create a function to allow us to pass the transition name to the callback
-    def callback():
-        update_transitions(transition_name, 'from future perils')
-    return callback
-
 # for transition in transitions['from future perils']:
 #     st.number_input(
 #         label=transition,
@@ -297,7 +279,7 @@ for transition in all_transitions['from future perils']:
     st.slider(
     label=transition,
     value=st.session_state[transition + " " + 'from future perils'],
-    on_change=make_on_change_future_perils_callback(transition),
+    on_change=make_on_change_callback(transition, 'from future perils'),
     key=transition + " " + 'from future perils' + "_from_input",
     **common_form_values)
 
@@ -312,12 +294,6 @@ st.markdown("""## Transitional probabilities from multiplanetary states""")
 st.write("""**If civilisation ever develops self-sustaining settlements on more than one planets),
          what is the probability that they will transitions directly to the following states?
          (assuming those are the only possible outcomes)?**""")
-
-def make_on_change_multiplanetary_callback(transition_name):
-    # Create a function to allow us to pass the transition name to the callback
-    def callback():
-        update_transitions(transition_name, 'from multiplanetary')
-    return callback
 
 # for transition in transitions['from multiplanetary']:
 #     st.number_input(
@@ -336,7 +312,7 @@ for transition in all_transitions['from multiplanetary']:
     st.slider(
     label=transition,
     value=st.session_state[transition + " " + 'from multiplanetary'],
-    on_change=make_on_change_multiplanetary_callback(transition),
+    on_change=make_on_change_callback(transition, 'from multiplanetary'),
     key=transition + " " + 'from multiplanetary' + "_from_input",
     **common_form_values)
 
@@ -447,12 +423,6 @@ you might imagine counterfactually effecting or preventing below""")
 
 # Section 6 - Transitional probabilities from abstract events
 
-def make_on_change_abstract_transition_callback(state_name):
-    # Create a function to allow us to pass the state name to the callback
-    def callback():
-        update_transitions(state_name, 'from abstract state')
-    return callback
-
 col1, col2, col3 = st.columns(3, gap="small")
 
 for state, col in zip(all_transitions['from abstract state'][:3], (col1, col2, col3)):
@@ -460,7 +430,7 @@ for state, col in zip(all_transitions['from abstract state'][:3], (col1, col2, c
         st.slider(
             label=state,
             value=st.session_state[state + " " + 'from abstract state'],
-            on_change=make_on_change_abstract_transition_callback(state),
+            on_change=make_on_change_callback(state, 'from abstract state'),
             key=state + " " + 'from abstract state' + "_from_input",
             **common_form_values)
 
@@ -476,7 +446,7 @@ for state, col in zip(all_transitions['from abstract state'][3:], (col1, col2, c
         st.slider(
             label=state,
             value=st.session_state[state + " " + 'from abstract state'],
-            on_change=make_on_change_abstract_transition_callback(state),
+            on_change=make_on_change_callback(state, 'from abstract state'),
             key=state + " " + 'from abstract state' + "_from_input",
             **common_form_values)
 
