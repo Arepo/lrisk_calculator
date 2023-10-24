@@ -52,12 +52,9 @@ all_transitions = {
 
 last_listed_transitions = [transitions[-1] + " " + origin_state for origin_state, transitions in all_transitions.items()]
 
-# Get a flattened list of all concrete transitions
-target_states = []
-for origin_state, target_states in all_transitions.items():
-    for target_state in target_states:
-        if origin_state != 'from abstract state':
-            target_states.append(target_state + " " + origin_state)
+# Get a flattened list of all transitions
+target_states = [target_state + " " + origin_state for origin_state, target_state_list in all_transitions.items()
+                 for target_state in target_state_list]
 
 common_form_values = {
     'min_value': 0.0,
@@ -449,19 +446,6 @@ def make_on_change_abstract_transition_callback(state_name):
     return callback
 
 col1, col2, col3 = st.columns(3, gap="small")
-
-# for abstract_transition in all_transitions['from abstract state']:
-#     if (abstract_transition + " " + 'from abstract state' not in st.session_state and
-#         abstract_transition + " " + 'from present perils' not in st.session_state and
-#         abstract_transition == 'Interstellar/existential security'):
-#             st.session_state[abstract_transition + " " + 'from abstract state'] = 1.0
-#     elif (abstract_transition + " " + 'from abstract state' not in st.session_state and
-#           abstract_transition + " " + 'from present perils' not in st.session_state):
-#             st.session_state[abstract_transition + " " + 'from abstract state'] = .0
-#     elif (abstract_transition + " " + 'from abstract state' not in st.session_state and
-#           abstract_transition + " " + 'from present perils' in st.session_state):
-#             st.session_state[abstract_transition + " " + 'from abstract state'] = st.session_state[abstract_transition + " " + 'from present perils']
-
 
 for state, col in zip(all_transitions['from abstract state'][:3], (col1, col2, col3)):
     with col:
