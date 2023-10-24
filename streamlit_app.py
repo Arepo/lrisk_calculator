@@ -44,7 +44,6 @@ all_transitions = {
         'Extinction',
         'Preindustrial',
         'Industrial',
-        'Remaining in present perils',
         'Future perils',
         'Multiplanetary',
         'Interstellar/existential security'
@@ -53,9 +52,12 @@ all_transitions = {
 
 last_listed_transitions = [transitions[-1] + " " + origin_state for origin_state, transitions in all_transitions.items()]
 
-# Get a flattened list of all transitions
-target_states = [target_state + " " + origin_state for origin_state, target_state_list in all_transitions.items()
-                 for target_state in target_state_list]
+# Get a flattened list of all concrete transitions
+target_states = []
+for origin_state, target_states in all_transitions.items():
+    for target_state in target_states:
+        if origin_state != 'from abstract state':
+            target_states.append(target_state + " " + origin_state)
 
 common_form_values = {
     'min_value': 0.0,
@@ -96,7 +98,7 @@ def update_transitions(transition_name, current_state):
 def get_remainder_value(remainder_function):
     return max(remainder_function(), .0)
 
-for session_value in (target_states):
+for session_value in target_states:
     if session_value not in st.session_state and session_value in last_listed_transitions:
 
         st.session_state[session_value] = 1.0
@@ -432,10 +434,10 @@ proportion_fig = px.bar(
     y='Cost of transitioning to state as a percentage of the cost of extinction')
 st.plotly_chart(proportion_fig, use_container_width=True)
 
-st.markdown("""If you find it more convenient to think of a specific event
-rather than a specific transition, you can enter your credences for that event
-transitioning us to each state below given its realisation, to see the overall
-expected value of that event.""")
+st.markdown("""An alternative way to think about a specific event, rather than being a transition,
+is to reimagine your credences of the transitions from our current time of perils conditional on the
+event happening, to compare the difference it makes to our prospects. You can do this for some event
+you might imagine counterfactually effecting or preventing below""")
 
 
 # Section 6 - Transitional probabilities from abstract events
@@ -447,6 +449,19 @@ def make_on_change_abstract_transition_callback(state_name):
     return callback
 
 col1, col2, col3 = st.columns(3, gap="small")
+
+# for abstract_transition in all_transitions['from abstract state']:
+#     if (abstract_transition + " " + 'from abstract state' not in st.session_state and
+#         abstract_transition + " " + 'from present perils' not in st.session_state and
+#         abstract_transition == 'Interstellar/existential security'):
+#             st.session_state[abstract_transition + " " + 'from abstract state'] = 1.0
+#     elif (abstract_transition + " " + 'from abstract state' not in st.session_state and
+#           abstract_transition + " " + 'from present perils' not in st.session_state):
+#             st.session_state[abstract_transition + " " + 'from abstract state'] = .0
+#     elif (abstract_transition + " " + 'from abstract state' not in st.session_state and
+#           abstract_transition + " " + 'from present perils' in st.session_state):
+#             st.session_state[abstract_transition + " " + 'from abstract state'] = st.session_state[abstract_transition + " " + 'from present perils']
+
 
 for state, col in zip(all_transitions['from abstract state'][:3], (col1, col2, col3)):
     with col:
@@ -473,12 +488,12 @@ for state, col in zip(all_transitions['from abstract state'][3:], (col1, col2, c
             key=state + " " + 'from abstract state' + "_from_input",
             **common_form_values)
 
-st.slider(
-    label='Interstellar',
-    value=st.session_state['Interstellar/existential security from abstract state'],
-    on_change=make_on_change_abstract_transition_callback('Interstellar/existential security'),
-    key='Interstellar/existential security from abstract state_from_input',
-    **common_form_values)
+# st.slider(
+#     label='Interstellar',
+#     value=st.session_state['Interstellar/existential security from abstract state'],
+#     on_change=make_on_change_abstract_transition_callback('Interstellar/existential security'),
+#     key='Interstellar/existential security from abstract state_from_input',
+#     **common_form_values)
 
         # st.number_input(
         #     label=state,
