@@ -5,8 +5,8 @@ import numpy as np
 
 # This script prints out a series of probabilities for transition becoming interstellar based on
 # estimates of the transition probabilities of various(values are currently hardcoded placeholders)
-# states, as in a Markov chain. The states are extinction, pre_equilibrium, preindustrial, industrial, time
-# of perils, multiplanetary, and interstellar.
+# states, as in a Markov chain. The states are extinction, preindustrial, industrial, the current time
+# of perils, any future times of perils, multiplanetary, and interstellar.
 #
 # A full description/explanation of the model is in the section titled The Cyclical Model in this
 # post:
