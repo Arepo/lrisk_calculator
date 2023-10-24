@@ -22,15 +22,15 @@ all_transitions = {
         'Extinction',
         'Preindustrial',
         'Industrial',
-        "An approximate restart of the 'time of perils'",
-        'Multiplanetary',
+        "A 'minor' technological regression†",
+        'Multiplanetary††',
         'Interstellar/existential security'
     ],
     'from future perils': [
         'Extinction',
         'Preindustrial',
         'Industrial',
-        'Multiplanetary',
+        'Multiplanetary††',
         'Interstellar/existential security'
     ],
     'from multiplanetary': [
@@ -44,11 +44,15 @@ all_transitions = {
         'Extinction',
         'Preindustrial',
         'Industrial',
-        'Future perils',
-        'Multiplanetary',
+        "A 'minor' technological regression†",
+        'Multiplanetary††',
         'Interstellar/existential security'
     ]
 }
+
+obelus_string = """† An event that technologically regressed us the equivalent of about about 50-100 years, but left us with nuclear arsenals or other comparatively destructive weaponry.
+
+†† Civilisation has established self-sustaining settlements on more than one planet."""
 
 last_listed_transitions = [transitions[-1] + " " + origin_state for origin_state, transitions in all_transitions.items()]
 
@@ -220,10 +224,10 @@ with col2:
 
 '---'
 
-st.markdown("""## Transitional probabilities from present perils states
+st.markdown("""## Transitional probabilities from the current 'time of perils'
 """)
 
-st.write("""**From our current state (postindustrial, single planets, high-tech weaponry available),
+st.write("""**From our current state (postindustrial, dependent on a single planet, high-tech weaponry available),
          what is the probability that civilisation transitions directly to the following states?
          (assuming those are the only possible outcomes)?**""")
 
@@ -231,6 +235,8 @@ def make_on_change_present_perils_callback(transition_name):
     # Create a function to allow us to pass the transition name to the callback
     def callback():
         update_transitions(transition_name, 'from present perils')
+        for state in all_transitions['from present perils']:
+            st.session_state[state + " " + 'from abstract state'] = st.session_state[state + " " + 'from present perils']
     return callback
 
 # for transition in transitions['from present perils']:
@@ -254,16 +260,17 @@ for transition in all_transitions['from present perils']:
         key=transition + " " + 'from present perils' + "_from_input",
         **common_form_values)
 
+st.write(obelus_string)
 
 # Section 4 - Transitional probabilities from future perils states
 
 '---'
 
-st.markdown("""## Transitional probabilities from future perils states
+st.markdown("""## Transitional probabilities from any future 'times of perils'
 """)
 
 st.write("""**If future civilisations ever regain technology resembling our current level
-         (postindustrial, single planets, high-tech weaponry available), what is the probability
+         (postindustrial, dependent on a single planet, high-tech weaponry available), what is the probability
          that they will transitions directly to the following states?
          (assuming those are the only possible outcomes)?**""")
 
@@ -300,8 +307,7 @@ for transition in all_transitions['from future perils']:
 
 '---'
 
-st.markdown("""## Transitional probabilities from multiplanetary states
-""")
+st.markdown("""## Transitional probabilities from multiplanetary states""")
 
 st.write("""**If civilisation ever develops self-sustaining settlements on more than one planets),
          what is the probability that they will transitions directly to the following states?
@@ -340,16 +346,18 @@ for transition in all_transitions['from multiplanetary']:
 #     disabled=True,
 #     **common_form_values)
 
+'---'
 
+st.markdown("""## Comparing the value of outcomes""")
 
 all_transition_probabilities = {
-    'extinction_given_preindustrial': 1 - st.session_state['Extinction from preindustrial'],
-    'extinction_given_industrial': 1 - st.session_state['Extinction from industrial'],
+    'extinction_given_preindustrial': st.session_state['Extinction from preindustrial'],
+    'extinction_given_industrial': st.session_state['Extinction from industrial'],
 
     'extinction_given_present_perils': st.session_state['Extinction from present perils'],
     'preindustrial_given_present_perils': st.session_state['Preindustrial from present perils'],
     'industrial_given_present_perils': st.session_state['Industrial from present perils'],
-    'future_perils_given_present_perils': st.session_state["An approximate restart of the 'time of perils' from present perils"],
+    'future_perils_given_present_perils': st.session_state["A 'minor' technological regression† from present perils"],
     'interstellar_given_present_perils': st.session_state['Interstellar/existential security from present perils'],
 
     'extinction_given_future_perils': st.session_state['Extinction from future perils'],
@@ -472,6 +480,7 @@ for state, col in zip(all_transitions['from abstract state'][3:], (col1, col2, c
             key=state + " " + 'from abstract state' + "_from_input",
             **common_form_values)
 
+st.write(obelus_string)
 # st.slider(
 #     label='Interstellar',
 #     value=st.session_state['Interstellar/existential security from abstract state'],
