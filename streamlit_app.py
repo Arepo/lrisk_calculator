@@ -1,5 +1,5 @@
-# pylint: disable=line-too-long, invalid-name, redefined-outer-name, no-else-break
-# pylint: disable=fixme, pointless-string-statement, consider-using-f-string
+# pylint: disable=line-too-long, invalid-name, redefined-outer-name, fixme
+# pylint: disable=pointless-string-statement, consider-using-f-string
 
 """Main page of the Streamlit app."""
 
@@ -89,7 +89,7 @@ def update_transitions(transition_name, current_state):
             # adjusting sliders
             st.session_state[transition + " " + current_state] += -excess_probability
             break
-        elif excess_probability > 0:
+        if excess_probability > 0:
             # Reduce this transition to 0 and continue to the next
             excess_probability -= st.session_state[transition + " " + current_state]
             st.session_state[transition + " " + current_state] = .0

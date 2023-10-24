@@ -1,3 +1,7 @@
+# pylint: disable=invalid-name
+
+"""Renders the 'About' Streamlit page."""
+
 import streamlit as st
 
 st.markdown("""

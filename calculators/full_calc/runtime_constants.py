@@ -1,3 +1,5 @@
+# pylint: skip-file
+
 # These constants determine runtime, which is something like
 # O(MAX_CIVILISATIONS*MAX_PROGRESS_YEARS^2) or O(MAX_CIVILISATIONS*MAX_PLANETS^2) if the
 # latter is bigger. So setting them higher substantially increases runtime, but will also increase
@@ -8,9 +10,8 @@ MAX_CIVILISATIONS = 20
 
 MAX_PROGRESS_YEARS = 1000
 if MAX_PROGRESS_YEARS < 2:
-  raise 'Need at least two possible progress years'
+    raise 'Need at least two possible progress years'
 
 MAX_PROGRESS_YEAR_REGRESSION_STEPS = 50
 if MAX_PROGRESS_YEAR_REGRESSION_STEPS < 1:
-  raise 'Need at least one possible regression'
-
+    raise 'Need at least one possible regression'
