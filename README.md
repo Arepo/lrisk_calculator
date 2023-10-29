@@ -138,11 +138,9 @@ This was just due to time restrictions - I would love to set some up.
 * Double check that the maths is implemented correctly
 * Tidy directory structure and leftover kruft
 * Identify specific questions of interest - eg, how often do we pass through certain states on average?
-* Consider simplifying pre-equilibrium, preindustrial, and industrial into 1 or two states
 * Add feature tests
 * Add unit tests for full calc
 * Add Sankey diagram visualisation
-* Consider Streamlit frontend
 * Implement web version of full calculator - may require login to limit the number of submitted requests
 * Look for optimisations for full calc, and/or figure out a way to determine sensible minimum runtime param values
 * Extend full calc to include pre- and post-AGI world states (such that, eg., post-AGI, if we aren't in either absorbing state, the chance of transitioning directly to either one from time of perils is reduced)
