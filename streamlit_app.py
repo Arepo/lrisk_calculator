@@ -12,6 +12,8 @@ st.set_page_config(
         page_title="L-risk calculator",
 )
 
+# TODO Add Sankey diagram
+
 all_transitions = {
     'from preindustrial': [
         'Extinction',
@@ -53,9 +55,9 @@ all_transitions = {
     ]
 }
 
-obelus_string = """† An event that technologically regressed us the equivalent of about about 50-100 years, but left us with nuclear arsenals or other comparatively destructive weaponry.
+obelus_string = """<span style="font-size:0.8em;">† Defined as an event that technologically regressed us the equivalent of about about 50-100 years, but left us with nuclear arsenals or other comparatively destructive weaponry.</span>
 
-†† Civilisation has established self-sustaining settlements on more than one planet."""
+<span style="font-size:0.8em;">†† Defined as civilisation having established self-sustaining settlements on more than one planet.</span>"""
 
 last_listed_transitions = [transitions[-1] + " " + origin_state for origin_state, transitions in all_transitions.items()]
 
@@ -248,7 +250,7 @@ for transition in all_transitions['from present perils']:
         key=transition + " " + 'from present perils' + "_from_input",
         **common_form_values)
 
-st.write(obelus_string)
+st.markdown(obelus_string, unsafe_allow_html=True)
 
 # Section 4 - Transitional probabilities from future perils states
 
@@ -415,24 +417,37 @@ proportion_fig = px.bar(
     y='Cost of transitioning to state as a percentage of the cost of extinction')
 st.plotly_chart(proportion_fig, use_container_width=True)
 
-st.markdown("""An alternative way to think about a specific event, rather than being a transition,
-is to reimagine your credences of the transitions from our current time of perils conditional on the
-event happening, to compare the difference it makes to our prospects. You can do this for some event
-you might imagine counterfactually effecting or preventing below""")
+
 
 
 # Section 6 - Transitional probabilities from abstract events
 
+'---'
+
+st.markdown("""## Transitional probabilities from abstract events""")
+
+st.markdown("""You could also consider an event, rather than as a transition, to be an adjustment
+your credences of the transitions from our current time of perils conditional on the event
+happening, to compare the difference it makes to our prospects. This way you can compare the
+counterfactual value of 'events' which are 'you work on some cause area'. You can make such
+adjustments with fields below (numbers input manually, to allow you arbitrary precision about your
+estimate of the outcome):""")
+
 col1, col2, col3 = st.columns(3, gap="small")
+
+precision = 9
 
 for state, col in zip(all_transitions['from abstract state'][:3], (col1, col2, col3)):
     with col:
-        st.slider(
+        st.number_input(
             label=state,
             value=st.session_state[state + " " + 'from abstract state'],
             on_change=make_on_change_callback(state, 'from abstract state'),
             key=state + " " + 'from abstract state' + "_from_input",
-            **common_form_values)
+            min_value= 0.0,
+            max_value= 1.0,
+            step= 0.01,
+            format= f"%.{precision}f")
 
         # st.number_input(
         #     label=state,
@@ -443,14 +458,17 @@ for state, col in zip(all_transitions['from abstract state'][:3], (col1, col2, c
 
 for state, col in zip(all_transitions['from abstract state'][3:], (col1, col2, col3)):
     with col:
-        st.slider(
+        st.number_input(
             label=state,
             value=st.session_state[state + " " + 'from abstract state'],
             on_change=make_on_change_callback(state, 'from abstract state'),
             key=state + " " + 'from abstract state' + "_from_input",
-            **common_form_values)
+            min_value= 0.0,
+            max_value= 1.0,
+            step= 0.01,
+            format= f"%.{precision}f")
 
-st.write(obelus_string)
+st.write(obelus_string, unsafe_allow_html=True)
 # st.slider(
 #     label='Interstellar',
 #     value=st.session_state['Interstellar/existential security from abstract state'],
@@ -471,14 +489,12 @@ st.write(obelus_string)
 #         **common_form_values)
 
 
-array1 = np.array(list(calc.probability_differences().values()))
-array2 = np.array([st.session_state[state + " " + 'from abstract state']
-                   for state in all_transitions['from abstract state']])
-result = np.round(np.dot(array1, array2), 3)
+probability_differences = np.array(list(calc.probability_differences().values()))
+counterfactual_transitional_probabilities = (
+    np.array([st.session_state[state + " " + 'from abstract state']
+              for state in all_transitions['from abstract state']]))
 
-if calc.net_interstellar_from_present_perils():
-    result2 = "${0}$ x".format(- np.round(result / calc.net_interstellar_from_present_perils(), 3))
-    st.markdown("The expected value of the event is ${0}V$, or {1} "\
-            "as bad as extinction".format(result, result2))
-else:
-    st.markdown("The expected value of the event is ${0}V$".format(result))
+result = np.round(np.dot(probability_differences, counterfactual_transitional_probabilities),
+                  precision)
+
+st.markdown("The expected value of the event is ${0}V$.".format(result))
