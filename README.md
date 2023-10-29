@@ -147,7 +147,7 @@ This was just due to time restrictions - I would love to set some up.
 * Look for optimisations for full calc, and/or figure out a way to determine sensible minimum runtime param values
 * Extend full calc to include pre- and post-AGI world states (such that, eg., post-AGI, if we aren't in either absorbing state, the chance of transitioning directly to either one from time of perils is reduced)
 * Add some initial values for full calc and/or simple calc - ideally a dropdown allowing you to select from relevant researchers' best guesses
-* Actually host it online somewhere
+* (With a lot of extra time); refactor to allow users to easily add and remove Markov Chain states
 
 
 
