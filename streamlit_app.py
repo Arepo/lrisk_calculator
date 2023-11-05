@@ -431,7 +431,7 @@ success is less than 50%).
 
 proportion_df = pd.DataFrame(
     calc.probability_proportion_differences().items(),
-    columns=['State', 'Cost of transitioning to state as a percentage of the cost of extinction'])
+    columns=['State', 'Cost of transitioning to state as a percentage of the cost of extinction (can be negative)'])
 proportion_fig = px.bar(
     proportion_df,
     x='State',
