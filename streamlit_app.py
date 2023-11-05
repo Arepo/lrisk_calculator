@@ -55,7 +55,7 @@ all_transitions = {
     ]
 }
 
-obelus_string = """<span style="font-size:0.8em;">† Defined as an event that technologically regressed us the equivalent of about about 50-100 years, but left us with nuclear arsenals or other comparatively destructive weaponry.</span>
+obelus_string = """<span style="font-size:0.8em;">† Defined as an event that effectively reset the modern era, i.e. technologically regressed us the equivalent of about about 50-100 years, but left us with nuclear arsenals or other comparatively destructive weaponry.</span>
 
 <span style="font-size:0.8em;">†† Defined as civilisation having established self-sustaining settlements on more than one planet.</span>"""
 
