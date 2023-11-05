@@ -429,13 +429,15 @@ negative values can theoretically be lower than -100% if the current chance of
 success is less than 50%).
 """, unsafe_allow_html=True)
 
+x='State'
+y='Cost of transitioning to state as a percentage of the cost of extinction (can be negative)'
 proportion_df = pd.DataFrame(
     calc.probability_proportion_differences().items(),
-    columns=['State', 'Cost of transitioning to state as a percentage of the cost of extinction (can be negative)'])
+    columns=[x, y])
 proportion_fig = px.bar(
     proportion_df,
-    x='State',
-    y='Cost of transitioning to state as a percentage of the cost of extinction')
+    x=x,
+    y=y)
 st.plotly_chart(proportion_fig, use_container_width=True)
 
 
