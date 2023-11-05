@@ -65,6 +65,8 @@ last_listed_transitions = [transitions[-1] + " " + origin_state for origin_state
 target_states = [target_state + " " + origin_state for origin_state, target_state_list in all_transitions.items()
                  for target_state in target_state_list]
 
+concrete_transitions = [state for state in target_states if not state.endswith('from abstract state')]
+
 common_form_values = {
     'min_value': 0.0,
     'max_value': 1.0,
@@ -81,7 +83,7 @@ common_form_values = {
 def set_query_params():
     query_params = {transition: value
                     for transition, value in st.session_state.items()
-                    if transition in target_states}
+                    if transition in concrete_transitions}
     st.experimental_set_query_params(**query_params)
 
 
@@ -116,11 +118,14 @@ def update_transitions(transition_name, current_state):
     set_query_params()
 
 for session_value in target_states:
+    # Determine values in session state, from query strings first, else recent user input, else
+    # default to 0s and 1s
     query_params = st.experimental_get_query_params()
     if session_value in query_params:
-        # breakpoint()
         st.session_state[session_value] = float(query_params[session_value][0])
-    if session_value not in st.session_state and session_value in last_listed_transitions:
+    elif session_value.endswith('from abstract state') and session_value not in st.session_state:
+        st.session_state[session_value] = st.session_state[session_value.replace('from abstract state', 'from present perils')]
+    elif session_value not in st.session_state and session_value in last_listed_transitions:
         st.session_state[session_value] = 1.0
     elif session_value not in st.session_state:
         st.session_state[session_value] = .0
@@ -512,5 +517,4 @@ counterfactual_transitional_probabilities = (
 
 result = np.round(np.dot(probability_differences, counterfactual_transitional_probabilities),
                   precision)
-
 st.markdown("The expected value of the event is ${0}V$.".format(result))
