@@ -72,13 +72,25 @@ common_form_values = {
     'format': "%.2f",
 }
 
+# TODO implement this without breaking session state names
+# def to_readable_url(string):
+#     """Convert transition names to a human-readable URL format"""
+#     string = string.replace(" ", "_").replace("'", "").replace("/", "").replace("†", "")
+#     return string.lower()
+
+def set_query_params():
+    query_params = {transition: value
+                    for transition, value in st.session_state.items()
+                    if transition in target_states}
+    st.experimental_set_query_params(**query_params)
+
+
 def update_transitions(transition_name, current_state):
     """For every transitional probability from the current state, update the value of the slider"""
     other_transitions = [transition for transition in all_transitions[current_state]
                          if transition != transition_name][::-1]
     st.session_state[transition_name + " " + current_state] = st.session_state[
         transition_name + " " + current_state + '_from_input']
-
     # Given the change, determine how much we need to adjust other transitional probabilities to
     # ensure they sum to 1
     excess_probability = sum(st.session_state[transition + ' ' + current_state] for transition in all_transitions[current_state]) - 1
@@ -101,10 +113,14 @@ def update_transitions(transition_name, current_state):
         st.session_state[all_transitions[current_state][-2] + " " + current_state] -= excess_probability
     elif excess_probability < 0:
         st.session_state[all_transitions[current_state][-1] + " " + current_state] -= excess_probability
+    set_query_params()
 
 for session_value in target_states:
+    query_params = st.experimental_get_query_params()
+    if session_value in query_params:
+        # breakpoint()
+        st.session_state[session_value] = float(query_params[session_value][0])
     if session_value not in st.session_state and session_value in last_listed_transitions:
-
         st.session_state[session_value] = 1.0
     elif session_value not in st.session_state:
         st.session_state[session_value] = .0
