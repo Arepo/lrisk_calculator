@@ -7,7 +7,7 @@ import streamlit as st
 st.markdown("""
 # Longtermism calculators
 
-This site implements the cycical model of human civilisation [described here](https://forum.effectivealtruism.org/s/gWsTMm5Nbgdxedyns/p/YnBwoNNqe6knBJH8p) (with the 'survival' state replaced ). That post is recommended reading if you want to use these tools, since otherwise the inputs required for each model might be opaque.
+This site implements the cycical model of human civilisation [described here](https://forum.effectivealtruism.org/s/gWsTMm5Nbgdxedyns/p/ouuj93CPymfnvu8uQ) (with the 'survival' state replaced ). That post is recommended reading if you want to use these tools, since otherwise the inputs required for each model might be opaque.
 
 ## Simple calculator vs advanced calculator
 

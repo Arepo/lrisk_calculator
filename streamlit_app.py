@@ -81,6 +81,7 @@ common_form_values = {
 #     return string.lower()
 
 def set_query_params():
+    """Add a query string to represent each of the current set of form values"""
     query_params = {transition: value
                     for transition, value in st.session_state.items()
                     if transition in concrete_transitions}
