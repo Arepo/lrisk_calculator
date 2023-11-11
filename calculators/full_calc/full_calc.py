@@ -139,24 +139,36 @@ def full_markov_chain():
 start = datetime.datetime.now()
 mc = full_markov_chain()
 runtime = (datetime.datetime.now() - start).seconds
-raise Exception("The output below looks highly suspicious")
 current_perils_index = mc.states.index('perils-0')
 first_preindustrial_index = mc.states.index('preindustrial-1')
 first_industrial_index = mc.states.index('industrial-1')
-print(f"""From this breakpoint, you can query the MarkovChain (variable name mc) object as
-    described at https://github.com/TommasoBelluzzo/PyDTMC, and in this repo's README.md
+# print(f"""From this breakpoint, you can query the MarkovChain (variable name mc) object as
+#     described at https://github.com/TommasoBelluzzo/PyDTMC, and in this repo's README.md
 
-    Example values of interest:
-    From our current time of perils, your parameters imply that our chance of ultimately becoming
-    interstellar is
-    ~{round(mc.absorption_probabilities()[1][current_perils_index] * 100)}%.
+#     Example values of interest:
+#     From our current time of perils, your parameters imply that our chance of ultimately becoming
+#     interstellar is
+#     ~{round(mc.absorption_probabilities()[1][current_perils_index] * 100)}%.
 
-    If we we to regress once to a preindustrial state, our chance of becoming interstellar would be
-    ~{round(mc.absorption_probabilities()[1][first_preindustrial_index] * 100)}%.
+#     If we we to regress once to a preindustrial state, our chance of becoming interstellar would be
+#     ~{round(mc.absorption_probabilities()[1][first_preindustrial_index] * 100)}%.
 
-    If we we to regress once to an industrial state, our chance of becoming interstellar would be
-    ~{round(mc.absorption_probabilities()[1][first_industrial_index] * 100)}%.
+#     If we we to regress once to an industrial state, our chance of becoming interstellar would be
+#     ~{round(mc.absorption_probabilities()[1][first_industrial_index] * 100)}%.
 
-    (the runtime with these parameters was {runtime} seconds)""")
-# Intentionally checked in breakpoint - this is where you can manually query the results
+#     (the runtime with these parameters was {runtime} seconds)""")
+# # Intentionally checked in breakpoint - this is where you can manually query the results
+
+print('Probability of becoming interstellar from perils-0:')
+print(mc.absorption_probabilities()[1][mc.states.index('perils-0')])
+print('*' * 20)
+for i in range(1, constant.MAX_CIVILISATIONS + 1):
+    print('Probability of becoming interstellar from preindustrial-' + str(i) + ':')
+    print(mc.absorption_probabilities()[1][mc.states.index(f'preindustrial-{i}')])
+    print('Probability of becoming interstellar from industrial-' + str(i) + ':')
+    print(mc.absorption_probabilities()[1][mc.states.index(f'industrial-{i}')])
+    print('Probability of becoming interstellar from perils-' + str(i) + ':')
+    print(mc.absorption_probabilities()[1][mc.states.index(f'perils-{i}')])
+    print('*' * 20)
+
 ipdb.set_trace()
