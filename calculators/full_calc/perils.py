@@ -8,7 +8,7 @@ import yaml
 import runtime_constants as constant
 from graph_functions import sigmoid_curved_risk
 
-with open('params.yml', 'r', encoding="utf-8") as stream:
+with open('calculators/full_calc/params.yml', 'r', encoding="utf-8") as stream:
     PARAMS = yaml.safe_load(stream)['perils']
 
 @cache
@@ -74,7 +74,7 @@ def _parameterised_transition_probability(k, p, target_state):
         return (PARAMS[target_state]['per_civilisation_background_risk_numerator'] ** (k + 1)
                 /PARAMS[target_state]['base_background_risk_denominator'])
 
-    return background_risk(target_state) + sigmoid_curved_risk(
+    return background_risk() + sigmoid_curved_risk(
         x=p,
         x_stretch=x_stretch(),
         y_stretch=y_stretch(),

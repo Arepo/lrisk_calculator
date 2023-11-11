@@ -5,7 +5,7 @@
 from functools import cache
 import yaml
 
-with open('params.yml', 'r', encoding="utf-8") as stream:
+with open('calculators/full_calc/params.yml', 'r', encoding="utf-8") as stream:
     PARAMS = yaml.safe_load(stream)['preperils']
 
 @cache

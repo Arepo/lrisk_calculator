@@ -15,17 +15,6 @@ perils:
     per_civilisation_background_risk_numerator: 1.02
     base_background_risk_denominator: 870_000
 
-  pre_equilibrium:
-    # Desmos graph:
-    # https://www.desmos.com/calculator/21twtfavxk
-    y_stretch: 0.000_005
-    base_x_stretch: 91
-    x_translation: 0
-    sharpness: 2.4
-    stretch_per_reboot: 1.5
-    per_civilisation_background_risk_numerator: 0
-    base_background_risk_denominator: 1
-
   preindustrial:
     # Desmos graph:
     # https://www.desmos.com/calculator/xgouzeyehb
@@ -99,12 +88,6 @@ multiplanetary:
     min_risk: 0
     x_translation: 2
 
-  pre_equilibrium:
-    two_planet_risk: 0
-    decay_rate: 0
-    min_risk: 0
-    x_translation: 2
-
   preindustrial:
     two_planet_risk: 0
     decay_rate: 0
@@ -147,10 +130,6 @@ multiplanetary:
     sharpness: 2
 
 preperils:
-
-  pre_equilibrium:
-    # I'm using a constant for this, so no Desmos graph
-    base_estimate: 0.0003
   preindustrial:
     # Desmos graph of defaults: (where x = k) at https://www.desmos.com/calculator/zf4xtayuhm
     base_expected_time_in_years: 13_700
@@ -166,5 +145,3 @@ preperils:
     annual_extinction_probability_multiplier: 0.7
     base_expected_time_in_years: 1450
     stretch_per_reboot: 1.5
-
-

@@ -8,7 +8,7 @@ import yaml
 import runtime_constants as constant
 from graph_functions import sigmoid_curved_risk, exponentially_decaying_risk
 
-with open('params.yml', 'r', encoding="utf-8") as stream:
+with open('calculators/full_calc/params.yml', 'r', encoding="utf-8") as stream:
     PARAMS = yaml.safe_load(stream)['multiplanetary']
 
 @cache
@@ -16,11 +16,6 @@ def extinction_given_multiplanetary(q):
     """Probability of transitioning to extinction given a multiplanetary state with q
     settlements."""
     return parameterised_decaying_transition_probability('extinction', q=q)
-
-def pre_equilibrium_given_multiplanetary():
-    """Sum of total pre_equilibrium exit probability over all values of q. Returns 0 on default
-    values"""
-    return parameterised_decaying_transition_probability('pre_equilibrium')
 
 def preindustrial_given_multiplanetary():
     """Sum of total preindustrial exit probability over all values of q. Returns 0 on default
@@ -180,7 +175,6 @@ def perils_given_multiplanetary(q):
 
 
 # exit_probabilities = [extinction_given_multiplanetary(1,11),
-#                         pre_equilibrium_given_multiplanetary(1,11),
 #                         preindustrial_given_multiplanetary(1,11),
 #                         industrial_given_multiplanetary(1,11),
 #                         perils_given_multiplanetary(1,11),
@@ -193,12 +187,9 @@ def perils_given_multiplanetary(q):
 # # transition_to_n_planets_given_multiplanetary(1, 9, 3)
 
 
-# pdb.set_trace()
-
 
 # TODO - consider reintroducing this checksum
 # if not 1 == (extinction_given_multiplanetary(k)
-#              + pre_equilibrium_given_multiplanetary(k)
 #              + preindustrial_given_multiplanetary(k)
 #              + industrial_given_multiplanetary(k)
 #              + perils_given_multiplanetary(k)
