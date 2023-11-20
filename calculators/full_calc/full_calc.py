@@ -159,16 +159,25 @@ first_industrial_index = mc.states.index('industrial-1')
 #     (the runtime with these parameters was {runtime} seconds)""")
 # # Intentionally checked in breakpoint - this is where you can manually query the results
 
+print('Total runtime: ' + str(runtime) + ' seconds')
+print('Runtime constants:')
+print('Max planets: ' + str(constant.MAX_PLANETS))
+print('Max civilisations: ' + str(constant.MAX_CIVILISATIONS))
+print('Max progress years: ' + str(constant.MAX_PROGRESS_YEARS))
 print('Probability of becoming interstellar from perils-0:')
 print(mc.absorption_probabilities()[1][mc.states.index('perils-0')])
+print('Probability of becoming interstellar from multiplanetary-0:')
+print(mc.absorption_probabilities()[1][mc.states.index('multiplanetary-0')])
 print('*' * 20)
-for i in range(1, constant.MAX_CIVILISATIONS + 1):
+for i in range(1, constant.MAX_CIVILISATIONS):
     print('Probability of becoming interstellar from preindustrial-' + str(i) + ':')
     print(mc.absorption_probabilities()[1][mc.states.index(f'preindustrial-{i}')])
     print('Probability of becoming interstellar from industrial-' + str(i) + ':')
     print(mc.absorption_probabilities()[1][mc.states.index(f'industrial-{i}')])
     print('Probability of becoming interstellar from perils-' + str(i) + ':')
     print(mc.absorption_probabilities()[1][mc.states.index(f'perils-{i}')])
+    print('Probability of becoming interstellar from multiplanetary-' + str(i) + ':')
+    print(mc.absorption_probabilities()[1][mc.states.index(f'multiplanetary-{i}')])
     print('*' * 20)
 
-ipdb.set_trace()
+# ipdb.set_trace()
