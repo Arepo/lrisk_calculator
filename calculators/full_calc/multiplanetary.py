@@ -7,9 +7,9 @@ import yaml
 
 import runtime_constants as constant
 from graph_functions import sigmoid_curved_risk, exponentially_decaying_risk
+from params import Params
 
-with open('calculators/full_calc/params.yml', 'r', encoding="utf-8") as stream:
-    PARAMS = yaml.safe_load(stream)['multiplanetary']
+params = Params().dictionary['multiplanetary']
 
 @cache
 def extinction_given_multiplanetary(q):
@@ -34,18 +34,18 @@ def interstellar_given_multiplanetary(q):
     TODO need to specify behaviour for max value."""
 
     def x_stretch():
-        return PARAMS['interstellar']['x_stretch'] # Just intuition
+        return params['interstellar']['x_stretch'] # Just intuition
 
     def y_stretch():
         # TODO - if this asymptotes too fast, we might get invalid total probabilities. Is there a
         # neat way to guard against that?
-        return PARAMS['interstellar']['y_stretch']
+        return params['interstellar']['y_stretch']
 
     def x_translation():
-        return PARAMS['interstellar']['x_translation']
+        return params['interstellar']['x_translation']
 
     def sharpness():
-        return PARAMS['interstellar']['sharpness']
+        return params['interstellar']['sharpness']
 
     # Graph with these values: https://www.desmos.com/calculator/vdyih29fqb
     return sigmoid_curved_risk(q, x_stretch(), y_stretch(), x_translation(), sharpness())
@@ -54,24 +54,24 @@ def interstellar_given_multiplanetary(q):
 def parameterised_decaying_transition_probability(target_state, q=None):
     """Calculate the overall probability of transition for specified value of q given
     user-determined params"""
-    if PARAMS[target_state]['two_planet_risk'] == 0:
+    if params[target_state]['two_planet_risk'] == 0:
         return 0
 
     @cache
     def starting_value():
-        return PARAMS[target_state]['two_planet_risk']
+        return params[target_state]['two_planet_risk']
 
     @cache
     def decay_rate():
-        return PARAMS[target_state]['decay_rate']
+        return params[target_state]['decay_rate']
 
     @cache
     def min_risk():
-        return PARAMS[target_state]['min_risk']
+        return params[target_state]['min_risk']
 
     @cache
     def x_translation():
-        return PARAMS[target_state]['x_translation']
+        return params[target_state]['x_translation']
 
     return exponentially_decaying_risk(
         x=q,
@@ -98,14 +98,14 @@ def transition_to_n_planets_given_multiplanetary(q, n):
 
     So on balance I err towards making it slightly lower.
     """
-    N_PARAMS = PARAMS['n_planets']
+    n_params = params['n_planets']
 
     def any_intra_multiplanetary_regression(q):
         return exponentially_decaying_risk(x=q,
-                                        starting_value=N_PARAMS['two_planet_risk'],
-                                        decay_rate=N_PARAMS['decay_rate'],
-                                        x_translation=N_PARAMS['x_translation'],
-                                        min_probability=N_PARAMS['min_risk'])
+                                        starting_value=n_params['two_planet_risk'],
+                                        decay_rate=n_params['decay_rate'],
+                                        x_translation=n_params['x_translation'],
+                                        min_probability=n_params['min_risk'])
 
     def remainder_outcome(q):
         return 1 - (extinction_given_multiplanetary(q)
@@ -147,7 +147,7 @@ def transition_to_n_planets_given_multiplanetary(q, n):
     # The commented out return values is the exponential decrease described above. TODO - where?
     total_probability_of_loss = any_intra_multiplanetary_regression(q) # How likely is it in
     # total we lose any number of planets between 1 and (q - 1) inclusive?
-    geometric_base = N_PARAMS['geometric_base']
+    geometric_base = n_params['geometric_base']
 
     numerator_for_n_planets = geometric_base ** n # How relatively likely is it, given
     # some loss, that that loss took us to exactly n planets?

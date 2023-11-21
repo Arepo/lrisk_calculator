@@ -4,22 +4,27 @@
 
 from functools import cache
 import yaml
+from params import Params
 
-with open('calculators/full_calc/params.yml', 'r', encoding="utf-8") as stream:
-    PARAMS = yaml.safe_load(stream)['preperils']
+params = Params().preperils
 
 @cache
 def extinction_given_preindustrial(k):
     """Calculate probability of extinction from preindustrial state in the kth civilisation,
     given user-specified params."""
-    base_expected_time_in_years = PARAMS['preindustrial']['base_expected_time_in_years']
+    p_params = params.preindustrial
 
-    stretch_per_reboot = PARAMS['preindustrial']['stretch_per_reboot']
+    base_expected_time_in_years = p_params.base_expected_time_in_years
+
+    stretch_per_reboot = p_params.stretch_per_reboot
 
     expected_time_in_years = base_expected_time_in_years * stretch_per_reboot ** k
 
     extinction_probability_per_year = (1 /
-        PARAMS['preindustrial']['extinction_probability_per_year_denominator'])
+        p_params.extinction_probability_per_year_denominator)
+
+    extinction_probability_per_year = (1 /
+        p_params.extinction_probability_per_year_denominator)
 
     return 1 - ((1 - extinction_probability_per_year) ** expected_time_in_years)
 
@@ -41,16 +46,16 @@ def extinction_given_industrial(k):
     # if k == 1:
     #   do_something_different
 
-    I_PARAMS = PARAMS['industrial']
+    i_params = params.industrial
 
     base_annual_extinction_probability = (1 /
-        I_PARAMS['base_annual_extinction_probability_denominator'])
+        i_params.base_annual_extinction_probability_denominator)
 
-    annual_extinction_probability_multiplier = I_PARAMS['annual_extinction_probability_multiplier']
+    annual_extinction_probability_multiplier = i_params.annual_extinction_probability_multiplier
 
-    stretch_per_reboot = I_PARAMS['stretch_per_reboot']
+    stretch_per_reboot = i_params.stretch_per_reboot
 
-    expected_time_in_years = I_PARAMS['base_expected_time_in_years'] * stretch_per_reboot ** (k - 1)
+    expected_time_in_years = i_params.base_expected_time_in_years * stretch_per_reboot ** (k - 1)
 
     return (1 - (1 - base_annual_extinction_probability * annual_extinction_probability_multiplier)
                 ** expected_time_in_years)
