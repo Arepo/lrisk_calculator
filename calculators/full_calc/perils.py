@@ -50,7 +50,7 @@ def _parameterised_transition_probability(k, p, target_state):
     @cache
     def x_stretch():
         return (params[target_state]['base_x_stretch']
-                * params[target_state]['stretch_per_reboot'] ** (k + 1))
+                * params[target_state]['stretch_per_reboot'] ** k)
 
     @cache
     def y_stretch():
