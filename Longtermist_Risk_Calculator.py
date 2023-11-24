@@ -140,7 +140,7 @@ def make_on_change_callback(transition_name, origin_state):
 # Make values percentages
 
 st.write("#### Adjust the values to see how the probability of human descendants becoming interstellar"\
-         "changes based on your credences.")
+         " changes based on your credences.")
 
 col1, col2 = st.columns(2, gap="large")
 
