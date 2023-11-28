@@ -145,8 +145,6 @@ def transition_to_n_planets_given_multiplanetary(q, n):
     # return any_intra_multiplanetary_regression(q) * ((n + 1)
     #                                               / (1 + (q ** 2)/2 + 3 * q / 2))
     # The commented out return values is the exponential decrease described above. TODO - where?
-    total_probability_of_loss = any_intra_multiplanetary_regression(q) # How likely is it in
-    # total we lose any number of planets between 1 and (q - 1) inclusive?
     geometric_base = n_params['geometric_base']
 
     numerator_for_n_planets = geometric_base ** n # How relatively likely is it, given
@@ -156,7 +154,7 @@ def transition_to_n_planets_given_multiplanetary(q, n):
                                     / (1 - geometric_base))
     # Thus numerator_for_n_planets / geometric_sum_of_weightings is a proportion; you can play
     # with the values at https://www.desmos.com/calculator/ku0p2iahq3
-    return total_probability_of_loss * (numerator_for_n_planets / geometric_sum_of_weightings)
+    return any_intra_multiplanetary_regression(q) * (numerator_for_n_planets / geometric_sum_of_weightings)
                                     # Brackets seem to improve floating point errors at least
                                     # when the contents should be 1
 
