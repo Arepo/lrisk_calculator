@@ -51,13 +51,11 @@ def extinction_given_industrial(k):
     base_annual_extinction_probability = (1 /
         i_params.base_annual_extinction_probability_denominator)
 
-    annual_extinction_probability_multiplier = i_params.annual_extinction_probability_multiplier
+    expected_time_in_years = (i_params.base_expected_time_in_years
+                              * i_params.stretch_per_reboot ** (k - 1))
 
-    stretch_per_reboot = i_params.stretch_per_reboot
-
-    expected_time_in_years = i_params.base_expected_time_in_years * stretch_per_reboot ** (k - 1)
-
-    return (1 - (1 - base_annual_extinction_probability * annual_extinction_probability_multiplier)
+    return (1 - (1 - base_annual_extinction_probability
+                     * i_params.annual_extinction_probability_multiplier)
                 ** expected_time_in_years)
 
 @cache

@@ -25,6 +25,11 @@ class IntraPerilsMCWrapper():
 
         # Transitional probabilities from non-absorbing states
         year_range = range(0, constant.MAX_PROGRESS_YEARS)
+        # if k == 8:
+        #     for pe in year_range:
+        #         for en in year_range:
+        #             if perils.transition_to_year_n_given_perils(k, pe, en) < 0 or perils.transition_to_year_n_given_perils(k, pe, en)> 1:
+        #                 import ipdb; ipdb.set_trace()
 
         intra_transition_probabilities = {
             p: [perils.transition_to_year_n_given_perils(k, p, n) for n in year_range]
@@ -53,13 +58,14 @@ class IntraPerilsMCWrapper():
                                             interstellar_row]
 
         perils_years = [f"{num}" for num in year_range]
-        # import pdb; pdb.set_trace()
+
+
         self.mc = MarkovChain(probability_matrix, perils_years
-                                                + ['Extinction',
-                                                   'Preindustrial',
-                                                   'Industrial',
-                                                   'Perils',
-                                                   'Interstellar'])
+                                            + ['Extinction',
+                                                'Preindustrial',
+                                                'Industrial',
+                                                'Multiplanetary',
+                                                'Interstellar'])
 
         self.starting_year = 70 # Nowish. Counting time of perils as starting in 1945, and treating
         # us as having had about net 8 progress years worth of regression.
@@ -73,10 +79,10 @@ class IntraPerilsMCWrapper():
             # extinct
 
             # Min() function corrects a pydtmc floating point error that can make this above 1
-            return min(self.mc.absorption_probabilities()[1][0]
-                        + self.mc.absorption_probabilities()[2][0]
-                        + self.mc.absorption_probabilities()[3][0]
-                        + self.mc.absorption_probabilities()[0][0], 1)
+            return min(self.mc.absorption_probabilities()[1][0] # preindustrial
+                        + self.mc.absorption_probabilities()[2][0] # industrial
+                        + self.mc.absorption_probabilities()[0][0] # extinction
+                        , 1)
         if self.k == 0:
             return self.mc.absorption_probabilities()[0][self.starting_year]
             # Assume we start from where we actually are in the current time of perils, but in
@@ -89,9 +95,9 @@ class IntraPerilsMCWrapper():
         if self.k + 1 >= constant.MAX_CIVILISATIONS:
             return 0
         if self.k == 0 and k1 == 1:
-            return self.mc.absorption_probabilities()[2][self.starting_year]
+            return self.mc.absorption_probabilities()[1][self.starting_year]
         if self.k + 1 == k1:
-            return self.mc.absorption_probabilities()[2][0]
+            return self.mc.absorption_probabilities()[1][0]
         # The only preindustrial state we can reach from perils_k is preindustrial_(k+1)
         return 0
 
@@ -101,9 +107,9 @@ class IntraPerilsMCWrapper():
         if self.k + 1 >= constant.MAX_CIVILISATIONS:
             return 0
         if self.k == 0 and k1 == 1:
-            return self.mc.absorption_probabilities()[3][self.starting_year]
+            return self.mc.absorption_probabilities()[2][self.starting_year]
         if self.k + 1 == k1:
-            return self.mc.absorption_probabilities()[3][0]
+            return self.mc.absorption_probabilities()[2][0]
         # The only industrial state we can reach from perils_k is industrial_(k+1)
         return 0
 
@@ -111,9 +117,9 @@ class IntraPerilsMCWrapper():
         """Return the overall probability of transitioning to a multiplanetary state for the kth
         civilisation, given that it's in a time of perils"""
         if self.k == 0 and k1 == 0:
-            return self.mc.absorption_probabilities()[4][self.starting_year]
+            return self.mc.absorption_probabilities()[3][self.starting_year]
         if self.k == k1:
-            return self.mc.absorption_probabilities()[4][0]
+            return self.mc.absorption_probabilities()[3][0]
         # The only multiplanetary state we can reach from perils_k is multiplanetary_k
         return 0
 

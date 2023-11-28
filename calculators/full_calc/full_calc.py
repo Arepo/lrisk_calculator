@@ -11,6 +11,8 @@ from pydtmc import MarkovChain
 import runtime_constants as constant
 import preperils
 import sub_markov_chains
+from params import Params
+
 
 def full_markov_chain():
     """Wrapper for a pydtmc Markov chain that implements the full decay/perils-focused/multiplanetary
@@ -128,6 +130,7 @@ def full_markov_chain():
                     for index in enumerate(perils_rows)]
     multiplanetary_names = ['multiplanetary-' + str(index[0])
                             for index in enumerate(multiplanetary_rows)]
+    # import ipdb; ipdb.set_trace()
     return MarkovChain(probability_matrix, preindustrial_names
                                            + industrial_names
                                            + perils_names
@@ -136,6 +139,13 @@ def full_markov_chain():
                                            + ['Interstellar'])
 
 
+print('Runtime constants:')
+print('Max planets: ' + str(constant.MAX_PLANETS))
+print('Max civilisations: ' + str(constant.MAX_CIVILISATIONS))
+print('Max progress years: ' + str(constant.MAX_PROGRESS_YEARS))
+print('With params as follows:')
+print(Params().describe())
+print("Read about what these params mean in the calculators/full_calc/params.yml file\n")
 start = datetime.datetime.now()
 mc = full_markov_chain()
 runtime = (datetime.datetime.now() - start).seconds
@@ -159,11 +169,7 @@ first_industrial_index = mc.states.index('industrial-1')
 #     (the runtime with these parameters was {runtime} seconds)""")
 # # Intentionally checked in breakpoint - this is where you can manually query the results
 
-print('Total runtime: ' + str(runtime) + ' seconds')
-print('Runtime constants:')
-print('Max planets: ' + str(constant.MAX_PLANETS))
-print('Max civilisations: ' + str(constant.MAX_CIVILISATIONS))
-print('Max progress years: ' + str(constant.MAX_PROGRESS_YEARS))
+print('Total runtime: ' + str(runtime) + ' seconds\n')
 print('Probability of becoming interstellar from perils-0:')
 print(mc.absorption_probabilities()[1][mc.states.index('perils-0')])
 print('Probability of becoming interstellar from multiplanetary-0:')

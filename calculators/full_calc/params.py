@@ -19,3 +19,7 @@ class Params:
 
     def __getattr__(self, item):
         return self.__dict__.get(item, None)
+
+    def describe(self):
+        """Returns a description of the parameters"""
+        return yaml.dump(self.dictionary, default_flow_style=False)

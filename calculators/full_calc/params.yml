@@ -20,7 +20,10 @@
 
 # If an explanation is missing for a given parameter, it may be given on an analogous one higher
 # in the document. Any one of these parameters could be, arguably should be, and in some cases have
-# been, the subject of a substantial research project. My guesses come from some combination of the
+# been, the subject of a substantial research project. Any one of these parameters could be,
+# arguably should be, and in some cases have been, the subject of a substantial research project -
+# the idea of the model is to fit as much as possible around the type of research people have
+# actually done. My guesses come from some combination of the
 # research I've found in existential risk literature but mostly from eyeballing graphs on Desmos (a
 # fantastic browser-based graphing site) to come up with a visually convincing value per basing on
 # the approximate trajectory of the current era. Where I don't give an explicit reason for a given
@@ -71,11 +74,17 @@ perils:
     # y_stretch: 0.004 # Suggested upper bound
     y_stretch: 0.00035 # Suggested lower bound (see above for why this is default)
     # The most optimistic explicit extinction estimate on the database is given
-    # by Metaculus' mean prediction of '1% chance of extinction by 2100'.
-    # https://www.metaculus.com/questions/1431/what-is-the-chance-of-human-extinction-by-2100/
+    # by Metaculus' median prediction of '1% chance of extinction by 2100'.
+    # https://www.metaculus.com/questions/578/human-extinction-by-2100/
     # This translates to an average annual extinction probability of 0.00013, which
     # I guess would double at peak, and I've multiplied by 4/3, since it looks approx
     # 3/4 of the way up based on, at time of writing, the other values in this section.
+
+    # For other possible ways of informing guesses as to this value, also see
+    # these Manifold predictions:
+    # https://manifold.markets/IsaacKing/will-humanity-survive-until-2100
+    # https://manifold.markets/jack/will-humans-go-extinct-before-2100
+
 
     base_x_stretch: 118 # The x-stretch of the graph at k=0 (primary determinant of how quickly the
     # extinction risk rises per progress year at low k-values)
@@ -96,11 +105,14 @@ perils:
     # stretch_per_reboot: 1.2 # Suggested lower bound
     # A guess about the max ability of human ingenuity to overcome resource
     # constraints, and assuming no great compounding effects from such constraints.
-    per_civilisation_background_risk_numerator: 3.5 # Best guess: ~the geometric mean of upper and lower bounds
-    # Used to calculate background risk. The default is
-    # based on the stretch_per_reboot, assuming the value approximates to a multiplier on the length
-    # of the time of peril (I haven't verified this).
-    # Suggested lower bound and upper bound are 1.2 and 10 respectively (for the reasoning, see for the stretch_per_reboot values above)
+    per_civilisation_background_risk_numerator: 1.05 # Best guess:
+    # A slight per-year-per-civilisation increase to background risk of extinction,
+    # representing for example, climate naturally changing away from the one best
+    # suited to humans, increased burden of disease.
+
+    # Note that high values of this will break the calculator, by making the per-year risk
+    # in later civilisations approach or exceed 1. TODO: make it more robust to this
+    # Suggested lower bound and upper bound is 1 and 10 respectively (for the reasoning, see for the stretch_per_reboot values above)
     #
     x_translation: 15 # The delay at the start of a time of perils before we expect this risk to
     # kick in. The default value assumes (with what we now know) that this would have been basically
@@ -147,11 +159,8 @@ perils:
     # stretch_per_reboot: 10 # Suggested upper bound
     # stretch_per_reboot: 1.2 # Suggested lower bound
 
-    per_civilisation_background_risk_numerator: 3.5 # Best guess: ~the geometric mean of upper and lower bounds
-    # Again I assume the same friction to progress on technologies that would cause this transition as
-    # those that would cause extinction, thus:
-    # per_civilisation_background_risk_numerator: 10 # Suggested upper bound
-    # per_civilisation_background_risk_numerator: 1.2 # Suggested lower bound
+    per_civilisation_background_risk_numerator: 1.05 # Best guess:
+    # Same as for industrial
 
 
     x_translation: 10 # I assume this could only happen after at least two countries developed
@@ -194,11 +203,8 @@ perils:
     # stretch_per_reboot: 10 # Suggested upper bound
     # stretch_per_reboot: 1.2 # Suggested lower bound
 
-    per_civilisation_background_risk_numerator: 3.5 # Best guess: ~the geometric mean of upper and lower bounds
-    # Again I assume the same friction to progress on technologies that would cause this transition as
-    # those that would cause extinction, thus:
-    # per_civilisation_background_risk_numerator: 10 # Suggested upper bound
-    # per_civilisation_background_risk_numerator: 1.2 # Suggested lower bound
+    per_civilisation_background_risk_numerator: 1.05 # Best guess:
+    # Same as for preindustrial
 
     x_translation: 0 # The definitionally minimum possible regression at the start of a time of
     # perils
@@ -314,8 +320,7 @@ perils:
     # calculation here).
     sharpness: 2
     stretch_per_reboot: 1.5
-    # I'm including the subsequent two params to avoid conditionals in the code, but these should
-    # remain unchanged for normal use cases - the background risk of humanity
+    # I'm including the subsequent two params to avoid conditionals in the code, but these should # remain unchanged for normal use cases - the background risk of humanity
     # becoming multiplanetary is probably safe to treat as 0. TODO Explain better
     per_civilisation_background_risk_numerator: 0
     base_background_risk_denominator: 1
@@ -590,7 +595,7 @@ preperils:
     # between John Halstead and David Denkenberger):
     # https://forum.effectivealtruism.org/posts/rtoGkzQkAhymErh2Q/are-we-going-to-run-out-of-phosphorous
 
-    base_expected_time_in_years: 1450
+    # base_expected_time_in_years: 1450 # suggested upper bound
     # I assume ten times the duration for rebooting with no oil, much less coal
     # that's more expensive to mine, and maybe 10% of the energy of our current
     # civilisation embodied in landfill:
@@ -603,7 +608,7 @@ preperils:
     # he might think it's unlikely to *ever* happen.
     # https://aeon.co/essays/could-we-reboot-a-modern-civilisation-without-fossil-fuels
 
-    stretch_per_reboot: 1.5
+    # stretch_per_reboot: 1.5 # suggested upper bound
 
     # Values for an optimistic scenario
 
@@ -611,5 +616,8 @@ preperils:
     # is much less punitive and that enough knowledge from previous civilisations
     # is retained to actually speed up this transition in the first couple of reboots
 
-    base_expected_time_in_years: 100
-    stretch_per_reboot: 1.2
+    # base_expected_time_in_years: 100 # suggested lower bound
+    # stretch_per_reboot: 1.2 # suggested lower bound
+
+    base_expected_time_in_years: 381 # best guess - geometric mean of the upper and lower bounds
+    stretch_per_reboot: 1.34 # best guess - geometric mean of the upper and lower bounds

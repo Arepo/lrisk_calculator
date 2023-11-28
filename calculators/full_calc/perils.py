@@ -110,6 +110,9 @@ def transition_to_year_n_given_perils(k:int, p:int, n=None):
                     + multiplanetary_given_perils(k, p)
                     + interstellar_given_perils(k, p))
 
+
+
+
     def exponential_algorithm():
         if possible_regressions - n > constant.MAX_PROGRESS_YEAR_REGRESSION_STEPS:
             # We round to 0 when numbers get small enough, so we don't have to deal with fractions like

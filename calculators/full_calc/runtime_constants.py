@@ -13,12 +13,17 @@
 # MAX_PLANETS = 10, MAX_CIVILISATIONS = 20, MAX_PROGRESS_YEARS = 2000, runtime = 399 seconds
 
 
-MAX_PLANETS = 10
-MAX_CIVILISATIONS = 20
+MAX_PLANETS = 20
+MAX_CIVILISATIONS = 10
+MAX_PROGRESS_YEARS = 500
+# For default parameters, higher values of the first three constants barely change
+# the outcomes but substantially increase runtime.
 
-MAX_PROGRESS_YEARS = 71
-# With standard specification, we'll get an index out of bounds error if this is less than 71
-if MAX_PROGRESS_YEARS < 2:
+
+
+# With standard setup, we'll get an index out of bounds error if this is less than 71 (since we're
+# treated as being in 70, 0-indexed)
+if MAX_PROGRESS_YEARS < 71:
     raise 'Need at least 2 possible progress years'
 
 MAX_PROGRESS_YEAR_REGRESSION_STEPS = 50
