@@ -112,8 +112,7 @@ perils:
 
     # Note that high values of this will break the calculator, by making the per-year risk
     # in later civilisations approach or exceed 1. TODO: make it more robust to this
-    # Suggested lower bound and upper bound is 1 and 10 respectively (for the reasoning, see for the stretch_per_reboot values above)
-    #
+
     x_translation: 15 # The delay at the start of a time of perils before we expect this risk to
     # kick in. The default value assumes (with what we now know) that this would have been basically
     # impossible via nuclear weaponry until the world had stockpiled tens of thousands of nuclear
@@ -273,8 +272,9 @@ perils:
     # much worse fit for historical data, but much more intuitively consistent with the
     # risks of regressing even further not being massively higher.
 
-    # To use this linear algorithm, uncomment the following line:
+    # To use this linear algorithm, uncomment the following two lines:
     # algorithm: 'linear'
+    # common_difference: 1 # The common difference of the numerator in probability of regressing
 
     any_regression: 0.026 # The annual probability of any intra-perils regression, used by both
     # the exponential and linear algorithms. This could be a function of k and/or p - but seems ok to
@@ -319,7 +319,11 @@ perils:
     # (it gives probability = 1/2 of at least one after 10 years. TODO: do a more rigorous
     # calculation here).
     sharpness: 2
-    stretch_per_reboot: 1.5
+    # stretch_per_reboot: 3.5 # Best guess: ~the geometric mean of upper and lower bounds
+    # I assume the same friction to progress on technologies that would cause this transition as
+    # those that would cause extinction, thus:
+    stretch_per_reboot: 10 # Suggested upper bound
+    # stretch_per_reboot: 1.2 # Suggested lower bound
     # I'm including the subsequent two params to avoid conditionals in the code, but these should # remain unchanged for normal use cases - the background risk of humanity
     # becoming multiplanetary is probably safe to treat as 0. TODO Explain better
     per_civilisation_background_risk_numerator: 0
@@ -460,6 +464,8 @@ multiplanetary:
 
 preperils:
   preindustrial:
+    # Parameters describing the chance of becoming industrial (vs extinct) from
+    # a preindustrial state
     # Desmos graph of defaults: at https://www.desmos.com/calculator/zf4xtayuhm
     # Here the x axis represents the number of civilisational reboots, y the
     # probability of going extinct from this state (with the only other
@@ -483,31 +489,31 @@ preperils:
 
     # '... Agricultural rev. and industrialization take as long as they did the
     # first time'
-    # base_expected_time_in_years: 300,000
+    # base_expected_time_in_years: 300_000
 
     # '... Agricultural civilization returns quickly, industrial revolution takes as long as it did the first time'
-    # base_expected_time_in_years: 500 Lower end of her range in this scenario
-    # base_expected_time_in_years: 30,000 Upper end of her range in this scenario
+    # base_expected_time_in_years: 500 # Lower end of her range in this scenario
+    # base_expected_time_in_years: 30_000 # Upper end of her range in this scenario
 
     # 'Inside view — If we assume that existing physical and human capital would accelerate the
     # speed of re-industrialization relative to the base rate'
 
     # 'Best case guess - Assumes the British industrial revolution happened about when we’d have expected'
-    # base_expected_time_in_years: 100 Lower end of her range in this scenario
-    # base_expected_time_in_years: 3700 Upper end of her range in this scenario
+    # base_expected_time_in_years: 100 # Lower end of her range in this scenario
+    # base_expected_time_in_years: 3700 # Upper end of her range in this scenario
 
     # 'Pessimistic case guess - Assumes we got very lucky with the British industrial revolution'
-    # base_expected_time_in_years: 1000 Lower end of her range in this scenario
-    # base_expected_time_in_years: 33,000 Upper end of her range in this scenario
+    # base_expected_time_in_years: 1000 # Lower end of her range in this scenario
+    # base_expected_time_in_years: 33_000 # Upper end of her range in this scenario
 
-    # To account for her remarks about technological stagnation, I just add 10000 years to each of the above.
-    # base_expected_time_in_years: 10,100
-    # base_expected_time_in_years: 10,500
-    # base_expected_time_in_years: 11,000
+    # To account for her remarks about technological stagnation, we might add 10000 years to each of the above.
+    # base_expected_time_in_years: 10_100
+    # base_expected_time_in_years: 10_500
+    # base_expected_time_in_years: 11_000
     base_expected_time_in_years: 13_700
-    # base_expected_time_in_years: 40,000
-    # base_expected_time_in_years: 43,000
-    # base_expected_time_in_years: 310,000
+    # base_expected_time_in_years: 40_000
+    # base_expected_time_in_years: 43_000
+    # base_expected_time_in_years: 310_000
 
 
     # Quotes and estimates of extinction probability per year below are from the
@@ -521,18 +527,18 @@ preperils:
     # 'Assuming a 200 thousand year (kyr) survival time, we can be exceptionally
     # confident that rates do not exceed 6.9 * 10^−5. This corresponds to an
     # annual extinction probability below roughly 1 in 14,000.'
-    # extinction_probability_per_year_denominator = 14,000
+    # extinction_probability_per_year_denominator: 14,000
 
     # 'Extinction can be represented by the exponential distribution with constant
     # extinction rate μ... Using the fossil dated to 315ka as a starting point
     # for humanity gives an upper bound of μ < 4.4 * 10^−5, corresponding to an
     # annual extinction probability below 1 in 22,800':
-    # extinction_probability_per_year_denominator = 22,800
+    # extinction_probability_per_year_denominator: 22_800
 
     # 'Using the emergence of Homo as our starting point pushes the initial bound
     # back a full order of magnitude, resulting in an annual extinction probability
     # below 1 in 140,000.'
-    # extinction_probability_per_year_denominator = 140,000
+    # extinction_probability_per_year_denominator: 140_000
 
     # 'We can also relax the one in million relative likelihood constraint and
     # derive less conservative upper bounds. An alternative bound would be rates
@@ -550,6 +556,8 @@ preperils:
     # and environmental damage, but substantially less of a stretch than the
     # later transitions, which seem much more likely to be resource-limited.
   industrial:
+    # Parameters describing the chance of reaching a time of perils (vs going
+    # extinct) from a preindustrial state
     # Desmos graph:
     # https://www.desmos.com/calculator/tbdcjmwao8 (defaulting to values for the pessimistic
     # scenario below)
