@@ -101,7 +101,8 @@ def transition_to_year_n_given_perils(k:int, p:int, n=None):
         inclusive?"""
         return params['progress_year_n']['any_regression']
 
-    def remainder_outcome(k, p):
+    if n == possible_regressions:
+        # The probability of advancing one progress year
         return 1 - (extinction_given_perils(k, p)
                     + preindustrial_given_perils(k, p)
                     + industrial_given_perils(k, p)
@@ -109,46 +110,56 @@ def transition_to_year_n_given_perils(k:int, p:int, n=None):
                     + multiplanetary_given_perils(k, p)
                     + interstellar_given_perils(k, p))
 
-    if n == possible_regressions:
-        # Our catchall is either progressing one progress year or staying on the spot if we're at
-        # max
-        return remainder_outcome(k, p)
+    def exponential_algorithm():
+        if possible_regressions - n > constant.MAX_PROGRESS_YEAR_REGRESSION_STEPS:
+            # We round to 0 when numbers get small enough, so we don't have to deal with fractions like
+            # ~a^10000/2a^10000 in the geometric sequence below
+            return 0
 
-    if possible_regressions - n > constant.MAX_PROGRESS_YEAR_REGRESSION_STEPS:
-        # We round to 0 when numbers get small enough, so we don't have to deal with fractions like
-        # ~a^10000/2a^10000 in the geometric sequence below
-        return 0
+        # If we get this far, we're setting up to calculate the division of the total probability of
+        # any_intra_perils_regression() into the specific probability of a regression to year n
+        if possible_regressions > constant.MAX_PROGRESS_YEAR_REGRESSION_STEPS:
+            # Reduce large numbers to the minimum, eg regression from progress-year 1000 from
+            # progress-year 950 with max_distance 100 becomes regression from PY 100 to PY 50. This way
+            # we ensure proportions still sum to 0.
+            max_regressed_states = constant.MAX_PROGRESS_YEAR_REGRESSION_STEPS
+            target_year = n - (possible_regressions - constant.MAX_PROGRESS_YEAR_REGRESSION_STEPS)
+        else:
+            max_regressed_states = possible_regressions
+            target_year = n
 
-    # If we get this far, we're setting up to calculate the division of the total probability of
-    # any_intra_perils_regression() into the specific probability of a regression to year n
-    if possible_regressions > constant.MAX_PROGRESS_YEAR_REGRESSION_STEPS:
-        # Reduce large numbers to the minimum, eg regression from progress-year 1000 from
-        # progress-year 950 with max_distance 100 becomes regression from PY 100 to PY 50. This way
-        # we ensure proportions still sum to 0.
-        max_regressed_states = constant.MAX_PROGRESS_YEAR_REGRESSION_STEPS
-        target_year = n - (possible_regressions - constant.MAX_PROGRESS_YEAR_REGRESSION_STEPS)
+        geometric_base = params['progress_year_n']['geometric_base']
+
+        geometric_sum_of_weightings = ( (1 - geometric_base ** max_regressed_states)
+                                        / (1 - geometric_base))
+
+        numerator_for_progress_year_n = geometric_base ** target_year # How likely is it, that given
+        # some loss, that loss took us to exactly progress year n?
+
+        # Thus numerator_for_progress_year_n / geometric_sum_of_weightings is a proportion; you can play
+        # with the values at https://www.desmos.com/calculator/1pcgidwr3f
+        return (any_intra_perils_regression() * numerator_for_progress_year_n
+                / geometric_sum_of_weightings)
+
+    def linear_algorithm():
+        """Probabilities of regressing n years are given by n/k, where k is the sum of all values of n
+        up to the number of possible regressions (p+1))"""
+        # In the following sum our common difference and starting value are both 1,
+        # and n = p+1 except if we're at the maximal allowable number of progress
+        # years (since in progress year 0 we can 'regress' up to once, to progress
+        # year 0, and so on)
+        r = possible_regressions
+        arithmetic_sequence_sum = r + 1 + (r**2 + r)/2
+        return (n + 1) / arithmetic_sequence_sum
+        # Desmos version:
+        # https://www.desmos.com/calculator/4yjc5kzasz
+
+    if params['progress_year_n']['algorithm'] == 'exponential':
+        return exponential_algorithm()
+    elif params['progress_year_n']['algorithm'] == 'linear':
+        return linear_algorithm()
     else:
-        max_regressed_states = possible_regressions
-        target_year = n
-
-    geometric_base = params['progress_year_n']['geometric_base']
-
-    geometric_sum_of_weightings = ( (1 - geometric_base ** max_regressed_states)
-                                    / (1 - geometric_base))
-
-    numerator_for_progress_year_n = geometric_base ** target_year # How likely is it, that given
-    # some loss, that loss took us to exactly progress year n?
-
-    # Linear version:
-    # arithmetic_sequence_sum = p + 1 + (p**2 + p)/2
-    # return (n + 1) / arithmetic_sequence_sum
-    # Desmos version:
-    # https://www.desmos.com/calculator/xtlzmxvikn
-
-    # Thus numerator_for_progress_year_n / geometric_sum_of_weightings is a proportion; you can play
-    # with the values at https://www.desmos.com/calculator/1pcgidwr3f
-    return (any_intra_perils_regression() * numerator_for_progress_year_n
-            / geometric_sum_of_weightings)
+        raise "Invalid algorithm given for progress_year_n"
 
 
 # The functions below single out AI for special treatment, and will not be used in the MVP (and may
