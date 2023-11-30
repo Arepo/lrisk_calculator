@@ -319,10 +319,10 @@ perils:
     # (it gives probability = 1/2 of at least one after 10 years. TODO: do a more rigorous
     # calculation here).
     sharpness: 2
-    # stretch_per_reboot: 3.5 # Best guess: ~the geometric mean of upper and lower bounds
+    stretch_per_reboot: 3.5 # Best guess: ~the geometric mean of upper and lower bounds
     # I assume the same friction to progress on technologies that would cause this transition as
     # those that would cause extinction, thus:
-    stretch_per_reboot: 10 # Suggested upper bound
+    # stretch_per_reboot: 10 # Suggested upper bound
     # stretch_per_reboot: 1.2 # Suggested lower bound
     # I'm including the subsequent two params to avoid conditionals in the code, but these should # remain unchanged for normal use cases - the background risk of humanity
     # becoming multiplanetary is probably safe to treat as 0. TODO Explain better
