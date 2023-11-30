@@ -133,6 +133,9 @@ The broad shape of the functions described above seem intuitively obvious to me,
 
 This was just due to time restrictions - I would love to set some up.
 
+## 7) No persistence of results
+
+Especially given the long runtimes, it would be nice to store the results in a CSV or similar, for easy sharing
 
 # Concete TODOs:
 * Double check that the maths is implemented correctly
