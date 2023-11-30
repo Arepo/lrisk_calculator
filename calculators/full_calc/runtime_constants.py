@@ -13,7 +13,9 @@
 # MAX_PLANETS = 10, MAX_CIVILISATIONS = 20, MAX_PROGRESS_YEARS = 2000, runtime = 399 seconds
 
 
-MAX_PLANETS = 20
+MAX_PLANETS = 20 # Gas giant moons and hollowed out asteroids might be self-sustainy
+# enough at least en masse to get this number quite a lot higher than the number of nominal
+# planets in the solar system.
 MAX_CIVILISATIONS = 10
 MAX_PROGRESS_YEARS = 500
 # For default parameters, higher values of the first three constants barely change
