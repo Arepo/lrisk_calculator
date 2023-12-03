@@ -21,6 +21,7 @@ class IntraPerilsMCWrapper():
     progress years in a given time of perils, between that time of perils and the other
     civilisational states"""
     def __init__(self, k):
+        print(f"Initialising IntraPerilsMCWrapper for k = {k}")
         self.k = k
 
         # Transitional probabilities from non-absorbing states
@@ -141,6 +142,7 @@ class IntraMultiplanetaryMCWrapper():
     perils and the other civilisational states"""
     def __init__(self, k):
         self.k = k
+        print(f"Initialising IntraMultiplanetaryMCWrapper for k = {k}")
 
         extinction_row =     [0] * (constant.MAX_PLANETS - 1) + [1,0,0,0,0]
         preindustrial_row =  [0] * (constant.MAX_PLANETS - 1) + [0,1,0,0,0]
