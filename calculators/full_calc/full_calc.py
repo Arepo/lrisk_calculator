@@ -4,7 +4,7 @@
 
 from functools import cache
 import datetime
-import ipdb
+import csv
 
 from pydtmc import MarkovChain
 
@@ -86,6 +86,8 @@ def full_markov_chain():
         # Create and cache a multiplanetary sub-chain for civilisation k
         return sub_markov_chains.IntraMultiplanetaryMCWrapper(k)
 
+    print('Creating multiplanetary subchain')
+
     multiplanetary_rows = []
     for k in range(0, constant.MAX_CIVILISATIONS):
         preindustrial_transitions = [multiplanetary_chain(k).preindustrial_given_multiplanetary(k1)
@@ -130,7 +132,7 @@ def full_markov_chain():
                     for index in enumerate(perils_rows)]
     multiplanetary_names = ['multiplanetary-' + str(index[0])
                             for index in enumerate(multiplanetary_rows)]
-    # import ipdb; ipdb.set_trace()
+    print('Creating full Markov chain')
     return MarkovChain(probability_matrix, preindustrial_names
                                            + industrial_names
                                            + perils_names
@@ -186,4 +188,47 @@ for i in range(1, constant.MAX_CIVILISATIONS):
     print(mc.absorption_probabilities()[1][mc.states.index(f'multiplanetary-{i}')])
     print('*' * 20)
 
-# ipdb.set_trace()
+
+import os
+file_name = 'results.csv'
+
+states = []
+for i in range(1, constant.MAX_CIVILISATIONS):
+    for state in (f'preindustrial-{i}', f'industrial-{i}', f'perils-{i}', f'multiplanetary-{i}'):
+        states.append(state)
+
+success_probabilities = []
+numbered_states = []
+for i in range(1, constant.MAX_CIVILISATIONS):
+
+    for state in (f'preindustrial-{i}', f'industrial-{i}', f'perils-{i}', f'multiplanetary-{i}'):
+        numbered_states.append(state)
+        probability = mc.absorption_probabilities()[1][mc.states.index(state)]
+        success_probabilities.append(probability)
+
+# Check if the file is empty or doesn't exist
+file_exists = os.path.exists(file_name) and os.path.getsize(file_name) > 0
+
+with open(file_name, 'a', newline='') as csvfile:
+    writer = csv.writer(csvfile)
+
+    civ_0_states = ['perils-0', 'multiplanetary-0']
+    all_numbered_states = civ_0_states + numbered_states
+
+    civ_0_probabilities = [mc.absorption_probabilities()[1][mc.states.index('perils-0')],
+                           mc.absorption_probabilities()[1][mc.states.index('multiplanetary-0')]]
+    all_success_probabilities = civ_0_probabilities + success_probabilities
+
+    if not file_exists:
+        # Write header only if file is empty or doesn't exist
+        writer.writerow(
+            [' ', 'Notes'] # Leave first two columns for people to enter their
+            # names/descriptions of their params etc
+            + all_numbered_states
+            + ['MAX_PLANETS', 'MAX_CIVILISATIONS', 'MAX_PROGRESS_YEARS']
+            + Params().get_param_keys())
+    writer.writerow(
+        [' ', ' ']
+        + all_success_probabilities
+        + [constant.MAX_PLANETS, constant.MAX_CIVILISATIONS, constant.MAX_PROGRESS_YEARS]
+        + Params().get_param_values())
