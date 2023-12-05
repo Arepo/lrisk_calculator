@@ -384,19 +384,23 @@ probabilties_fig = px.bar(probabilities_df,
                           y='Probability of becoming interstellar')
 st.plotly_chart(probabilties_fig, use_container_width=True)
 
+# TODO Need to distinguish below between V as value, and V_event
+
 st.markdown("""
-Let $V$ be the value we imagine of humans becoming interstellar, assume that by
-the time we reach that point we're highly likely to expand to multiple stars if
-we have any chance of doing so (see [post]() for rationale for this).
+Let $V$ be the value we imagine of humans becoming interstellar and V_state be
+the event that we attain that state. We assume that by the time we reach pass some
+threshhold, like settling around the first other star, we are either now
+existentially secure (hence have attained V in expectation) or never will be
+(see [post]() for rationale for this).
 
 Let $T_{\\text{state}}$ be some event that transitions us to some other state
 than 'present perils', for example, 'nuclear war that destroys all industry in
 next 10 years' or 'humans develop self-sustaining offworld settlement before
 2070'.
 Thus, we define:
-- $P(V | T_{\\text{state}})$ as the probability of becoming interstellar from
+- $P(V_state | T_{\\text{state}})$ as the probability of becoming interstellar from
 the state $T_{\\text{state}}$ would transition us to,
-- $P(V | \\neg T_{\\text{state}})$ as the probability of becoming interstellar
+- $P(V_state | \\neg T_{\\text{state}})$ as the probability of becoming interstellar
 from our current state, given that $T_{\\text{state}}$ doesn't occur.
 
 We can then express the expected value of $T_{\\text{state}}$ in terms of $V$, as
