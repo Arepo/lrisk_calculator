@@ -36,7 +36,6 @@
 # I fiddle with the values a lot, so Desmos graphs might not track the default values below.
 
 perils:
-
   # In general the default params are set in a way that tracks my intuition for how the current time
   # of perils has evolved. For this reason I’m treating our current progress year as approx #70.
   # We’re 78 actual years after the first nuclear bomb was detonated, less 1 progress year for each
@@ -44,7 +43,7 @@ perils:
   # substantial-negative-growth year, as gauged by eyeballing these graphs:
   # https://data.worldbank.org/indicator/NY.GDP.MKTP.KD.ZG
   # https://ourworldindata.org/grapher/total-gdp-in-the-uk-since-1270 (only for the UK, but goes
-  # back further)
+  # back further).
 
   # The shape of the function these parameters inform is arguably too pessimistic,
   # in that it assumes transitional probabilities only go up over time (and most
@@ -54,6 +53,7 @@ perils:
   # than social/geopolitical norms might evolve, and c) because I would guess
   # the majority of possibilty space to involve a transition happening before they
   # start going predictably down, if we did think a decline was predictable
+
   extinction:
     # Desmos graph: https://www.desmos.com/calculator/6osrh7jg8d - this graph assumes k=1. To see
     # the effect of reboots on the estimates, you'll need to manually increase the x-stretch (parameter
@@ -272,9 +272,8 @@ perils:
     # much worse fit for historical data, but much more intuitively consistent with the
     # risks of regressing even further not being massively higher.
 
-    # To use this linear algorithm, uncomment the following two lines:
+    # To use this linear algorithm, uncomment the following line:
     # algorithm: 'linear'
-    # common_difference: 1 # The common difference of the numerator in probability of regressing
 
     any_regression: 0.026 # The annual probability of any intra-perils regression, used by both
     # the exponential and linear algorithms. This could be a function of k and/or p - but seems ok to

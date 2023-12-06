@@ -148,15 +148,16 @@ def transition_to_year_n_given_perils(k:int, p:int, n=None):
     def linear_algorithm():
         """Probabilities of regressing n years are given by n/k, where k is the sum of all values of n
         up to the number of possible regressions (p+1))"""
-        # In the following sum our starting value is always 1,
-        # and r = the number of terms = p+1 except if we're at the maximal allowable number of progress
-        # years (since in progress year 0 we can 'regress' up to once, to progress
-        # year 0, and so on)
-        d = params['progress_year_n']['common_difference']
         r = possible_regressions
 
+        # In the following sum our starting value is always 1, as is our common difference
+        # (because for high numbers of possible regressions, the fractional changes of among different
+        # common differences are negligible)
+        # and r = the number of terms = p+1 except if we're at the maximal allowable number of progress
+        # years (since in progress year 0 we can 'regress' up to once, to progress
+            # year 0, and so on)
         # TODO cache this value, probably for each value of possible_regressions
-        arithmetic_sequence_sum = r/2 * (2 + (r - 1) * d)
+        arithmetic_sequence_sum = r/2 * (1 + r)
 
         return (1 + n * d) / arithmetic_sequence_sum * any_intra_perils_regression()
 
