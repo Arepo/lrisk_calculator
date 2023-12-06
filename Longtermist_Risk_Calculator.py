@@ -387,7 +387,7 @@ st.plotly_chart(probabilties_fig, use_container_width=True)
 # TODO Need to distinguish below between V as value, and V_event
 
 st.markdown("""
-Let $V$ be the value we imagine of humans becoming interstellar and V_state be
+Let $V$ be the value we imagine of humans becoming interstellar and $V_{\\text{state}}$ be
 the event that we attain that state. We assume that by the time we reach pass some
 threshhold, like settling around the first other star, we are either now
 existentially secure (hence have attained V in expectation) or never will be
@@ -398,15 +398,15 @@ than 'present perils', for example, 'nuclear war that destroys all industry in
 next 10 years' or 'humans develop self-sustaining offworld settlement before
 2070'.
 Thus, we define:
-- $P(V_state | T_{\\text{state}})$ as the probability of becoming interstellar from
+- $P(V_{\\text{state}} | T_{\\text{state}})$ as the probability of becoming interstellar from
 the state $T_{\\text{state}}$ would transition us to,
-- $P(V_state | \\neg T_{\\text{state}})$ as the probability of becoming interstellar
+- $P(V_{\\text{state}} | \\neg T_{\\text{state}})$ as the probability of becoming interstellar
 from our current state, given that $T_{\\text{state}}$ doesn't occur.
 
 We can then express the expected value of $T_{\\text{state}}$ in terms of $V$, as
 """, unsafe_allow_html=True)
 st.latex(r'''
-\mathbb{E}[T_{\text{state}}] = V \cdot \left( P[V | T_{\text{state}}] - P[V | \neg T_{\text{state}}] \right)
+\mathbb{E}[T_{\text{state}}] = V \cdot \left( P[V_{\text{state}} | T_{\text{state}}] - P[V_{\text{state}} | \neg T_{\text{state}}] \right)
 ''')
 
 difference_df = pd.DataFrame(
