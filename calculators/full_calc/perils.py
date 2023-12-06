@@ -133,6 +133,7 @@ def transition_to_year_n_given_perils(k:int, p:int, n=None):
 
         geometric_base = params['progress_year_n']['geometric_base']
 
+        # TODO cache this value, probably for each value of possible_regressions
         geometric_sum_of_weightings = ( (1 - geometric_base ** max_regressed_states)
                                         / (1 - geometric_base))
 
@@ -147,14 +148,17 @@ def transition_to_year_n_given_perils(k:int, p:int, n=None):
     def linear_algorithm():
         """Probabilities of regressing n years are given by n/k, where k is the sum of all values of n
         up to the number of possible regressions (p+1))"""
-        # In the following sum our starting value is 1,
+        # In the following sum our starting value is always 1,
         # and r = the number of terms = p+1 except if we're at the maximal allowable number of progress
         # years (since in progress year 0 we can 'regress' up to once, to progress
         # year 0, and so on)
         d = params['progress_year_n']['common_difference']
         r = possible_regressions
+
+        # TODO cache this value, probably for each value of possible_regressions
         arithmetic_sequence_sum = r/2 * (2 + (r - 1) * d)
-        return (n + 1) / arithmetic_sequence_sum * any_intra_perils_regression()
+
+        return (1 + n * d) / arithmetic_sequence_sum * any_intra_perils_regression()
 
 
     if params['progress_year_n']['algorithm'] == 'exponential':
