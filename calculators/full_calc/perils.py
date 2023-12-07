@@ -159,7 +159,7 @@ def transition_to_year_n_given_perils(k:int, p:int, n=None):
         # TODO cache this value, probably for each value of possible_regressions
         arithmetic_sequence_sum = r/2 * (1 + r)
 
-        return (1 + n * d) / arithmetic_sequence_sum * any_intra_perils_regression()
+        return (n + 1) / arithmetic_sequence_sum * any_intra_perils_regression()
 
 
     if params['progress_year_n']['algorithm'] == 'exponential':
