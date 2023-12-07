@@ -36,6 +36,7 @@
 # I fiddle with the values a lot, so Desmos graphs might not track the default values below.
 
 perils:
+  current_progress_year: 70
   # In general the default params are set in a way that tracks my intuition for how the current time
   # of perils has evolved. For this reason I’m treating our current progress year as approx #70.
   # We’re 78 actual years after the first nuclear bomb was detonated, less 1 progress year for each
@@ -43,7 +44,8 @@ perils:
   # substantial-negative-growth year, as gauged by eyeballing these graphs:
   # https://data.worldbank.org/indicator/NY.GDP.MKTP.KD.ZG
   # https://ourworldindata.org/grapher/total-gdp-in-the-uk-since-1270 (only for the UK, but goes
-  # back further).
+  # back further). You can also modify this param keeping other values constant to see the
+  # net effect of some intra-perils on our ultimate probability of success.
 
   # The shape of the function these parameters inform is arguably too pessimistic,
   # in that it assumes transitional probabilities only go up over time (and most

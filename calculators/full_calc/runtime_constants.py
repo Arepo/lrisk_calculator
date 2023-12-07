@@ -27,9 +27,10 @@ MAX_PROGRESS_YEARS = 4000 # The longer the stretches x_stretches set in the para
 
 
 
-# With standard setup, we'll get an index out of bounds error if this is less than 71 (since we're
+# Min 2 to have a notion of progressing and 'regressing', but beware that with
+# standard setup, we'll get an index out of bounds error if this is less than 71 (since we're
 # treated as being in 70, 0-indexed)
-if MAX_PROGRESS_YEARS < 71:
+if MAX_PROGRESS_YEARS < 2:
     raise 'Need at least 2 possible progress years'
 
 MAX_PROGRESS_YEAR_REGRESSION_STEPS = 50

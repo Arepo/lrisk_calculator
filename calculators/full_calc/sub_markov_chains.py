@@ -10,6 +10,7 @@ from pydtmc import MarkovChain
 import runtime_constants as constant
 import multiplanetary
 import perils
+from params import Params
 
 # See https://dbader.org/blog/python-memoization for a primer on caching
 # TODO look into https://github.com/pymc-devs/pymc
@@ -68,8 +69,8 @@ class IntraPerilsMCWrapper():
                                                 'Multiplanetary',
                                                 'Interstellar'])
 
-        self.starting_year = 70 # Nowish. Counting time of perils as starting in 1945, and treating
-        # us as having had about net 8 progress years worth of regression.
+        self.starting_year = Params().dictionary['perils']['current_progress_year']
+        # TODO: make it easier to investigate different values for this param
         # self.starting_year = 0 # For testing
 
     def extinction_given_perils(self):
