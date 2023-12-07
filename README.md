@@ -19,6 +19,12 @@ Once you're satisfied with the parameters, navigate to navigate to ./calculators
 * the MarkovChain object has a `.states` property, which I find useful to confirm ordering in the full transition matrix
 * the `mc.absorption_probabilities()` function produces an array of arrays with one top-level array for each absorbing state (in our case, two), in the order they were passed to the constructor (in our case, Extinction first, then Interstellar). The subarray elements correspond to the probability of hitting that absborbing state from each non-absorbing state, again in the order the were passed to the constructor (in our case, the prequilibrium states for each possible future civilisation up to <the max number of future civilisations - 1>, then the preindustrial ones, etc)
 
+# Storing results for discussion
+
+When you run the full calculator, it it will store he parameters you've chosen and the results they imply in results.csv.
+
+If you do so, please consider committing the changes to the CSV file and submitting it as a pull request, so we can compare how people's intuitions differ. Feel free to add a name/brief description to the run if there's any salient parameters you want to highlight, and any notes you have to the second column.
+
 # Philosophy of the calculator
 ## Expect increasing difficulty of developing technology
 
