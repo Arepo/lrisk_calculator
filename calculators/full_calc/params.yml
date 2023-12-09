@@ -57,7 +57,8 @@ perils:
   # start going predictably down, if we did think a decline was predictable
 
   extinction:
-    # Desmos graph: https://www.desmos.com/calculator/6osrh7jg8d - this graph assumes k=1. To see
+
+    # Desmos graph: https://www.desmos.com/calculator/ojufzwje81 - this graph assumes k=1. To see
     # the effect of reboots on the estimates, you'll need to manually increase the x-stretch (parameter
     # b on Desmos) by an appropriate proportion.
     # y_stretch: 0.0012 # Best guess: ~the geometric mean of upper and lower bounds
@@ -88,8 +89,10 @@ perils:
     # https://manifold.markets/jack/will-humans-go-extinct-before-2100
 
 
-    base_x_stretch: 118 # The x-stretch of the graph at k=0 (primary determinant of how quickly the
-    # extinction risk rises per progress year at low k-values)
+    base_x_stretch: 90 # The x-stretch of the graph at k=0 (primary determinant of how quickly the
+    # extinction risk rises per progress year at low k-values). I'm setting this to be the same
+    # as the multiplanetary x-stretch, since many of the technologies that enable latter enable the
+    # former (but this one starts rising sooner because of the smaller x-translation).
     stretch_per_reboot: 3.5 # Best guess: ~the geometric mean of upper and lower bounds
     # stretch_per_reboot: 10 # Suggested upper bound
     # A per-reboot multiplier on the x-stretch (the formula for x_stretch is
@@ -120,8 +123,9 @@ perils:
     # impossible via nuclear weaponry until the world had stockpiled tens of thousands of nuclear
     # warheads. I'm treating that as after the huge jump between 1955 and 1960
     # described in https://en.wikipedia.org/wiki/Historical_nuclear_weapons_stockpiles_and_nuclear_tests_by_country.
-    sharpness: 2.5 # A minor parameter codetermining steepness, set by eyeballing the Desmos graph
-    # given the other params
+    sharpness: 6 # A minor parameter codetermining steepness, set by eyeballing the Desmos graph
+    # given the other params - the default value implies a sharp increase in risk starting around
+    # the turn of the century, and continuing to meaningfully increase for around a century after that
     base_background_risk_denominator: 184_000 # The denominator of the fraction used to calculate
     # background risk of extinction, constant throughout a given time of perils.
     # This is based on one of the middling values of the base_annual_extinction_probability_denominator
@@ -130,8 +134,9 @@ perils:
     # (under most assumptions, this will probably have little effect on the overall calculation).
 
   preindustrial:
+
     # Desmos graph:
-    # https://www.desmos.com/calculator/wrkjrpz33a
+    # https://www.desmos.com/calculator/unwzkamdla
     # I'm treating nukes as being substantially the most likely tech to cause this outcome, since
     # they destroy far more resources than a pandemic would, making rebuilding much harder. So I
     # expect the risk to level out relatively early in a time of perils compared to other
@@ -151,7 +156,7 @@ perils:
 
     # Since this transition isn't really covered in the literature that I've seen,
     # I don't have a simple way to generate upper/lower bounds.
-    base_x_stretch: 20 # The x-stretch of the graph at k=0 (primary determinant of how quickly the
+    base_x_stretch: 75 # The x-stretch of the graph at k=0 (primary determinant of how quickly the
     # extinction risk rises per progress year at low k-values)
 
     stretch_per_reboot: 3.5 # Best guess: ~the geometric mean of upper and lower bounds
@@ -163,17 +168,18 @@ perils:
     per_civilisation_background_risk_numerator: 1.05 # Best guess:
     # Same as for industrial
 
-
-    x_translation: 10 # I assume this could only happen after at least two countries developed
-    # a nuclear arsenal, which took about 10 years the first time
-    sharpness: 2
+    x_translation: 5 # I assume this gets much more plausible after at least two countries developed
+    # a nuclear arsenal, which took about 10 years the first time (the sharpness parameter below
+    # keeps it close to for the first 5 years)
+    sharpness: 0.9
     base_background_risk_denominator: 87_000 # I assume this is approx half what
     # it is for extinction (ie the probability is twice that for extinction), in line with the
     # best guess ratios for the y_stretch.
 
   industrial:
+
     # Desmos graph:
-    # https://www.desmos.com/calculator/nhnbxrczk0
+    # https://www.desmos.com/calculator/42hjsgyiit
     y_stretch: 0.0015 # Max annual probability of extinction from a time of perils. I assume a 0.1
     # total chance of a catastrophe that would wipe out multiple billions in the next century,
     # loosely based on the estimates in FHI’s 2008 Global Catastrophic Risks Survey. The survey’s
@@ -196,8 +202,13 @@ perils:
     # decreasing by at least 10% during any 5-year period until 2100, which is
     # currently given as
     # https://www.metaculus.com/questions/1493/global-population-decline-10-by-2100/
-    base_x_stretch: 69 # This and the default values for x_translation and sharpness would put us
-    # at approx 3/4 of the way to max annual risk.
+    base_x_stretch: 85 # Higher than for preindustrial, because biopandemics seem
+    # relatively more likely to cause this regression than nuclear weaponry (cf
+    # the argument in The Knowledge that catastrophes which kill people and leave
+    # resources are likely to be worse longer term than catastrophes which destroy
+    # resources), and judging by our own history the latter will usually be
+    # developed earlier. This and the default values for x_translation and
+    # sharpness would put us at approx 2/3 of the way to max annual risk.
     stretch_per_reboot: 3.5 # Best guess: ~the geometric mean of upper and lower bounds
     # I assume the same friction to progress on technologies that would cause this transition as
     # those that would cause extinction, thus:
@@ -209,7 +220,7 @@ perils:
 
     x_translation: 0 # The definitionally minimum possible regression at the start of a time of
     # perils
-    sharpness: 2
+    sharpness: 0.9
     base_background_risk_denominator: 61_000 # I assume this is approx a third of what
     # it is for extinction (ie the probability is 3x that for extinction), in line with the
     # best guess ratios for the y_stretch.
@@ -305,8 +316,8 @@ perils:
     # very optimistically assuming no further regressions, ie for x = 70 + 53 = 123,
     # and picked values that would give ~80% probability on those assumption.
     # * https://www.metaculus.com/questions/1432/will-humans-have-a-sustainable-off-world-presence-by-2100/
-    base_x_stretch: 66
-    x_translation: 80 # Robert Zubrin was probably the first person to develop a
+    base_x_stretch: 90
+    x_translation: 70 # Robert Zubrin was probably the first person to develop a
     # practical and concrete proposal to create a self-sustaining offworld settlement
     # that was taken seriously by the US government. That was around 1990, and
     # somewhat similar to SpaceX's plan. In his most optimistic vision, the
@@ -314,7 +325,12 @@ perils:
     # slower to accelerate than Musk's vision, which Musk thought in about 2020
     # was doable by about 2050. So if Zubrin's plan had been followed enthusiastically,
     # it might in the absolute best case have got there about 25 years earlier.
-    # So 80 = the number of years between 1945 and (2050-25)
+    # So 70 = the number of years between 1945 and (2050-25) less a decade. The latter
+    # subtraction is to represent But self-sustainingness itself isn't a clear
+    # line - in some cases an offworld colony might be able to outlast a local
+    # calamity that killed everyone on Earth and repopulate the planet afterwards
+    #  without having attained the ability to exist as a colony without it.
+    # So this line can start increasing a decade  before that.
     y_stretch: 0.07 # Meaning a high tech civilisation could create a new
     # settlement maybe every ~15 years on average, given somewhere nearby to expand to
     # (it gives probability = 1/2 of at least one after 10 years. TODO: do a more rigorous
@@ -368,7 +384,7 @@ multiplanetary:
     # Desmos graph:
     # https://www.desmos.com/calculator/20grgq1ar5
     two_planet_risk: 0.12
-    decay_rate: 0.55
+    decay_rate: 0.55 # TODO explain this
     min_risk: 0 # Longtermist philosophy is basically predicated on this being 0.
     # In the long run, if this doesn't tend to become almost 0, longtermism isn't
     # possible (in principle if all settlements are in our solar system we might
@@ -451,9 +467,10 @@ multiplanetary:
   # assumptions about transitioning to n planets, so doesn't take any unique params
 
   interstellar:
-    # Desmos graph: https://www.desmos.com/calculator/1wazngfpba
+
+    # Desmos graph: https://www.desmos.com/calculator/ex64ucuqcj
     # (unlike the other multiplanetary transitions, I assume this becomes more
-    # likely the more planets are settled, and use the same S-curve as for transitions
+    # likely the more planets are settled, and use the same abstract formula as for transitions
     # in the time of perils)
     x_stretch: 13
     y_stretch: 0.65 # With enough interplanetary colonies, it becomes increasingly likely that
@@ -465,6 +482,7 @@ multiplanetary:
 
 preperils:
   preindustrial:
+
     # Parameters describing the chance of becoming industrial (vs extinct) from
     # a preindustrial state
     # Desmos graph of defaults: at https://www.desmos.com/calculator/zf4xtayuhm
@@ -560,7 +578,7 @@ preperils:
     # Parameters describing the chance of reaching a time of perils (vs going
     # extinct) from a preindustrial state
     # Desmos graph:
-    # https://www.desmos.com/calculator/tbdcjmwao8 (defaulting to values for the pessimistic
+    # https://www.desmos.com/calculator/ianoufodce (defaulting to values for the pessimistic
     # scenario below)
 
     # For extinction probability per year, we can start with the base rates
