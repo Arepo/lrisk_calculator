@@ -2,7 +2,9 @@
 
 # These constants determine runtime, which is something like
 # O(MAX_CIVILISATIONS*MAX_PROGRESS_YEARS^2) or O(MAX_CIVILISATIONS*MAX_PLANETS^2) if the
-# latter is bigger. So setting them higher substantially increases runtime, but will also increase
+# latter is bigger (although I have the impression that MAX_CIVILISATIONS has some
+# exponentiation going on due to later civilisations requiring more precision in
+# their float values). So setting them higher substantially increases runtime, but will also increase
 # the fidelity of the final output (since the theoretical model assumes arbitrarily many).
 
 # Some example runtimes on my 2019 Macbook Pro:
@@ -19,7 +21,7 @@ MAX_PLANETS = 20 # Gas giant moons and hollowed out asteroids might be self-sust
 MAX_CIVILISATIONS = 10
 # For default parameters, higher values of the first two constants barely change
 # the outcomes but substantially increase runtime.
-MAX_PROGRESS_YEARS = 4000 # The longer the stretches x_stretches set in the params, the more this
+MAX_PROGRESS_YEARS = 3000 # The longer the stretches x_stretches set in the params, the more this
 # parameter seems likely to matter
 
 
