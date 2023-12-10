@@ -88,13 +88,14 @@ perils:
     # https://manifold.markets/IsaacKing/will-humanity-survive-until-2100
     # https://manifold.markets/jack/will-humans-go-extinct-before-2100
 
-
-    base_x_stretch: 90 # The x-stretch of the graph at k=0 (primary determinant of how quickly the
+    base_x_stretch: 90 # Suggested upper bound/default.
+    # The x-stretch of the graph at k=0 (primary determinant of how quickly the
     # extinction risk rises per progress year at low k-values). I'm setting this to be the same
     # as the multiplanetary x-stretch, since many of the technologies that enable latter enable the
     # former (but this one starts rising sooner because of the smaller x-translation).
+    # base_x_stretch: 60 # Suggested lower bound.
     stretch_per_reboot: 3.5 # Best guess: ~the geometric mean of upper and lower bounds
-    # stretch_per_reboot: 10 # Suggested upper bound
+    # stretch_per_reboot: 10 # Suggested upper bound.
     # A per-reboot multiplier on the x-stretch (the formula for x_stretch is
     # base_x_stretch * stretch_per_reboot ** k), so the primary determinant of how quickly the
     # extinction risk rises per year at high k-values). Higher values imply longer before both good
@@ -156,8 +157,10 @@ perils:
 
     # Since this transition isn't really covered in the literature that I've seen,
     # I don't have a simple way to generate upper/lower bounds.
-    base_x_stretch: 75 # The x-stretch of the graph at k=0 (primary determinant of how quickly the
+    base_x_stretch: 75 # Suggested upper bound. I suggest sharpness = 2 when using this value
+    # The x-stretch of the graph at k=0 (primary determinant of how quickly the
     # extinction risk rises per progress year at low k-values)
+    # base_x_stretch: 10.5 # Suggested lower bound. I suggest sharpness = 2 when using this value
 
     stretch_per_reboot: 3.5 # Best guess: ~the geometric mean of upper and lower bounds
     # I assume the same friction to progress on technologies that would cause this transition as
@@ -202,13 +205,15 @@ perils:
     # decreasing by at least 10% during any 5-year period until 2100, which is
     # currently given as
     # https://www.metaculus.com/questions/1493/global-population-decline-10-by-2100/
-    base_x_stretch: 85 # Higher than for preindustrial, because biopandemics seem
+    base_x_stretch: 85 # Suggested upper bound
+    # Higher than for preindustrial, because biopandemics seem
     # relatively more likely to cause this regression than nuclear weaponry (cf
     # the argument in The Knowledge that catastrophes which kill people and leave
     # resources are likely to be worse longer term than catastrophes which destroy
     # resources), and judging by our own history the latter will usually be
     # developed earlier. This and the default values for x_translation and
     # sharpness would put us at approx 2/3 of the way to max annual risk.
+    # base_x_stretch: 15 # Suggested upper bound. I suggest sharpness = 2 when using this value
     stretch_per_reboot: 3.5 # Best guess: ~the geometric mean of upper and lower bounds
     # I assume the same friction to progress on technologies that would cause this transition as
     # those that would cause extinction, thus:
@@ -546,7 +551,7 @@ preperils:
     # 'Assuming a 200 thousand year (kyr) survival time, we can be exceptionally
     # confident that rates do not exceed 6.9 * 10^−5. This corresponds to an
     # annual extinction probability below roughly 1 in 14,000.'
-    # extinction_probability_per_year_denominator: 14,000
+    # extinction_probability_per_year_denominator: 14_000
 
     # 'Extinction can be represented by the exponential distribution with constant
     # extinction rate μ... Using the fossil dated to 315ka as a starting point
@@ -569,7 +574,7 @@ preperils:
 
     # 'Using the 2Myr origin of Homo strengthens the bound by an order of magnitude
     # in a similar way and produces annual extinction probabilities below 1 in 870,000.'
-    # extinction_probability_per_year_denominator: 870,000
+    # extinction_probability_per_year_denominator: 870_000
 
     stretch_per_reboot: 1.05 # I assume a slight increase from burden of disease,
     # and environmental damage, but substantially less of a stretch than the
