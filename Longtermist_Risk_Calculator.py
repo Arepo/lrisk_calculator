@@ -137,9 +137,28 @@ def make_on_change_callback(transition_name, origin_state):
         update_transitions(transition_name, origin_state)
     return callback
 
+
+st.write("#### The tool below allows you to estimate the transitional probabilities represented in the following diagram (descriptions below):")
+
+st.image('https://res.cloudinary.com/cea/image/upload/f_auto,q_auto/v1/mirroredImages/ouuj93CPymfnvu8uQ/ytdctispib3doi9emjhb')
+
+st.write("""_Extinction_: Extinction of sentient life any time inclusively between now and our sun’s death.
+
+_Preindustrial_: Civilisation has regressed to [pre-first-industrial-revolution](https://www.britannica.com/money/topic/Industrial-Revolution/The-first-Industrial-Revolution)-equivalent technology.
+
+_Industrial_: Civilisation has technology comparable to the first industrial revolution but does not yet have the technological capacity to do enough civilisational damage to regress to a previous state (e.g. nuclear weapons, biopandemics etc). A formal definition of industrial revolution technology is tricky but seems unlikely to dramatically affect probability estimates. In principle it could be something like '[kcals captured per capita](https://lukemuehlhauser.com/three-wild-speculations-from-amateur-quantitative-macrohistory/) go up more than 5x as much in a 100 year period as they had in any of the previous five 100-year periods.’
+
+_Current perils_: Our current state, as of 1945, when we developed nuclear weaponry - what Carl Sagan called the ‘time of perils’.
+
+_Future perils_: Human development has had a serious setback, and also has technology capable of threatening another serious contraction (such as nuclear weaponry, misaligned AI, etc.) but does not yet have multiple spatially isolated self-sustaining settlements. Arguably we could transition directly to this directly from our current state if there were a global shock sufficient to destroy much modern technology, but small enough to leave our nuclear arsenals and a decent fraction of industry intact or very quickly recoverable.
+
+_Multiplanetary_: Civilisation has progressed to having at least two spatially isolated self-sustaining settlements capable of continuing in an advanced enough technological state to produce further such settlements even if all the others disappeared. Each settlement must be physically isolated enough to be unaffected by at least one type of technological milestone catastrophe impacting the other two (e.g. another planet, a hollowed out asteroid or an _extremely_ well-maintained bunker system). Although each settlement may face local threats, we might assume the risks to humanity as a whole, of either extinction or regression to reduced-technology-states, declines as the number of settlements increases.
+
+_Interstellar_: Civilisation has progressed to having at least two self-sustaining colonies in different star systems, or gains existential security in some other way.""")
+
 # Make values percentages
 
-st.write("#### Adjust the values to see how the probability of human descendants becoming interstellar"\
+st.write("#### Now adjust the values to see how the overall probability of human descendants becoming interstellar"\
          " changes based on your credences.")
 
 col1, col2 = st.columns(2, gap="large")
