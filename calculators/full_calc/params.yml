@@ -100,13 +100,12 @@ perils:
     # https://manifold.markets/IsaacKing/will-humanity-survive-until-2100
     # https://manifold.markets/jack/will-humans-go-extinct-before-2100
 
-    current_perils_base_x_stretch: 9
-    base_x_stretch: 72 # Suggested upper bound/default.
-    # The x-stretch of the graph at k=0 (primary determinant of how quickly the
+    # current_perils_base_x_stretch: 90
+    base_x_stretch: 90 # The x-stretch of the graph at k=0 (primary determinant of how quickly the
     # extinction risk rises per progress year at low k-values). I'm setting this to be the same
     # as the multiplanetary x-stretch, since many of the technologies that enable latter enable the
     # former (but this one starts rising sooner because of the smaller x-translation).
-    # base_x_stretch: 60 # Suggested lower bound.
+
     # current_perils_stretch_per_reboot: 3.5
     stretch_per_reboot: 3.5 # Best guess: ~the geometric mean of upper and lower bounds
     # stretch_per_reboot: 10 # Suggested upper bound.
@@ -154,6 +153,7 @@ perils:
 
     # Desmos graph:
     # https://www.desmos.com/calculator/unwzkamdla
+    # https://www.desmos.com/calculator/wuicjmu8ui
     # I'm treating nukes as being substantially the most likely tech to cause this outcome, since
     # they destroy far more resources than a pandemic would, making rebuilding much harder. So I
     # expect the risk to level out relatively early in a time of perils compared to other
@@ -235,7 +235,7 @@ perils:
     # resources), and judging by our own history the latter will usually be
     # developed earlier. This and the default values for x_translation and
     # sharpness would put us at approx 2/3 of the way to max annual risk.
-    # base_x_stretch: 15 # Suggested upper bound. I suggest sharpness = 2 when using this value
+    # base_x_stretch: 15 # Suggested lower bound. I use sharpness = 2 when using this value
     # current_perils_stretch_per_reboot: 3.5
     stretch_per_reboot: 3.5 # Best guess: ~the geometric mean of upper and lower bounds
     # I assume the same friction to progress on technologies that would cause this transition as
@@ -346,7 +346,7 @@ perils:
     # very optimistically assuming no further regressions, ie for x = 70 + 53 = 123,
     # and picked values that would give ~80% probability on those assumption.
     # * https://www.metaculus.com/questions/1432/will-humans-have-a-sustainable-off-world-presence-by-2100/
-    current_perils_base_x_stretch: 81
+    # current_perils_base_x_stretch: 81
     base_x_stretch: 90
     # current_perils_x_translation: 70
     x_translation: 70 # Robert Zubrin was probably the first person to develop a
