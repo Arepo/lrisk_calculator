@@ -5,6 +5,7 @@
 from functools import cache
 import datetime
 import csv
+import os
 
 from pydtmc import MarkovChain
 
@@ -232,3 +233,5 @@ with open(file_name, 'a', newline='') as csvfile:
         + all_success_probabilities
         + [constant.MAX_PLANETS, constant.MAX_CIVILISATIONS, constant.MAX_PROGRESS_YEARS]
         + Params().get_param_values())
+
+os.system('echo -n "\a"') # Make a beep noise to indicate the program has finished
