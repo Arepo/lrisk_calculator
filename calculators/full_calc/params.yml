@@ -40,7 +40,8 @@
 # our current time of perils, and the default values will be used for all future times of perils
 # - this is useful for modelling the effects of for example cultural or political changes we
 # might make in the current era that wouldn't necessarily have any carryover to
-# future civilisations.
+# future civilisations. TODO At the moment, using any of these current_perils parameters will
+# mess up the alignment of later columns in the CSV file by inserting a column for each current_perils value.
 #
 # * specifically, current_perils_base_x_stretch, current_perils_stretch_per_reboot,
 # current_perils_y_stretch, current_perils_x_translation, and current_perils_sharpness
@@ -315,8 +316,10 @@ perils:
     # much worse fit for historical data, but much more intuitively consistent with the
     # risks of regressing even further not being massively higher.
 
-    # To use this linear algorithm, uncomment the following line:
+    # To use this linear algorithm, uncomment the following two lines:
     # algorithm: 'linear'
+    # geometric_base: 1.4 # This parameter is ignored when using the linear algorithm,
+    # but including it keeps the CSV columns lined up correctly
 
     any_regression: 0.026 # The annual probability of any intra-perils regression, used by both
     # the exponential and linear algorithms. This could be a function of k and/or p - but seems ok to
