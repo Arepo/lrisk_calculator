@@ -35,15 +35,18 @@
 
 # I fiddle with the values a lot, so Desmos graphs might not track the default values below.
 
-perils:
-  # Some of the parameters below* have a 'current_perils_'-prefixed alternative.
-  # If you uncomment this, they will be used only for determining the graphs of
-  # our current time of perils, and the default values will be used for all future times of perils
-  #
-  # * specifically, current_perils_base_x_stretch, current_perils_stretch_per_reboot,
-  # current_perils_y_stretch, current_perils_x_translation, and current_perils_sharpness
-  # for each transition
+# Some of the parameters in 'perils' have a 'current_perils_'-prefixed alternative.*
+# If you uncomment this, they will be used only for determining the graphs of
+# our current time of perils, and the default values will be used for all future times of perils
+# - this is useful for modelling the effects of for example cultural or political changes we
+# might make in the current era that wouldn't necessarily have any carryover to
+# future civilisations.
+#
+# * specifically, current_perils_base_x_stretch, current_perils_stretch_per_reboot,
+# current_perils_y_stretch, current_perils_x_translation, and current_perils_sharpness
+# for each transition
 
+perils:
   current_progress_year: 70
   # In general the default params are set in a way that tracks my intuition for how the current time
   # of perils has evolved. For this reason I’m treating our current progress year as approx #70.
@@ -97,8 +100,8 @@ perils:
     # https://manifold.markets/IsaacKing/will-humanity-survive-until-2100
     # https://manifold.markets/jack/will-humans-go-extinct-before-2100
 
-    # current_perils_base_x_stretch: 90
-    base_x_stretch: 90 # Suggested upper bound/default.
+    current_perils_base_x_stretch: 9
+    base_x_stretch: 72 # Suggested upper bound/default.
     # The x-stretch of the graph at k=0 (primary determinant of how quickly the
     # extinction risk rises per progress year at low k-values). I'm setting this to be the same
     # as the multiplanetary x-stretch, since many of the technologies that enable latter enable the
@@ -343,7 +346,7 @@ perils:
     # very optimistically assuming no further regressions, ie for x = 70 + 53 = 123,
     # and picked values that would give ~80% probability on those assumption.
     # * https://www.metaculus.com/questions/1432/will-humans-have-a-sustainable-off-world-presence-by-2100/
-    # current_perils_base_x_stretch: 90
+    current_perils_base_x_stretch: 81
     base_x_stretch: 90
     # current_perils_x_translation: 70
     x_translation: 70 # Robert Zubrin was probably the first person to develop a
