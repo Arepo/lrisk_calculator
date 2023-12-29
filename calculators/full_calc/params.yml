@@ -36,6 +36,14 @@
 # I fiddle with the values a lot, so Desmos graphs might not track the default values below.
 
 perils:
+  # Some of the parameters below* have a 'current_perils_'-prefixed alternative.
+  # If you uncomment this, they will be used only for determining the graphs of
+  # our current time of perils, and the default values will be used for all future times of perils
+  #
+  # * specifically, current_perils_base_x_stretch, current_perils_stretch_per_reboot,
+  # current_perils_y_stretch, current_perils_x_translation, and current_perils_sharpness
+  # for each transition
+
   current_progress_year: 70
   # In general the default params are set in a way that tracks my intuition for how the current time
   # of perils has evolved. For this reason I’m treating our current progress year as approx #70.
@@ -74,6 +82,7 @@ perils:
     # extinction seem necessarily more speculative than for lesser regressions,
     # I'm leaving the lower bound as the default.
 
+    # current_perils_y_stretch: 0.00035
     # y_stretch: 0.004 # Suggested upper bound
     y_stretch: 0.00035 # Suggested lower bound (see above for why this is default)
     # The most optimistic explicit extinction estimate on the database is given
@@ -88,12 +97,14 @@ perils:
     # https://manifold.markets/IsaacKing/will-humanity-survive-until-2100
     # https://manifold.markets/jack/will-humans-go-extinct-before-2100
 
+    # current_perils_base_x_stretch: 90
     base_x_stretch: 90 # Suggested upper bound/default.
     # The x-stretch of the graph at k=0 (primary determinant of how quickly the
     # extinction risk rises per progress year at low k-values). I'm setting this to be the same
     # as the multiplanetary x-stretch, since many of the technologies that enable latter enable the
     # former (but this one starts rising sooner because of the smaller x-translation).
     # base_x_stretch: 60 # Suggested lower bound.
+    # current_perils_stretch_per_reboot: 3.5
     stretch_per_reboot: 3.5 # Best guess: ~the geometric mean of upper and lower bounds
     # stretch_per_reboot: 10 # Suggested upper bound.
     # A per-reboot multiplier on the x-stretch (the formula for x_stretch is
@@ -119,11 +130,13 @@ perils:
     # Note that high values of this will break the calculator, by making the per-year risk
     # in later civilisations approach or exceed 1. TODO: make it more robust to this
 
+    # current_perils_x_translation: 15
     x_translation: 15 # The delay at the start of a time of perils before we expect this risk to
     # kick in. The default value assumes (with what we now know) that this would have been basically
     # impossible via nuclear weaponry until the world had stockpiled tens of thousands of nuclear
     # warheads. I'm treating that as after the huge jump between 1955 and 1960
     # described in https://en.wikipedia.org/wiki/Historical_nuclear_weapons_stockpiles_and_nuclear_tests_by_country.
+    # current_perils_sharpness: 6
     sharpness: 6 # A minor parameter codetermining steepness, set by eyeballing the Desmos graph
     # given the other params - the default value implies a sharp increase in risk starting around
     # the turn of the century, and continuing to meaningfully increase for around a century after that
@@ -142,6 +155,7 @@ perils:
     # they destroy far more resources than a pandemic would, making rebuilding much harder. So I
     # expect the risk to level out relatively early in a time of perils compared to other
     # transitions.
+    # current_perils_y_stretch: 0.0009
     y_stretch: 0.0009 # Best guess - see below
     # Max annual probability of transitioning to a preindustrial state from
     # a time of perils. Ord's estimate* of a 0.05 chance of full scale nuclear war
@@ -157,11 +171,12 @@ perils:
 
     # Since this transition isn't really covered in the literature that I've seen,
     # I don't have a simple way to generate upper/lower bounds.
+    # current_perils_base_x_stretch: 75
     base_x_stretch: 75 # Suggested upper bound. I suggest sharpness = 2 when using this value
     # The x-stretch of the graph at k=0 (primary determinant of how quickly the
     # extinction risk rises per progress year at low k-values)
     # base_x_stretch: 10.5 # Suggested lower bound. I suggest sharpness = 2 when using this value
-
+    # current_perils_stretch_per_reboot: 3.5
     stretch_per_reboot: 3.5 # Best guess: ~the geometric mean of upper and lower bounds
     # I assume the same friction to progress on technologies that would cause this transition as
     # those that would cause extinction, thus:
@@ -171,9 +186,11 @@ perils:
     per_civilisation_background_risk_numerator: 1.05 # Best guess:
     # Same as for industrial
 
+    # current_perils_x_translation: 5
     x_translation: 5 # I assume this gets much more plausible after at least two countries developed
     # a nuclear arsenal, which took about 10 years the first time (the sharpness parameter below
     # keeps it close to for the first 5 years)
+    # current_perils_sharpness: 0.9
     sharpness: 0.9
     base_background_risk_denominator: 87_000 # I assume this is approx half what
     # it is for extinction (ie the probability is twice that for extinction), in line with the
@@ -183,6 +200,7 @@ perils:
 
     # Desmos graph:
     # https://www.desmos.com/calculator/42hjsgyiit
+    # current_perils_y_stretch: 0.0015
     y_stretch: 0.0015 # Max annual probability of extinction from a time of perils. I assume a 0.1
     # total chance of a catastrophe that would wipe out multiple billions in the next century,
     # loosely based on the estimates in FHI’s 2008 Global Catastrophic Risks Survey. The survey’s
@@ -205,6 +223,7 @@ perils:
     # decreasing by at least 10% during any 5-year period until 2100, which is
     # currently given as
     # https://www.metaculus.com/questions/1493/global-population-decline-10-by-2100/
+    # current_perils_base_x_stretch: 85
     base_x_stretch: 85 # Suggested upper bound
     # Higher than for preindustrial, because biopandemics seem
     # relatively more likely to cause this regression than nuclear weaponry (cf
@@ -214,6 +233,7 @@ perils:
     # developed earlier. This and the default values for x_translation and
     # sharpness would put us at approx 2/3 of the way to max annual risk.
     # base_x_stretch: 15 # Suggested upper bound. I suggest sharpness = 2 when using this value
+    # current_perils_stretch_per_reboot: 3.5
     stretch_per_reboot: 3.5 # Best guess: ~the geometric mean of upper and lower bounds
     # I assume the same friction to progress on technologies that would cause this transition as
     # those that would cause extinction, thus:
@@ -223,8 +243,10 @@ perils:
     per_civilisation_background_risk_numerator: 1.05 # Best guess:
     # Same as for preindustrial
 
+    # current_perils_x_translation: 0
     x_translation: 0 # The definitionally minimum possible regression at the start of a time of
     # perils
+    # current_perils_sharpness: 0.9
     sharpness: 0.9
     base_background_risk_denominator: 61_000 # I assume this is approx a third of what
     # it is for extinction (ie the probability is 3x that for extinction), in line with the
@@ -321,7 +343,9 @@ perils:
     # very optimistically assuming no further regressions, ie for x = 70 + 53 = 123,
     # and picked values that would give ~80% probability on those assumption.
     # * https://www.metaculus.com/questions/1432/will-humans-have-a-sustainable-off-world-presence-by-2100/
+    # current_perils_base_x_stretch: 90
     base_x_stretch: 90
+    # current_perils_x_translation: 70
     x_translation: 70 # Robert Zubrin was probably the first person to develop a
     # practical and concrete proposal to create a self-sustaining offworld settlement
     # that was taken seriously by the US government. That was around 1990, and
@@ -336,11 +360,14 @@ perils:
     # calamity that killed everyone on Earth and repopulate the planet afterwards
     #  without having attained the ability to exist as a colony without it.
     # So this line can start increasing a decade  before that.
+    # current_perils_y_stretch: 0.07
     y_stretch: 0.07 # Meaning a high tech civilisation could create a new
     # settlement maybe every ~15 years on average, given somewhere nearby to expand to
     # (it gives probability = 1/2 of at least one after 10 years. TODO: do a more rigorous
     # calculation here).
+    # current_perils_sharpness: 2
     sharpness: 2
+    # current_perils_stretch_per_reboot: 3.5
     stretch_per_reboot: 3.5 # Best guess: ~the geometric mean of upper and lower bounds
     # I assume the same friction to progress on technologies that would cause this transition as
     # those that would cause extinction, thus:
@@ -365,10 +392,15 @@ perils:
     # sake, I'm happy to treat this transition as as 0 probability (y-stretch of
     # 0 with everything else being irrelevant), but YMMV.
 
+    # current_perils_y_stretch: 0
     y_stretch: 0
+    # current_perils_base_x_stretch: 118
     base_x_stretch: 118
+    # current_perils_x_translation: 15
     x_translation: 15
+    # current_perils_sharpness: 2
     sharpness: 2
+    # current_perils_stretch_per_reboot: 10
     stretch_per_reboot: 10
     # I'm including the subsequent two params to avoid conditionals in the code, but these should
     # be 0 under normal assumptions. TODO: explain better

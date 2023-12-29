@@ -42,30 +42,26 @@ def interstellar_given_perils(k, p):
     return _parameterised_transition_probability(k, p, 'interstellar')
 
 def _parameterised_transition_probability(k, p, target_state):
-    # To allow for some inside view about the first time we reboot, we could
-    # have an explicit condition here:
-    # if k == 1:
-    #   do_something_different
+    if k == 0:
+        # Some kruft required to deal with values potentially being 0
+        base_x_stretch = params[target_state].get('current_perils_base_x_stretch')
+        base_x_stretch = base_x_stretch if base_x_stretch is not None else params[target_state]['base_x_stretch']
+        x_stretch_stretch = params[target_state].get('current_perils_stretch_per_reboot')
+        x_stretch_stretch = (x_stretch_stretch if x_stretch_stretch is not None else params[target_state]['stretch_per_reboot']) ** k
+        y_stretch = params[target_state].get('current_perils_y_stretch')
+        y_stretch = y_stretch if y_stretch is not None else params[target_state]['y_stretch']
+        x_translation = params[target_state].get('current_perils_x_translation')
+        x_translation = x_translation if x_translation is not None else params[target_state]['x_translation']
+        sharpness = params[target_state].get('current_perils_sharpness')
+        sharpness = sharpness if sharpness is not None else params[target_state]['sharpness']
+    else:
+        base_x_stretch = params[target_state]['base_x_stretch']
+        x_stretch_stretch = params[target_state]['stretch_per_reboot'] ** k
+        y_stretch = params[target_state]['y_stretch']
+        x_translation = params[target_state]['x_translation']
+        sharpness = params[target_state]['sharpness']
 
-    @cache
-    def x_stretch():
-        return (params[target_state]['base_x_stretch']
-                * params[target_state]['stretch_per_reboot'] ** k)
-
-    @cache
-    def y_stretch():
-        """Max probability per year of this transition"""
-        return params[target_state]['y_stretch']
-
-    @cache
-    def x_translation():
-        """How many progress years into the time of perils does this possibility rise meaningfully
-        above 0"""
-        return params[target_state]['x_translation']
-
-    @cache
-    def sharpness():
-        return params[target_state]['sharpness']
+    total_x_stretch = base_x_stretch * x_stretch_stretch
 
     @cache
     def background_risk():
@@ -76,10 +72,10 @@ def _parameterised_transition_probability(k, p, target_state):
 
     return background_risk() + sigmoid_curved_risk(
         x=p,
-        x_stretch=x_stretch(),
-        y_stretch=y_stretch(),
-        x_translation=x_translation(),
-        sharpness=sharpness())
+        x_stretch=total_x_stretch,
+        y_stretch=y_stretch,
+        x_translation=x_translation,
+        sharpness=sharpness)
 
 @cache
 def transition_to_year_n_given_perils(k:int, p:int, n=None):
