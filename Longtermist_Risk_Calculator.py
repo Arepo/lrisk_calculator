@@ -410,7 +410,7 @@ Let $V$ be the value we imagine of humans becoming interstellar and $V_{\\text{s
 the event that we attain that state. We assume that by the time we reach pass some
 threshhold, like settling around the first other star, we are either now
 existentially secure (hence have attained V in expectation) or never will be
-(see [post]() for rationale for this).
+(see [see this footnote](https://forum.effectivealtruism.org/s/gWsTMm5Nbgdxedyns/p/YnBwoNNqe6knBJH8p#fncubjw6vmka) for rationale for this).
 
 Let $T_{\\text{state}}$ be some event that transitions us to some other state
 than 'present perils', for example, 'nuclear war that destroys all industry in
