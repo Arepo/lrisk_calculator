@@ -200,7 +200,9 @@ for i in range(1, constant.MAX_CIVILISATIONS):
 
 success_probabilities = []
 numbered_states = []
-for i in range(1, constant.MAX_CIVILISATIONS):
+for i in range(1, 10): # ideally this would go up to constant.MAX_CIVILISATIONS, but that messes up
+                       # the CSV columns; if you want to save the results beyond civ-10, you'll
+                       # store them manually from the printed output
 
     for state in (f'preindustrial-{i}', f'industrial-{i}', f'perils-{i}', f'multiplanetary-{i}'):
         numbered_states.append(state)
@@ -219,17 +221,26 @@ with open(file_name, 'a', newline='') as csvfile:
     civ_0_probabilities = [mc.absorption_probabilities()[1][mc.states.index('perils-0')],
                            mc.absorption_probabilities()[1][mc.states.index('multiplanetary-0')]]
     all_success_probabilities = civ_0_probabilities + success_probabilities
+    preindustrial_in_terms_of_astronomical_value = civ_0_probabilities[0] - success_probabilities[0]
+    preindustrial_as_extinction_proportion = (preindustrial_in_terms_of_astronomical_value) / civ_0_probabilities[0]
+    industrial_in_terms_of_astronomical_value = civ_0_probabilities[0] - success_probabilities[1]
+    industrial_as_extinction_proportion = (industrial_in_terms_of_astronomical_value) / civ_0_probabilities[0]
+    industrial_as_preindustrial_proportion = industrial_in_terms_of_astronomical_value / preindustrial_in_terms_of_astronomical_value
 
     if not file_exists:
         # Write header only if file is empty or doesn't exist
         writer.writerow(
-            [' ', 'Notes'] # Leave first two columns for people to enter their
-            # names/descriptions of their params etc
+            [' ', 'Notes', 'Industrial-1 as proportion of Preindustrial-1', 'X(preindustrial)', 'X(industrial)', 'V(preindustrial)', 'V(industrial)']
+            # Leave first two columns for people to enter their
+            # names/descriptions of their params etc, and next four to show costs of a regression to
+            # preindustrial/industrial relative to extinction to to astronomical value
             + all_numbered_states
             + ['MAX_PLANETS', 'MAX_CIVILISATIONS', 'MAX_PROGRESS_YEARS']
             + Params().get_param_keys())
     writer.writerow(
-        [' ', ' ']
+        [' ', ' ', industrial_as_preindustrial_proportion]
+        + [preindustrial_as_extinction_proportion, industrial_as_extinction_proportion]
+        + [preindustrial_in_terms_of_astronomical_value, industrial_in_terms_of_astronomical_value]
         + all_success_probabilities
         + [constant.MAX_PLANETS, constant.MAX_CIVILISATIONS, constant.MAX_PROGRESS_YEARS]
         + Params().get_param_values())

@@ -401,6 +401,10 @@ probabilities_df = pd.DataFrame(
 probabilties_fig = px.bar(probabilities_df,
                           x='Civilisation state',
                           y='Probability of becoming interstellar')
+
+st.markdown("""<h6 style="text-align: center;">
+            Prospects from each state:
+            </h6>""", unsafe_allow_html=True)
 st.plotly_chart(probabilties_fig, use_container_width=True)
 
 # TODO Need to distinguish below between V as value, and V_event
@@ -416,10 +420,10 @@ Let $T_{\\text{state}}$ be some event that transitions us to some other state
 than 'present perils', for example, 'nuclear war that destroys all industry in
 next 10 years' or 'humans develop self-sustaining offworld settlement before
 2070'.
-Thus, we define:
-- $P(V_{\\text{state}} | T_{\\text{state}})$ as the probability of becoming interstellar from
+Thus:
+- $P(V_{\\text{state}} | T_{\\text{state}})$ is the probability of becoming interstellar from
 the state $T_{\\text{state}}$ would transition us to,
-- $P(V_{\\text{state}} | \\neg T_{\\text{state}})$ as the probability of becoming interstellar
+- $P(V_{\\text{state}} | \\neg T_{\\text{state}})$ is the probability of becoming interstellar
 from our current state, given that $T_{\\text{state}}$ doesn't occur.
 
 We can then express the expected value of $T_{\\text{state}}$ in terms of $V$, as
@@ -435,6 +439,10 @@ difference_fig = px.bar(
     difference_df,
     x='State',
     y='Value of transitioning to state (as a multiple of V)')
+
+st.markdown("""<h6 style="text-align: center;">
+            Value of each transition in terms of <em>V</em>:
+            </h6>""", unsafe_allow_html=True)
 st.plotly_chart(difference_fig, use_container_width=True)
 
 # TODO This example seems priming
@@ -454,7 +462,7 @@ success is less than 50%).
 """, unsafe_allow_html=True)
 
 x='State'
-y='Cost of transitioning to state as a percentage of the cost of extinction (can be negative)'
+y='Cost of transitioning to state as a percentage of the cost of extinction'
 proportion_df = pd.DataFrame(
     calc.probability_proportion_differences().items(),
     columns=[x, y])
@@ -462,6 +470,10 @@ proportion_fig = px.bar(
     proportion_df,
     x=x,
     y=y)
+
+st.markdown("""<h6 style="text-align: center;">
+            Cost of each transition as proportion of extinction:
+            </h6>""", unsafe_allow_html=True)
 st.plotly_chart(proportion_fig, use_container_width=True)
 
 
@@ -544,3 +556,7 @@ counterfactual_transitional_probabilities = (
 result = np.round(np.dot(probability_differences, counterfactual_transitional_probabilities),
                   precision)
 st.markdown("The expected value of the event is ${0}V$.".format(result))
+
+'----'
+
+st.markdown("Your answers are represented in the URL - please share them with others :)")
