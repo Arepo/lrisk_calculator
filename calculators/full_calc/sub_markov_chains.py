@@ -7,10 +7,10 @@ https://forum.effectivealtruism.org/s/gWsTMm5Nbgdxedyns/p/YnBwoNNqe6knBJH8p#The_
 
 from pydtmc import MarkovChain
 
-import runtime_constants as constant
-import multiplanetary
-import perils
-from params import Params
+import calculators.full_calc.runtime_constants as constant
+from calculators.full_calc import multiplanetary
+from calculators.full_calc import perils
+from calculators.full_calc.params import Params
 
 # See https://dbader.org/blog/python-memoization for a primer on caching
 # TODO look into https://github.com/pymc-devs/pymc

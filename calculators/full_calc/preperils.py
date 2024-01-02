@@ -3,8 +3,7 @@
 """Functions to calculate transition probabilities from preperils states."""
 
 from functools import cache
-import yaml
-from params import Params
+from calculators.full_calc.params import Params
 
 params = Params().preperils
 

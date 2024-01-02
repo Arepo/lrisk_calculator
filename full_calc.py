@@ -9,11 +9,10 @@ import os
 
 from pydtmc import MarkovChain
 
-import runtime_constants as constant
-import preperils
-import sub_markov_chains
-from params import Params
-
+import calculators.full_calc.runtime_constants as constant
+from calculators.full_calc import preperils
+from calculators.full_calc import sub_markov_chains
+from calculators.full_calc.params import Params
 
 def full_markov_chain():
     """Wrapper for a pydtmc Markov chain that implements the full decay/perils-focused/multiplanetary
