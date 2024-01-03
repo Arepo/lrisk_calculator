@@ -74,12 +74,6 @@ common_form_values = {
     'format': "%.2f",
 }
 
-# TODO implement this without breaking session state names
-# def to_readable_url(string):
-#     """Convert transition names to a human-readable URL format"""
-#     string = string.replace(" ", "_").replace("'", "").replace("/", "").replace("†", "")
-#     return string.lower()
-
 def set_query_params():
     """Add a query string to represent each of the current set of form values"""
     query_params = {transition: value
@@ -179,48 +173,6 @@ with col1:
             key=transition + " " + 'from preindustrial' + "_from_input",
             **common_form_values)
 
-    # def update_preindustrial_from_slider():
-    #     st.session_state['Industrial given preindustrial'] = st.session_state['preindustrial_slider_value']
-
-    # def update_preindustrial_from_number():
-    #     st.session_state['Industrial given preindustrial'] = st.session_state['preindustrial_num_input_value']
-
-    # st.slider(label='Extinction (slider) given Preindustrial',
-    #     value=1 - st.session_state['Industrial given preindustrial'],
-    #     **common_form_values)
-
-    # st.slider(
-    #     label='Industrial (Slider) given Preindustrial',
-    #     value=st.session_state['Industrial given preindustrial'],
-    #     on_change=update_preindustrial_from_slider,
-    #     key='preindustrial_slider_value' + "_from_input",
-    #     **common_form_values)
-
-    # st.number_input(label='Industrial (Number) given Preindustrial',
-    #                 value=st.session_state['Industrial given preindustrial'],
-    #                 on_change=update_preindustrial_from_number,
-    #                 key='preindustrial_input_value' + "_from_input",
-    #                 **common_form_values)
-
-    # st.number_input(label='Extinction (number) given Preindustrial',
-    #             value=round(1 - st.session_state['Industrial given preindustrial'], 5),
-    #             disabled=True,
-    #             **common_form_values)
-
-
-
-
-
-    # def update_preindustrial():
-    #     st.session_state['Industrial given preindustrial'] = round(st.session_state['preindustrial_input_value'], 5)
-
-
-
-
-
-
-
-
 # Second Section: Future perils given preindustrial
 
 with col2:
@@ -235,20 +187,6 @@ with col2:
             on_change=make_on_change_callback(transition,  'from industrial'),
             key=transition + " " + 'from industrial' + "_from_input",
             **common_form_values)
-
-    # st.number_input(
-    #     label='Future perils (number) given Industrial',
-    #     value=st.session_state['Future perils given industrial'],
-    #     on_change=update_perils_from_number,
-    #     key='future_perils_num_input_value' + "_from_input",
-    #     **common_form_values)
-
-    # st.number_input(
-    #     label='Extinction (number) given Industrial',
-    #     value=round(1 - st.session_state['Future perils given industrial'], 5),
-    #     disabled=True,
-    #     **common_form_values)
-
 
 # # Section 3: Transitions from present perils
 
@@ -269,19 +207,6 @@ def make_on_change_present_perils_callback(transition_name):
         for state in all_transitions['from present perils']:
             st.session_state[state + " " + 'from abstract state'] = st.session_state[state + " " + 'from present perils']
     return callback
-
-# for transition in transitions['from present perils']:
-#     st.number_input(
-#         label=transition,
-#         value=st.session_state[transition],
-#         on_change=make_on_change_present_perils_callback(transition),
-#         key=transition + '_value' + "_from_input",
-#         **common_form_values)
-
-# st.number_input(label=f'Multiplanetary given present perils',
-#         value=get_remainder_value(present_perils_remainder),
-#         disabled = True,
-#         **common_form_values)
 
 for transition in all_transitions['from present perils']:
     st.slider(
@@ -305,19 +230,6 @@ st.write("""**If future civilisations ever regain technology resembling our curr
          that they will transitions directly to the following states?
          (assuming those are the only possible outcomes)?**""")
 
-# for transition in transitions['from future perils']:
-#     st.number_input(
-#         label=transition,
-#         value=st.session_state[transition],
-#         on_change=make_on_change_future_perils_callback(transition),
-#         key=transition + '_value' + "_from_input",
-#         **common_form_values)
-
-# st.number_input(label=f'Multiplanetary given future perils',
-#         value=get_remainder_value(future_perils_remainder),
-#         disabled = True,
-#         **common_form_values)
-
 for transition in all_transitions['from future perils']:
     st.slider(
     label=transition,
@@ -338,19 +250,6 @@ st.write("""**If civilisation ever develops self-sustaining settlements on more 
          what is the probability that they will transitions directly to the following states?
          (assuming those are the only possible outcomes)?**""")
 
-# for transition in transitions['from multiplanetary']:
-#     st.number_input(
-#         label=transition,
-#         value=st.session_state[transition],
-#         on_change=make_on_change_multiplanetary_callback(transition),
-#         key=transition + '_value' + "_from_input",
-#         **common_form_values)
-
-# st.number_input(label=f'Interstellar given multiplanetary',
-#         value=get_remainder_value(multiplanetary_remainder),
-#         disabled = True,
-#         **common_form_values)
-
 for transition in all_transitions['from multiplanetary']:
     st.slider(
     label=transition,
@@ -358,12 +257,6 @@ for transition in all_transitions['from multiplanetary']:
     on_change=make_on_change_callback(transition, 'from multiplanetary'),
     key=transition + " " + 'from multiplanetary' + "_from_input",
     **common_form_values)
-
-# st.slider(
-#     label='Interstellar given multiplanetary',
-#     value=get_remainder_value(multiplanetary_remainder),
-#     disabled=True,
-#     **common_form_values)
 
 '---'
 
@@ -407,7 +300,6 @@ st.markdown("""<h6 style="text-align: center;">
             </h6>""", unsafe_allow_html=True)
 st.plotly_chart(probabilties_fig, use_container_width=True)
 
-# TODO Need to distinguish below between V as value, and V_event
 
 st.markdown("""
 Let $V$ be the value we imagine of humans becoming interstellar and $V_{\\text{state}}$ be
@@ -508,13 +400,6 @@ for state, col in zip(all_transitions['from abstract state'][:3], (col1, col2, c
             step= 0.01,
             format= f"%.{precision}f")
 
-        # st.number_input(
-        #     label=state,
-        #     value=st.session_state[state],
-        #     on_change=make_on_change_abstract_transition_callback(state),
-        #     key=state + '_value' + "_from_input",
-        #     **common_form_values)
-
 for state, col in zip(all_transitions['from abstract state'][3:], (col1, col2, col3)):
     with col:
         st.number_input(
@@ -528,25 +413,6 @@ for state, col in zip(all_transitions['from abstract state'][3:], (col1, col2, c
             format= f"%.{precision}f")
 
 st.write(obelus_string, unsafe_allow_html=True)
-# st.slider(
-#     label='Interstellar',
-#     value=st.session_state['Interstellar/existential security from abstract state'],
-#     on_change=make_on_change_abstract_transition_callback('Interstellar/existential security'),
-#     key='Interstellar/existential security from abstract state_from_input',
-#     **common_form_values)
-
-        # st.number_input(
-        #     label=state,
-        #     value=st.session_state[state],
-        #     on_change=make_on_change_abstract_transition_callback(state),
-        #     key=state + '_value' + "_from_input",
-        #     **common_form_values)
-
-# st.number_input(label=f'Probability of remaining in current state given event',
-#         value=get_remainder_value(abstract_event_remainder),
-#         disabled = True,
-#         **common_form_values)
-
 
 probability_differences = np.array(list(calc.probability_differences().values()))
 counterfactual_transitional_probabilities = (
