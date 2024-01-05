@@ -425,4 +425,4 @@ st.markdown("The expected value of the event is ${0}V$.".format(result))
 
 '----'
 
-st.markdown("Your answers are represented in the URL - please share them with others :)")
+st.markdown("Your answers are stored in the URL - please share them with others :)")
