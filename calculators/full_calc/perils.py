@@ -156,11 +156,16 @@ def transition_to_year_n_given_perils(k:int, p:int, n=None):
 
         return (n + 1) / arithmetic_sequence_sum * any_intra_perils_regression()
 
+    def mean_algorithm():
+        "Returns the mean of the linear and exponential algorithms"
+        return (exponential_algorithm() + linear_algorithm()) / 2
 
     if params['progress_year_n']['algorithm'] == 'exponential':
         return exponential_algorithm()
     elif params['progress_year_n']['algorithm'] == 'linear':
         return linear_algorithm()
+    elif params['progress_year_n']['algorithm'] == 'mean':
+        return mean_algorithm()
     else:
         raise "Invalid algorithm given for progress_year_n"
 

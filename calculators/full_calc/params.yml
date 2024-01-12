@@ -70,7 +70,7 @@ perils:
 
   extinction:
 
-    # Desmos graph: https://www.desmos.com/calculator/ojufzwje81 - this graph assumes k=1. To see
+    # Desmos graph: https://www.desmos.com/calculator/wxdy17hz1d - this graph assumes k=0. To see
     # the effect of reboots on the estimates, you'll need to manually increase the x-stretch (parameter
     # b on Desmos) by an appropriate proportion.
     # y_stretch: 0.0012 # Best guess: ~the geometric mean of upper and lower bounds
@@ -125,7 +125,7 @@ perils:
     # stretch_per_reboot: 1.2 # Suggested lower bound
     # A guess about the max ability of human ingenuity to overcome resource
     # constraints, and assuming no great compounding effects from such constraints.
-    per_civilisation_background_risk_numerator: 1.05 # Best guess:
+    per_civilisation_background_risk_numerator: 1.05 # Best guess
     # A slight per-year-per-civilisation increase to background risk of extinction,
     # representing for example, climate naturally changing away from the one best
     # suited to humans, increased burden of disease.
@@ -155,8 +155,8 @@ perils:
   preindustrial:
 
     # Desmos graph:
-    # https://www.desmos.com/calculator/unwzkamdla
-    # https://www.desmos.com/calculator/wuicjmu8ui
+    # https://www.desmos.com/calculator/w8ajlykmzk
+
     # I'm treating nukes as being substantially the most likely tech to cause this outcome, since
     # they destroy far more resources than a pandemic would, making rebuilding much harder. So I
     # expect the risk to level out relatively early in a time of perils compared to other
@@ -197,7 +197,8 @@ perils:
     # a nuclear arsenal, which took about 10 years the first time (the sharpness parameter below
     # keeps it close to for the first 5 years)
     # current_perils_sharpness: 0.9
-    sharpness: 0.9
+    sharpness: 0.9 # Based on historical nuclear arsenals, this rose so fast I don't want it to look
+    # 'S'ish
     base_background_risk_denominator: 87_000 # I assume this is approx half what
     # it is for extinction (ie the probability is twice that for extinction), in line with the
     # best guess ratios for the y_stretch.
@@ -205,7 +206,7 @@ perils:
   industrial:
 
     # Desmos graph:
-    # https://www.desmos.com/calculator/42hjsgyiit
+    # https://www.desmos.com/calculator/ycylxrxgs0
     # current_perils_y_stretch: 0.0015
     y_stretch: 0.0015 # Max annual probability of extinction from a time of perils. I assume a 0.1
     # total chance of a catastrophe that would wipe out multiple billions in the next century,
@@ -253,32 +254,34 @@ perils:
     x_translation: 0 # The definitionally minimum possible regression at the start of a time of
     # perils
     # current_perils_sharpness: 0.9
-    sharpness: 0.9
+    sharpness: 0.9 # Based on historical nuclear arsenals, this rose so fast I don't want it to look
+    # 'S'ish
     base_background_risk_denominator: 61_000 # I assume this is approx a third of what
     # it is for extinction (ie the probability is 3x that for extinction), in line with the
     # best guess ratios for the y_stretch.
 
   progress_year_n:
     # Desmos graph:
-    # https://www.desmos.com/calculator/olr4mepouy (exponential version)
-
-    # The red graph represents the probability of regressing from progress year x to progress year
-    # n, such that 0 <= n <= x, and the green graph shows the same thing with a different x-axis - the
-    # probability of regressing from progress year p to progress year x, such that 0 <= x <= p
+    # https://www.desmos.com/calculator/k4fxxqgctw The three graphs represent the
+    # three algorithms described below that give a probability of retrogressing from progress year
+    # p to progress year x, such that 0 <= x <= p
+    # Green is the exponential algorithm, blue the linear algorithm, red is the
+    # mean of the two.
 
     # The parameters in this section determine the probability of transitioning within the
     # time of perils from progress-year p to progress-year n.
 
-    # There are two simple ways I can think of to deal with this, which I think
+    # There are two base ways I can think of to deal with this, which I think
     # could yield very different results. In either case we assume some base probability of
     # any intra-perils regressions - this is the any_regression param below - and divide
     # that probability up in the probabilities of regressing to progress year p.
+    # There's also the option to take the mean of the other two algorithms, which is the default.
 
-    # 1) to assume the probability of regressing
-    # to any specific progress year decreases exponentially the further back we
-    # might regress. So the probability, given some intraperils regression of regressing from
-    # progress year p to progress year q is b^q/<the geometric sum b^0 + b^1 + ... + b^p>, where
-    # b is the geometric_base parameter below. TODO Double check this is implemented correctly
+    # 1) to assume the probability of regressing to any specific progress year decreases
+    # exponentially the further back we might regress. So the probability, given some
+    # intraperils regression of regressing from progress year p to progress year
+    # q is b^q/<the geometric sum b^0 + b^1 + ... + b^p>, where b is the
+    # geometric_base parameter below. TODO Double check this is implemented correctly
 
     # More generally, given some intra-perils regression r and some geometric base g (set by
     # the geometric_base parameter below>, the probability of regressing to exactly
@@ -300,9 +303,10 @@ perils:
     # algorithm offers a lower bound on the significance of intra-perils regressions.
 
     # TODO not sure 'exponential' is the best description for this.
-    # To use this exponential algorithm, leave the following two lines  uncommented:
+    # To use this exponential algorithm, uncomment the next line, and comment out
+    # the "algorithm" 'mean'" line further down:
+    # algorithm: 'exponential'
 
-    algorithm: 'exponential'
     geometric_base: 1.4 # I chose the current value fairly arbitrarily, by looking at the world
     # GDP graph https://data.worldbank.org/indicator/NY.GDP.MKTP.KD.ZG, treating
     # 1975, and 1982 as a regression of 0 years, 2009 as a regression
@@ -323,6 +327,10 @@ perils:
     # the column structure of the params in results.csv):
     # algorithm: 'linear'
 
+    # 3) The mean of the linear and exponential algorithms (this might substantially
+    # extend the runtime).
+    algorithm: 'mean'
+
     any_regression: 0.026 # The annual probability of any intra-perils regression, used by both
     # the exponential and linear algorithms. This could be a function of k and/or p - but seems ok to
     # treat as a constant (at any given time using all the nukes would, more or
@@ -334,7 +342,7 @@ perils:
 
 
   multiplanetary:
-    # Desmos graph: https://www.desmos.com/calculator/mkiueju9w6
+    # Desmos graph: https://www.desmos.com/calculator/mv10b5ighs
 
     # I tried to give a small but non-negligible credence to Elon
     # Musk's claim* that we could have a self-sustaining Mars colony by 2050 (on
@@ -388,6 +396,7 @@ perils:
 
 
   interstellar:
+    # No Desmos graph:
     # I assume this can only happen directly from the time of perils (without
     # going via a multiplanetary state) via a benevolent AI singleton, and
     # since I'm not effectively modelling the development of AI in the current
@@ -397,8 +406,9 @@ perils:
     # kill us all' and Camp B: 'it's going to be a very powerful tool which
     # doesn't fundamentally change human dynamics'. On either view, this
     # outcome seems very unlikely, though not inconceivable. For simplicity's
-    # sake, I'm happy to treat this transition as as 0 probability (y-stretch of
-    # 0 with everything else being irrelevant), but YMMV.
+    # sake, I'm treating this transition as as 0 probability (y-stretch of
+    # 0 with everything else being irrelevant), but you can adjust if that seems
+    # wrong.
 
     # current_perils_y_stretch: 0
     y_stretch: 0
@@ -427,7 +437,7 @@ multiplanetary:
   # technology to learn from.
   extinction:
     # Desmos graph:
-    # https://www.desmos.com/calculator/20grgq1ar5
+    # https://www.desmos.com/calculator/gxrnkk8kqd
     two_planet_risk: 0.12
     decay_rate: 0.55 # TODO explain this
     min_risk: 0 # Longtermist philosophy is basically predicated on this being 0.
@@ -513,7 +523,7 @@ multiplanetary:
 
   interstellar:
 
-    # Desmos graph: https://www.desmos.com/calculator/ex64ucuqcj
+    # Desmos graph: https://www.desmos.com/calculator/r5c6cqwlux
     # (unlike the other multiplanetary transitions, I assume this becomes more
     # likely the more planets are settled, and use the same abstract formula as for transitions
     # in the time of perils)
