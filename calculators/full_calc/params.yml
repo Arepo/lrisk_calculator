@@ -141,7 +141,9 @@ perils:
     # described in https://en.wikipedia.org/wiki/Historical_nuclear_weapons_stockpiles_and_nuclear_tests_by_country.
     # current_perils_sharpness: 6
     sharpness: 6 # A minor parameter codetermining steepness, set by eyeballing the Desmos graph
-    # given the other params - the default value implies a sharp increase in risk starting around
+    # given the other params. Setting this value to 3 in every section yields reasonable results
+    # but you can tweak it for more control of the steepest region of the graph - the default
+    # value here implies a sharp increase in risk starting around
     # the turn of the century, and continuing to meaningfully increase for around a century after that
     base_background_risk_denominator: 184_000 # The denominator of the fraction used to calculate
     # background risk of extinction, constant throughout a given time of perils.

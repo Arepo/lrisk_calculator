@@ -229,7 +229,7 @@ with open(file_name, 'a', newline='') as csvfile:
     if not file_exists:
         # Write header only if file is empty or doesn't exist
         writer.writerow(
-            [' ', 'Notes', 'Industrial-1 as proportion of Preindustrial-1', 'X(preindustrial)', 'X(industrial)', 'V(preindustrial)', 'V(industrial)']
+            [' ', 'Notes', 'Loss of value from Industrial-1 as proportion of loss of value from Preindustrial-1', 'X(preindustrial)', 'X(industrial)', 'V(preindustrial)', 'V(industrial)']
             # Leave first two columns for people to enter their
             # names/descriptions of their params etc, and next four to show costs of a regression to
             # preindustrial/industrial relative to extinction to to astronomical value
