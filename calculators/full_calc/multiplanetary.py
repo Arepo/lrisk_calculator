@@ -124,7 +124,7 @@ def transition_to_n_planets_given_multiplanetary(q, n):
         # Allows us to check total probability sums to 1
         # TODO this branch prob obsolete now
         return any_intra_multiplanetary_regression(q)
-    if n == q + 1:
+    if n == q + 1 and q != constant.MAX_PLANETS:
         # This is our catchall branch - the probability is whatever's left after we decide all the
         # other risks
         return remainder_outcome(q)

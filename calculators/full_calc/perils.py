@@ -87,7 +87,7 @@ def transition_to_year_n_given_perils(k:int, p:int, n=None):
         # staying on the spot (which becomes our remainder)
         possible_regressions -= 1
 
-    if n > (possible_regressions):
+    if n > possible_regressions:
         # We only allow progress to increment by up to one.
         return 0
 

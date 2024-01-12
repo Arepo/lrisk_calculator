@@ -262,7 +262,7 @@ perils:
 
   progress_year_n:
     # Desmos graph:
-    # https://www.desmos.com/calculator/05bifkk1dl The three graphs represent the
+    # https://www.desmos.com/calculator/xmjhulo4lj The three graphs represent the
     # three algorithms described below that give a probability of retrogressing from progress year
     # p to progress year x, such that 0 <= x <= p
     # Green is the exponential algorithm, blue the linear algorithm, red is the
