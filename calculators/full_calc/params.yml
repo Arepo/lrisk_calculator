@@ -262,7 +262,7 @@ perils:
 
   progress_year_n:
     # Desmos graph:
-    # https://www.desmos.com/calculator/k4fxxqgctw The three graphs represent the
+    # https://www.desmos.com/calculator/05bifkk1dl The three graphs represent the
     # three algorithms described below that give a probability of retrogressing from progress year
     # p to progress year x, such that 0 <= x <= p
     # Green is the exponential algorithm, blue the linear algorithm, red is the
@@ -481,8 +481,8 @@ multiplanetary:
 
     # The green line represents the total probability that we regress from x to n planets - so it's
     # the y-value of the other two lines multiplied
-    two_planet_risk: 0.2
-    decay_rate: 0.4
+    two_planet_risk: 'na'
+    decay_rate: 'na'
     x_translation: 2
     min_risk: 0 # Best guess
     # The minimum risk of losing at least one planet before gaining
