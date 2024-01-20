@@ -100,6 +100,10 @@ def transition_to_n_planets_given_multiplanetary(q, n):
     n_params = params['n_planets']
 
     def any_intra_multiplanetary_regression(q):
+        """Calculate the probability of any regression (this could be a parameter
+        constant for all values of q, but it seems consistent with the necessary picture of
+        multiplanetary tech gradually overtaking weapons tech to expect it the ratio to continue
+        improving for some time thereafter)"""
         return exponentially_decaying_risk(x=q,
                                         starting_value=n_params['two_planet_risk'],
                                         decay_rate=n_params['decay_rate'],

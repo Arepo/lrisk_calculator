@@ -302,10 +302,9 @@ perils:
     # to an earlier technological state - which also seems wrong. So at best, this
     # algorithm offers a lower bound on the significance of intra-perils regressions.
 
-    # TODO not sure 'exponential' is the best description for this.
     # To use this exponential algorithm, uncomment the next line, and comment out
     # the "algorithm" 'mean'" line further down:
-    # algorithm: 'exponential'
+    # algorithm: 'exponential' # Upper bound
 
     geometric_base: 1.4 # I chose the current value fairly arbitrarily, by looking at the world
     # GDP graph https://data.worldbank.org/indicator/NY.GDP.MKTP.KD.ZG, treating
@@ -325,11 +324,13 @@ perils:
     # To use this linear algorithm, uncomment the following two lines (leaving
     # geometric_base uncommented - it's not used by the linear algorithm, but it preserves
     # the column structure of the params in results.csv):
-    # algorithm: 'linear'
+    # algorithm: 'linear' # Lower bound
 
     # 3) The mean of the linear and exponential algorithms (this might substantially
     # extend the runtime).
-    algorithm: 'mean'
+    algorithm: 'mean' # Best guess - consequently set as default, but since the bulk of the
+    # runtime comes from the algorithm used here, consider setting it to one of the more efficient
+    # ones above if an upper/lower bound will do
 
     any_regression: 0.026 # The annual probability of any intra-perils regression, used by both
     # the exponential and linear algorithms. This could be a function of k and/or p - but seems ok to
@@ -481,8 +482,8 @@ multiplanetary:
 
     # The green line represents the total probability that we regress from x to n planets - so it's
     # the y-value of the other two lines multiplied
-    two_planet_risk: 'na'
-    decay_rate: 'na'
+    two_planet_risk: 0.2
+    decay_rate: 0.4
     x_translation: 2
     min_risk: 0 # Best guess
     # The minimum risk of losing at least one planet before gaining
