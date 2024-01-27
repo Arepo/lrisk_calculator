@@ -291,13 +291,29 @@ probabilities_df = pd.DataFrame(
     data.items(),
     columns=['Civilisation state', 'Probability of becoming interstellar'])
 
-probabilties_fig = px.bar(probabilities_df,
-                          x='Civilisation state',
-                          y='Probability of becoming interstellar')
+st.markdown(f"### tl;dr: we have a {round(success_probabilities[2] * 100)}% chance of becoming interstellar")
+
 
 st.markdown("""<h6 style="text-align: center;">
             Prospects from each state:
             </h6>""", unsafe_allow_html=True)
+
+standard_blue = '#2968c3'
+highlighted_red = '#c32929'
+color_map = {
+    'Preindustrial': standard_blue,
+    'Industrial': standard_blue,
+    'Present perils': highlighted_red,
+    'Future perils': standard_blue,
+    'Multiplanetary': standard_blue
+}
+
+probabilties_fig = px.bar(probabilities_df,
+                          x='Civilisation state',
+                          y='Probability of becoming interstellar',
+                          color='Civilisation state',
+                          color_discrete_map=color_map)
+
 st.plotly_chart(probabilties_fig, use_container_width=True)
 
 
