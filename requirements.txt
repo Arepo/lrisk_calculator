@@ -1,7 +1,7 @@
 # Python 3.10.6
-pandas
-plotly
-streamlit
-numpy
-pydtmc
-pyyaml
+pandas==2.1.1
+plotly==5.17.0
+streamlit==1.27.0
+numpy==1.26.0
+pydtmc==8.2.0
+pyyaml==6.0.1
