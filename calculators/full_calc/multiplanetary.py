@@ -32,13 +32,13 @@ def interstellar_given_multiplanetary(planet_count):
 
     TODO need to specify behaviour for max value."""
 
-    def x_stretch():
-        return params['interstellar']['x_stretch'] # Just intuition
+    def x_scale():
+        return params['interstellar']['x_scale'] # Just intuition
 
-    def y_stretch():
+    def y_scale():
         # TODO - if this asymptotes too fast, we might get invalid total probabilities. Is there a
         # neat way to guard against that?
-        return params['interstellar']['y_stretch']
+        return params['interstellar']['y_scale']
 
     def x_translation():
         return params['interstellar']['x_translation']
@@ -47,7 +47,7 @@ def interstellar_given_multiplanetary(planet_count):
         return params['interstellar']['sharpness']
 
     # Graph with these values: https://www.desmos.com/calculator/vdyih29fqb
-    return sigmoid_curved_risk(planet_count, x_stretch(), y_stretch(), x_translation(), sharpness())
+    return sigmoid_curved_risk(planet_count, x_scale(), y_scale(), x_translation(), sharpness())
 
 @cache
 def parameterised_decaying_transition_probability(target_state, planet_count=None):

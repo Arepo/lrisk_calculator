@@ -43,24 +43,24 @@ def interstellar_given_perils(k, progress_year):
 def _parameterised_transition_probability(k, progress_year, target_state):
     if k == 0:
         # Some kruft required to deal with values potentially being 0
-        base_x_stretch = params[target_state].get('current_perils_base_x_stretch')
-        base_x_stretch = base_x_stretch if base_x_stretch is not None else params[target_state]['base_x_stretch']
-        x_stretch_stretch = params[target_state].get('current_perils_stretch_per_reboot')
-        x_stretch_stretch = (x_stretch_stretch if x_stretch_stretch is not None else params[target_state]['stretch_per_reboot']) ** k
-        y_stretch = params[target_state].get('current_perils_y_stretch')
-        y_stretch = y_stretch if y_stretch is not None else params[target_state]['y_stretch']
+        base_x_scale = params[target_state].get('current_perils_base_x_scale')
+        base_x_scale = base_x_scale if base_x_scale is not None else params[target_state]['base_x_scale']
+        x_scale_stretch = params[target_state].get('current_perils_stretch_per_reboot')
+        x_scale_stretch = (x_scale_stretch if x_scale_stretch is not None else params[target_state]['stretch_per_reboot']) ** k
+        y_scale = params[target_state].get('current_perils_y_scale')
+        y_scale = y_scale if y_scale is not None else params[target_state]['y_scale']
         x_translation = params[target_state].get('current_perils_x_translation')
         x_translation = x_translation if x_translation is not None else params[target_state]['x_translation']
         sharpness = params[target_state].get('current_perils_sharpness')
         sharpness = sharpness if sharpness is not None else params[target_state]['sharpness']
     else:
-        base_x_stretch = params[target_state]['base_x_stretch']
-        x_stretch_stretch = params[target_state]['stretch_per_reboot'] ** k
-        y_stretch = params[target_state]['y_stretch']
+        base_x_scale = params[target_state]['base_x_scale']
+        x_scale_stretch = params[target_state]['stretch_per_reboot'] ** k
+        y_scale = params[target_state]['y_scale']
         x_translation = params[target_state]['x_translation']
         sharpness = params[target_state]['sharpness']
 
-    total_x_stretch = base_x_stretch * x_stretch_stretch
+    total_x_scale = base_x_scale * x_scale_stretch
 
     @cache
     def background_risk():
@@ -71,8 +71,8 @@ def _parameterised_transition_probability(k, progress_year, target_state):
 
     return background_risk() + sigmoid_curved_risk(
         x=progress_year,
-        x_stretch=total_x_stretch,
-        y_stretch=y_stretch,
+        x_scale=total_x_scale,
+        y_scale=y_scale,
         x_translation=x_translation,
         sharpness=sharpness)
 
@@ -105,7 +105,31 @@ def transition_to_year_n_given_perils(k:int, progress_year:int, n=None):
                     + multiplanetary_given_perils(k, progress_year)
                     + interstellar_given_perils(k, progress_year))
 
+    def zipf_algorithm():
+        pass
 
+        # ChatGPT code below implementing a finite zipf distribution that works
+        # in isolation, but needs to be incorporated into program
+        # import numpy as np
+
+        # def generalized_harmonic_number(n, a):
+        #     return np.sum([1 / (k ** a) for k in range(1, n + 1)])
+
+        # def f(x, n, a):
+        #     # Ensure x, n, and a are positive and within specified bounds
+        #     if x < 1 or x > n or n <= 0 or a <= 0:
+        #         raise ValueError("Invalid input values")
+
+        #     hn = generalized_harmonic_number(n, a)
+        #     return 1 / (hn * (x ** a))
+
+        # # Example usage
+        # n = 10  # Replace with desired n value
+        # a = 2   # Replace with desired a value
+        # x_values = np.arange(1, n+1)  # Discrete values from 1 to n
+
+        # # Calculate f for each x in the domain
+        # f_values = [f(x, n, a) for x in x_values]
 
 
     def exponential_algorithm():
