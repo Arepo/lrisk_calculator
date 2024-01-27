@@ -11,36 +11,36 @@ from calculators.full_calc.params import Params
 params = Params().dictionary['perils']
 
 @cache
-def preindustrial_given_perils(k, p):
-    """Probability of transitioning to a preindustrial state given p progress years into the perils
-    state of the kth civilisation"""
-    return _parameterised_transition_probability(k, p, 'preindustrial')
+def preindustrial_given_perils(k, progress_year):
+    """Probability of transitioning to a preindustrial state given some number
+    of progress years into the perils state of the kth civilisation"""
+    return _parameterised_transition_probability(k, progress_year, 'preindustrial')
 
 @cache
-def industrial_given_perils(k, p):
-    """Probability of transitioning to an industrial state given p progress years into the perils
-    state of the kth civilisation"""
-    return _parameterised_transition_probability(k, p, 'industrial')
+def industrial_given_perils(k, progress_year):
+    """Probability of transitioning to an industrial state given some number of
+    progress years into the perils state of the kth civilisation"""
+    return _parameterised_transition_probability(k, progress_year, 'industrial')
 
 @cache
-def multiplanetary_given_perils(k, p):
-    """Probability of transitioning to a multiplanetary state given p progress years into the perils
-    state of the kth civilisation"""
-    return _parameterised_transition_probability(k, p, 'multiplanetary')
+def multiplanetary_given_perils(k, progress_year):
+    """Probability of transitioning to a multiplanetary state given some number
+    of progress years into the perils state of the kth civilisation"""
+    return _parameterised_transition_probability(k, progress_year, 'multiplanetary')
 
 @cache
-def extinction_given_perils(k, p):
-    """Probability of transitioning to extinction given p progress years into the perils
-    state of the kth civilisation"""
-    return _parameterised_transition_probability(k, p, 'extinction')
+def extinction_given_perils(k, progress_year):
+    """Probability of transitioning to extinction given some number of progress
+    years into the perils state of the kth civilisation"""
+    return _parameterised_transition_probability(k, progress_year, 'extinction')
 
 @cache
-def interstellar_given_perils(k, p):
-    """Probability of transitioning to an interstellar state given p progress years into the perils
-    state of the kth civilisation"""
-    return _parameterised_transition_probability(k, p, 'interstellar')
+def interstellar_given_perils(k, progress_year):
+    """Probability of transitioning to an interstellar state given some number
+    of progress years into the perils state of the kth civilisation"""
+    return _parameterised_transition_probability(k, progress_year, 'interstellar')
 
-def _parameterised_transition_probability(k, p, target_state):
+def _parameterised_transition_probability(k, progress_year, target_state):
     if k == 0:
         # Some kruft required to deal with values potentially being 0
         base_x_stretch = params[target_state].get('current_perils_base_x_stretch')
@@ -70,17 +70,17 @@ def _parameterised_transition_probability(k, p, target_state):
                 /params[target_state]['base_background_risk_denominator'])
 
     return background_risk() + sigmoid_curved_risk(
-        x=p,
+        x=progress_year,
         x_stretch=total_x_stretch,
         y_stretch=y_stretch,
         x_translation=x_translation,
         sharpness=sharpness)
 
 @cache
-def transition_to_year_n_given_perils(k:int, p:int, n=None):
-    """Probability of transitioning to progress year n given p progress years into the kth time
-    of perils"""
-    possible_regressions = p + 1
+def transition_to_year_n_given_perils(k:int, progress_year:int, n=None):
+    """Probability of transitioning to progress year n given some number of
+    progress years into the kth time of perils"""
+    possible_regressions = progress_year + 1
 
     if possible_regressions == constant.MAX_PROGRESS_YEARS:
         # We're at the maximum allowable number of progress years, so lose the 'regression' of
@@ -98,12 +98,12 @@ def transition_to_year_n_given_perils(k:int, p:int, n=None):
 
     if n == possible_regressions:
         # The probability of advancing one progress year
-        return 1 - (extinction_given_perils(k, p)
-                    + preindustrial_given_perils(k, p)
-                    + industrial_given_perils(k, p)
+        return 1 - (extinction_given_perils(k, progress_year)
+                    + preindustrial_given_perils(k, progress_year)
+                    + industrial_given_perils(k, progress_year)
                     + any_intra_perils_regression()
-                    + multiplanetary_given_perils(k, p)
-                    + interstellar_given_perils(k, p))
+                    + multiplanetary_given_perils(k, progress_year)
+                    + interstellar_given_perils(k, progress_year))
 
 
 

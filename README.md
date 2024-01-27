@@ -35,3 +35,4 @@ To run the full calc:
 * (With a lot of extra time): refactor to allow users to easily add and remove Markov Chain states via a UI
 * (With a lot of extra time, only possible after significant optimisations): introduce some kind of Monte Carlo simulation functionality
 * Consider simplifying the perils graphing functions
+* Have an option to look at Time of Perils in 10-progress-year-chunks, for greater runtime
