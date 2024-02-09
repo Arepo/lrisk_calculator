@@ -4,3 +4,4 @@ calculators/simple_calc/__pycache__/
 calculators/website/__pycache__
 *.DS_Store
 .python-version
+.~lock.results.csv#
