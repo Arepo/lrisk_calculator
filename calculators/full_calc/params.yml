@@ -493,7 +493,7 @@ multiplanetary:
   extinction:
     # Desmos graph of the probability of transitioning from x 'planets' (self
     # supporting, technologically independent settlements) directly to extinction
-    # https://www.desmos.com/calculator/gxrnkk8kqd
+    # https://www.desmos.com/calculator/y1qb97buad
     # The Desmos values correspond to the parameters in this section as follow
     # x = number of planets (calculated for every number up to the MAX_PLANETS constant)
     # a = two_planet_risk

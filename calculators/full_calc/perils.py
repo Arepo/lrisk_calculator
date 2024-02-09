@@ -152,7 +152,8 @@ def transition_to_year_n_given_perils(k:int, progress_year:int, n=None):
 
         geometric_base = params['progress_year_n']['geometric_base']
 
-        # TODO cache this value, probably for each value of possible_regressions
+        # TODO cache this value, probably for each value of possible_regressions - may be a bad trade
+        # off if it puts millions of floats into short term memory
         geometric_sum_of_weightings = ( (1 - geometric_base ** max_regressed_states)
                                         / (1 - geometric_base))
 
