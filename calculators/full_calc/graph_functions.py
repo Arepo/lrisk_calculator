@@ -2,12 +2,10 @@
 
 """Functions used to model the change in probability of outcomes in the sub-chains"""
 
-from functools import cache
 import math
 
 # TODO simplify these functions if possible
 
-@cache
 def sigmoid_curved_risk(
     x:int, x_scale:float, y_scale:float, x_translation: float, sharpness: float=2) -> float:
     """A stretched sigmoid is the simplest intuitive trajectory I can think of to describe most
@@ -49,8 +47,7 @@ def sigmoid_curved_risk(
 
     return y_scale /  (1 + modified_x_value ** -sharpness * math.e ** -(modified_x_value))
 
-@cache
-def exponentially_decaying_risk(x, starting_value, decay_rate, min_probability=0, x_translation=0):
+def exponentially_decaying_risk(x, starting_value, decay_rate, min_probability=0, x_translation=2):
     """The simplest way I can think of to intuit the various risks given multiple interplanetary
     settlements is as an exponential decay based on the number of planets.
 
@@ -63,7 +60,7 @@ def exponentially_decaying_risk(x, starting_value, decay_rate, min_probability=0
 
     You can play with the generic formula at https://www.desmos.com/calculator/vbvu6a1yyo
 
-    x_translation defaults to 2, since this is mostly used for muultiplanetary
+    x_translation defaults to 2, since this is normally only used for multiplanetary
     functions in which we define 2 as the min number of planets in the state
 
     Note that min_value is a translation on the y-axis. So if you set starting_value as 0.4 and
