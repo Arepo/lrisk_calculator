@@ -2,25 +2,23 @@
 
 """Functions used to model the change in probability of outcomes in the sub-chains"""
 
-from functools import cache
 import math
 
 # TODO simplify these functions if possible
 
-@cache
 def sigmoid_curved_risk(
-    x:int, x_stretch:float, y_stretch:float, x_translation: float, sharpness: float=2) -> float:
+    x:int, x_scale:float, y_scale:float, x_translation: float, sharpness: float=2) -> float:
     """A stretched sigmoid is the simplest intuitive trajectory I can think of to describe most
     risks in a time of perils, and some in a multiplanetary state. Risks of all exits, good or bad,
     start at ~0 and asymptote to some value V, such that 0 < V < 1.
 
-    x_stretch determines how extended the sigmoid curve will be from some base, eg due to decreased
+    x_scale determines how extended the sigmoid curve will be from some base, eg due to decreased
     resources slowing tech progress down. Higher = a more drawn out curve.
 
-    y_stretch determines max probability per year of this transition - a value of 0.5 would mean it
+    y_scale determines max probability per year of this transition - a value of 0.5 would mean it
     asymptotes towards 0.5.
 
-    x_translation determines (pre-x_stretch adjustment) how many progress years after entering the
+    x_translation determines (pre-x_scale adjustment) how many progress years after entering the
     time of perils technologies that enable this outcome are to start getting produced - ie when the
     risk starts climbing above 0.
 
@@ -28,8 +26,8 @@ def sigmoid_curved_risk(
     levels off).
 
     Then the questions the parameters let us answer are 'how high does annual risk asymptote to?'
-    (y_stretch), and 'when does it start meaningfully climbing' (x_translation) and 'how fast does
-    it climb from that point?' (x_stretch)
+    (y_scale), and 'when does it start meaningfully climbing' (x_translation) and 'how fast does
+    it climb from that point?' (x_scale)
 
     In general for my default estimates, I'm using the current time of perils, dated from 1945, as a
     template for k = 0
@@ -41,16 +39,15 @@ def sigmoid_curved_risk(
     TODO: look into failure rate functions as an alternative approach
     TODO: look into simpler scipy implementations"""
 
-    modified_x_value = 1 / x_stretch * (x - x_translation)
+    modified_x_value = 1 / x_scale * (x - x_translation)
 
     if x - x_translation == 0 or modified_x_value < 0:
         return 0 # Theoretically this makes it discontinuous, but the value should be so small it's
         # indistinguishable from 0 for practical purposes
 
-    return y_stretch /  (1 + modified_x_value ** -sharpness * math.e ** -(modified_x_value))
+    return y_scale /  (1 + modified_x_value ** -sharpness * math.e ** -(modified_x_value))
 
-@cache
-def exponentially_decaying_risk(x, starting_value, decay_rate, min_probability=0, x_translation=0):
+def exponentially_decaying_risk(x, starting_value, decay_rate, min_probability=0, x_translation=2):
     """The simplest way I can think of to intuit the various risks given multiple interplanetary
     settlements is as an exponential decay based on the number of planets.
 
@@ -63,7 +60,7 @@ def exponentially_decaying_risk(x, starting_value, decay_rate, min_probability=0
 
     You can play with the generic formula at https://www.desmos.com/calculator/vbvu6a1yyo
 
-    x_translation defaults to 2, since this is mostly used for muultiplanetary
+    x_translation defaults to 2, since this is normally only used for multiplanetary
     functions in which we define 2 as the min number of planets in the state
 
     Note that min_value is a translation on the y-axis. So if you set starting_value as 0.4 and

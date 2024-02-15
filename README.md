@@ -18,8 +18,10 @@ To run the full calc:
 * the MarkovChain object has a `.states` property, which I find useful to confirm ordering in the full transition matrix
 * the `mc.absorption_probabilities()` function produces an array of arrays with one top-level array for each absorbing state (in our case, two), in the order they were passed to the constructor (in our case, Extinction first, then Interstellar). The subarray elements correspond to the probability of hitting that absborbing state from each non-absorbing state, again in the order the were passed to the constructor (in our case, the preindustrial states for each possible future civilisation up to <the max number of future civilisations - 1>, then the industrial ones, etc)
 
+5. Look at your results either in the printed output, or in the row added to `./results.csv`, which might be clearer. The value you most care about to start with is probably the 'perils-0' column, which represents our current all-things-considered probability of eventually becoming interstellar or existentially secure (whichever you choose to interpret and parameterise that end state as).
+
 # Development roadmap/main TODOs:
-* Double check that the maths is implemented correctly 
+* Double check that the maths is implemented correctly
 * Tidy directory structure and leftover kruft
 * Identify specific questions of interest - eg, how often do we pass through certain states on average?
 * Add feature tests
@@ -33,3 +35,5 @@ To run the full calc:
 * (With a lot of extra time): refactor to allow users to easily add and remove Markov Chain states via a UI
 * (With a lot of extra time, only possible after significant optimisations): introduce some kind of Monte Carlo simulation functionality
 * Consider simplifying the perils graphing functions
+* Have an option to look at Time of Perils in 10-progress-year-chunks, for greater runtime
+* Implement zipf algorithm for intra-perils regressions (see preliminary commented out version in file)

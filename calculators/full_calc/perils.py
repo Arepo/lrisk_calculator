@@ -2,7 +2,7 @@
 
 """Functions to calculate the transitional probabilities from time of perils states."""
 
-from functools import cache
+
 
 import calculators.full_calc.runtime_constants as constant
 from calculators.full_calc.graph_functions import sigmoid_curved_risk
@@ -10,59 +10,59 @@ from calculators.full_calc.params import Params
 
 params = Params().dictionary['perils']
 
-@cache
-def preindustrial_given_perils(k, p):
-    """Probability of transitioning to a preindustrial state given p progress years into the perils
-    state of the kth civilisation"""
-    return _parameterised_transition_probability(k, p, 'preindustrial')
 
-@cache
-def industrial_given_perils(k, p):
-    """Probability of transitioning to an industrial state given p progress years into the perils
-    state of the kth civilisation"""
-    return _parameterised_transition_probability(k, p, 'industrial')
+def preindustrial_given_perils(k, progress_year):
+    """Probability of transitioning to a preindustrial state given some number
+    of progress years into the perils state of the kth civilisation"""
+    return _parameterised_transition_probability(k, progress_year, 'preindustrial')
 
-@cache
-def multiplanetary_given_perils(k, p):
-    """Probability of transitioning to a multiplanetary state given p progress years into the perils
-    state of the kth civilisation"""
-    return _parameterised_transition_probability(k, p, 'multiplanetary')
 
-@cache
-def extinction_given_perils(k, p):
-    """Probability of transitioning to extinction given p progress years into the perils
-    state of the kth civilisation"""
-    return _parameterised_transition_probability(k, p, 'extinction')
+def industrial_given_perils(k, progress_year):
+    """Probability of transitioning to an industrial state given some number of
+    progress years into the perils state of the kth civilisation"""
+    return _parameterised_transition_probability(k, progress_year, 'industrial')
 
-@cache
-def interstellar_given_perils(k, p):
-    """Probability of transitioning to an interstellar state given p progress years into the perils
-    state of the kth civilisation"""
-    return _parameterised_transition_probability(k, p, 'interstellar')
 
-def _parameterised_transition_probability(k, p, target_state):
+def multiplanetary_given_perils(k, progress_year):
+    """Probability of transitioning to a multiplanetary state given some number
+    of progress years into the perils state of the kth civilisation"""
+    return _parameterised_transition_probability(k, progress_year, 'multiplanetary')
+
+
+def extinction_given_perils(k, progress_year):
+    """Probability of transitioning to extinction given some number of progress
+    years into the perils state of the kth civilisation"""
+    return _parameterised_transition_probability(k, progress_year, 'extinction')
+
+
+def interstellar_given_perils(k, progress_year):
+    """Probability of transitioning to an interstellar state given some number
+    of progress years into the perils state of the kth civilisation"""
+    return _parameterised_transition_probability(k, progress_year, 'interstellar')
+
+def _parameterised_transition_probability(k, progress_year, target_state):
     if k == 0:
         # Some kruft required to deal with values potentially being 0
-        base_x_stretch = params[target_state].get('current_perils_base_x_stretch')
-        base_x_stretch = base_x_stretch if base_x_stretch is not None else params[target_state]['base_x_stretch']
-        x_stretch_stretch = params[target_state].get('current_perils_stretch_per_reboot')
-        x_stretch_stretch = (x_stretch_stretch if x_stretch_stretch is not None else params[target_state]['stretch_per_reboot']) ** k
-        y_stretch = params[target_state].get('current_perils_y_stretch')
-        y_stretch = y_stretch if y_stretch is not None else params[target_state]['y_stretch']
+        base_x_scale = params[target_state].get('current_perils_base_x_scale')
+        base_x_scale = base_x_scale if base_x_scale is not None else params[target_state]['base_x_scale']
+        x_scale_stretch = params[target_state].get('current_perils_stretch_per_reboot')
+        x_scale_stretch = (x_scale_stretch if x_scale_stretch is not None else params[target_state]['stretch_per_reboot']) ** k
+        y_scale = params[target_state].get('current_perils_y_scale')
+        y_scale = y_scale if y_scale is not None else params[target_state]['y_scale']
         x_translation = params[target_state].get('current_perils_x_translation')
         x_translation = x_translation if x_translation is not None else params[target_state]['x_translation']
         sharpness = params[target_state].get('current_perils_sharpness')
         sharpness = sharpness if sharpness is not None else params[target_state]['sharpness']
     else:
-        base_x_stretch = params[target_state]['base_x_stretch']
-        x_stretch_stretch = params[target_state]['stretch_per_reboot'] ** k
-        y_stretch = params[target_state]['y_stretch']
+        base_x_scale = params[target_state]['base_x_scale']
+        x_scale_stretch = params[target_state]['stretch_per_reboot'] ** k
+        y_scale = params[target_state]['y_scale']
         x_translation = params[target_state]['x_translation']
         sharpness = params[target_state]['sharpness']
 
-    total_x_stretch = base_x_stretch * x_stretch_stretch
+    total_x_scale = base_x_scale * x_scale_stretch
 
-    @cache
+
     def background_risk():
         # Exponent should be >0, since this is a probability that should be settable to 0 (and can't
         # be if the exponent is 0)
@@ -70,17 +70,17 @@ def _parameterised_transition_probability(k, p, target_state):
                 /params[target_state]['base_background_risk_denominator'])
 
     return background_risk() + sigmoid_curved_risk(
-        x=p,
-        x_stretch=total_x_stretch,
-        y_stretch=y_stretch,
+        x=progress_year,
+        x_scale=total_x_scale,
+        y_scale=y_scale,
         x_translation=x_translation,
         sharpness=sharpness)
 
-@cache
-def transition_to_year_n_given_perils(k:int, p:int, n=None):
-    """Probability of transitioning to progress year n given p progress years into the kth time
-    of perils"""
-    possible_regressions = p + 1
+
+def transition_to_year_n_given_perils(k:int, progress_year:int, n=None):
+    """Probability of transitioning to progress year n given some number of
+    progress years into the kth time of perils"""
+    possible_regressions = progress_year + 1
 
     if possible_regressions == constant.MAX_PROGRESS_YEARS:
         # We're at the maximum allowable number of progress years, so lose the 'regression' of
@@ -98,14 +98,38 @@ def transition_to_year_n_given_perils(k:int, p:int, n=None):
 
     if n == possible_regressions:
         # The probability of advancing one progress year
-        return 1 - (extinction_given_perils(k, p)
-                    + preindustrial_given_perils(k, p)
-                    + industrial_given_perils(k, p)
+        return 1 - (extinction_given_perils(k, progress_year)
+                    + preindustrial_given_perils(k, progress_year)
+                    + industrial_given_perils(k, progress_year)
                     + any_intra_perils_regression()
-                    + multiplanetary_given_perils(k, p)
-                    + interstellar_given_perils(k, p))
+                    + multiplanetary_given_perils(k, progress_year)
+                    + interstellar_given_perils(k, progress_year))
 
+    def zipf_algorithm():
+        pass
 
+        # ChatGPT code below implementing a finite zipf distribution that works
+        # in isolation, but needs to be incorporated into program
+        # import numpy as np
+
+        # def generalized_harmonic_number(n, a):
+        #     return np.sum([1 / (k ** a) for k in range(1, n + 1)])
+
+        # def f(x, n, a):
+        #     # Ensure x, n, and a are positive and within specified bounds
+        #     if x < 1 or x > n or n <= 0 or a <= 0:
+        #         raise ValueError("Invalid input values")
+
+        #     hn = generalized_harmonic_number(n, a)
+        #     return 1 / (hn * (x ** a))
+
+        # # Example usage
+        # n = 10  # Replace with desired n value
+        # a = 2   # Replace with desired a value
+        # x_values = np.arange(1, n+1)  # Discrete values from 1 to n
+
+        # # Calculate f for each x in the domain
+        # f_values = [f(x, n, a) for x in x_values]
 
 
     def exponential_algorithm():
@@ -126,13 +150,14 @@ def transition_to_year_n_given_perils(k:int, p:int, n=None):
             max_regressed_states = possible_regressions
             target_year = n
 
-        geometric_base = params['progress_year_n']['geometric_base']
+        r = params['progress_year_n']['common_ratio_for_geometric_sum']
 
-        # TODO cache this value, probably for each value of possible_regressions
-        geometric_sum_of_weightings = ( (1 - geometric_base ** max_regressed_states)
-                                        / (1 - geometric_base))
+        # TODO cache this value, probably for each value of possible_regressions - may be a bad trade
+        # off if it puts millions of floats into short term memory
+        geometric_sum_of_weightings = ( (1 - r ** max_regressed_states)
+                                        / (1 - r))
 
-        numerator_for_progress_year_n = geometric_base ** target_year # How likely is it, that given
+        numerator_for_progress_year_n = r ** target_year # How likely is it, that given
         # some loss, that loss took us to exactly progress year n?
 
         # Thus numerator_for_progress_year_n / geometric_sum_of_weightings is a proportion; you can play

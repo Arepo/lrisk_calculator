@@ -27,11 +27,6 @@ class IntraPerilsMCWrapper():
 
         # Transitional probabilities from non-absorbing states
         year_range = range(0, constant.MAX_PROGRESS_YEARS)
-        # if k == 8:
-        #     for pe in year_range:
-        #         for en in year_range:
-        #             if perils.transition_to_year_n_given_perils(k, pe, en) < 0 or perils.transition_to_year_n_given_perils(k, pe, en)> 1:
-        #                 import ipdb; ipdb.set_trace()
 
         intra_transition_probabilities = {
             p: [perils.transition_to_year_n_given_perils(k, p, n) for n in year_range]
