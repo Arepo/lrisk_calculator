@@ -37,3 +37,37 @@ To run the full calc:
 * Consider simplifying the perils graphing functions
 * Have an option to look at Time of Perils in 10-progress-year-chunks, for greater runtime
 * Implement zipf algorithm for intra-perils regressions (see preliminary commented out version in file)
+
+## Running with pipenv
+
+pipenv is a virtual environment tool which isolates python dependencies, which reduces dependency conflicts. To install pipenv and run this program, you can try:
+
+```
+pip3 install pipenv
+python3 -m pipenv install --dev
+python3 -m  pipenv shell
+# then inside the pipenv shell:
+  python --version
+  python full_calc.py
+```
+
+For an Ubuntu 20.04 machine which has various python installations, this might instead look like:
+
+```
+pip3.10 install pipenv
+python3.10 -m pipenv install --dev
+python3.10 -m  pipenv shell
+# then inside the pipenv shell:
+  python --version # 3.10
+  python full_calc.py
+```
+
+We are using python 3.10 as that's the version @Arepo used, and it will probably give fewer problems.
+
+Some debugging commands which might help are:
+
+```
+pip3.10 install --upgrade pip wheel setuptools requests
+sudo apt remove pipenv # use pip version, not apt version
+```
+
