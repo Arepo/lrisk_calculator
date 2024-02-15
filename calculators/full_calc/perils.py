@@ -2,7 +2,7 @@
 
 """Functions to calculate the transitional probabilities from time of perils states."""
 
-from functools import cache
+
 
 import calculators.full_calc.runtime_constants as constant
 from calculators.full_calc.graph_functions import sigmoid_curved_risk
@@ -10,31 +10,31 @@ from calculators.full_calc.params import Params
 
 params = Params().dictionary['perils']
 
-@cache
+
 def preindustrial_given_perils(k, progress_year):
     """Probability of transitioning to a preindustrial state given some number
     of progress years into the perils state of the kth civilisation"""
     return _parameterised_transition_probability(k, progress_year, 'preindustrial')
 
-@cache
+
 def industrial_given_perils(k, progress_year):
     """Probability of transitioning to an industrial state given some number of
     progress years into the perils state of the kth civilisation"""
     return _parameterised_transition_probability(k, progress_year, 'industrial')
 
-@cache
+
 def multiplanetary_given_perils(k, progress_year):
     """Probability of transitioning to a multiplanetary state given some number
     of progress years into the perils state of the kth civilisation"""
     return _parameterised_transition_probability(k, progress_year, 'multiplanetary')
 
-@cache
+
 def extinction_given_perils(k, progress_year):
     """Probability of transitioning to extinction given some number of progress
     years into the perils state of the kth civilisation"""
     return _parameterised_transition_probability(k, progress_year, 'extinction')
 
-@cache
+
 def interstellar_given_perils(k, progress_year):
     """Probability of transitioning to an interstellar state given some number
     of progress years into the perils state of the kth civilisation"""
@@ -62,7 +62,7 @@ def _parameterised_transition_probability(k, progress_year, target_state):
 
     total_x_scale = base_x_scale * x_scale_stretch
 
-    @cache
+
     def background_risk():
         # Exponent should be >0, since this is a probability that should be settable to 0 (and can't
         # be if the exponent is 0)
@@ -76,7 +76,7 @@ def _parameterised_transition_probability(k, progress_year, target_state):
         x_translation=x_translation,
         sharpness=sharpness)
 
-@cache
+
 def transition_to_year_n_given_perils(k:int, progress_year:int, n=None):
     """Probability of transitioning to progress year n given some number of
     progress years into the kth time of perils"""
@@ -150,13 +150,14 @@ def transition_to_year_n_given_perils(k:int, progress_year:int, n=None):
             max_regressed_states = possible_regressions
             target_year = n
 
-        geometric_base = params['progress_year_n']['geometric_base']
+        r = params['progress_year_n']['common_ratio_for_geometric_sum']
 
-        # TODO cache this value, probably for each value of possible_regressions
-        geometric_sum_of_weightings = ( (1 - geometric_base ** max_regressed_states)
-                                        / (1 - geometric_base))
+        # TODO cache this value, probably for each value of possible_regressions - may be a bad trade
+        # off if it puts millions of floats into short term memory
+        geometric_sum_of_weightings = ( (1 - r ** max_regressed_states)
+                                        / (1 - r))
 
-        numerator_for_progress_year_n = geometric_base ** target_year # How likely is it, that given
+        numerator_for_progress_year_n = r ** target_year # How likely is it, that given
         # some loss, that loss took us to exactly progress year n?
 
         # Thus numerator_for_progress_year_n / geometric_sum_of_weightings is a proportion; you can play

@@ -136,7 +136,7 @@ st.write("#### The tool below allows you to estimate the transitional probabilit
 
 st.image('https://res.cloudinary.com/cea/image/upload/f_auto,q_auto/v1/mirroredImages/ouuj93CPymfnvu8uQ/ytdctispib3doi9emjhb')
 
-st.write("""_Extinction_: Extinction of sentient life any time inclusively between now and our sun’s death.
+st.write("""_Extinction_: Extinction of whatever type of life you value any time inclusively between now and our sun’s death (i.e. any case where we've failed to develop interplanetary technology that lets us escape the event).
 
 _Preindustrial_: Civilisation has regressed to [pre-first-industrial-revolution](https://www.britannica.com/money/topic/Industrial-Revolution/The-first-Industrial-Revolution)-equivalent technology.
 
