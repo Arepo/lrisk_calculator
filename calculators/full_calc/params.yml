@@ -57,7 +57,7 @@ perils:
     # This graph assumes k=0. To see
     # the effect of reboots on the estimates, you'll need to manually increase the x-stretch (parameter
     # b on Desmos) by an appropriate proportion.
-    
+
     # The most optimistic explicit extinction estimate on the database is given
     # by Metaculus' median prediction of '1% chance of extinction by 2100'.
     # https://www.metaculus.com/questions/578/human-extinction-by-2100/
@@ -65,7 +65,7 @@ perils:
     # I guess would double at peak, and I've multiplied by 4/3, since it looks approx
     # 3/4 of the way up based on, at time of writing, the other values in this section.
     # TODO MD->SC: rewrite this, I have no clue what "it looks 3/4 of the way up" means
-    
+
     # y_scale: 0.0012 # Best guess: ~the geometric mean of upper and lower bounds
     # Max annual probability of extinction from a time of perils.
 
@@ -219,9 +219,9 @@ perils:
     # n = base_background_risk_denominator
 
     # current_perils_y_scale: 0.0015
-    y_scale: 0.0015 # Max annual probability of reverting to industrial era from a time of perils. 
-    # Loosely based on the estimates in FHI’s 2008 Global Catastrophic Risks Survey and a Metaculus 
-    # poll[1], plus the assumption that reverting to industrial era is considerably less likely 
+    y_scale: 0.0015 # Max annual probability of reverting to industrial era from a time of perils.
+    # Loosely based on the estimates in FHI’s 2008 Global Catastrophic Risks Survey and a Metaculus
+    # poll[1], plus the assumption that reverting to industrial era is considerably less likely
     # than ‘at least a billion dead before 2100’.
     # [1] https://www.metaculus.com/questions/1493/global-population-decline-10-by-2100/
 
@@ -355,14 +355,14 @@ perils:
     # advancing through the time of perils without interruption.
     # [5] https://www.metaculus.com/questions/1432/will-humans-have-a-sustainable-off-world-presence-by-2100/
     # current_perils_base_x_stretch: 81
-    base_x_stretch: 90
+    base_x_scale: 90
     # current_perils_x_translation: 70
     x_translation: 70
     # 70 years represents the best case scenario of time from the first nuke to
     # the first self-sustaining offworld settlement, which lines up with Robert
     # Zubrin's ~1990 proposal.
     # current_perils_y_stretch: 0.07
-    y_stretch: 0.07 # Meaning a high tech civilisation could create a new
+    y_scale: 0.07 # Meaning a high tech civilisation could create a new
 
     # settlement maybe every ~15 years on average, given somewhere nearby to expand to
     # (it gives probability = 1/2 of at least one after 10 years. TODO: do a more rigorous
@@ -549,14 +549,14 @@ preperils:
     # come from Andrew Snyder-Beattie, Toby Ord & Michael Bonsall’s paper[7].
     # These each give us many plausible choice of parameter values, so I list
     # them below under the relevant quote from each essay, in the order they
-    # appeared in the relevant text - uncomment as preferred. 
+    # appeared in the relevant text - uncomment as preferred.
     # [6] https://forum.effectivealtruism.org/posts/Nc9fCzjBKYDaDJGiX/what-is-the-likelihood-that-civilizational-collapse-would-1
     # [7] https://doi.org/10.1038/s41598-019-47540-7
 
     # base_expected_time_in_years: 500  # optimistic: agricultural and industrial revolutions are much easier the second time
-    base_expected_time_in_years: 11_100  # 3X Luisa's upper end of her best-case guess in her scenario 'Inside view — if we assume that existing 
-    # physical and human capital would accelerate the speed of re-industrialization relative to the base rate (and 
-    # therefore) the British industrial revolution happened about when we’d have expected' scenario, to account for 
+    base_expected_time_in_years: 11_100  # 3X Luisa's upper end of her best-case guess in her scenario 'Inside view — if we assume that existing
+    # physical and human capital would accelerate the speed of re-industrialization relative to the base rate (and
+    # therefore) the British industrial revolution happened about when we’d have expected' scenario, to account for
     # her remarks about technological stagnation
     # base_expected_time_in_years: 300_000  # pessimistic: agricultural revolution takes as long as it did the first time
 
