@@ -24,7 +24,8 @@ def extinction_given_preindustrial(k):
     extinction_probability_per_year = (1 /
         p_params.annual_extinction_probability_denominator)
 
-    return 1 - ((1 - extinction_probability_per_year) ** expected_time_in_years)
+    print(f"Extinction given preindustrial {k}:", min(0.4, 1 - ((1 - extinction_probability_per_year) ** expected_time_in_years)))
+    return min(0.4, 1 - ((1 - extinction_probability_per_year) ** expected_time_in_years))
 
 
 def industrial_given_preindustrial(k, k1):

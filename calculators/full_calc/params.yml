@@ -236,7 +236,7 @@ perils:
     # stretch_per_reboot: 10 # Suggested upper bound
     # stretch_per_reboot: 1.2 # Suggested lower bound
 
-    per_civilisation_background_risk_numerator: 1.05 # Best guess:
+    per_civilisation_background_risk_numerator: 0 # Best guess:
     # Same as for preindustrial
 
     # current_perils_x_translation: 0 # Uncomment to affect the current time of perils only
@@ -439,16 +439,12 @@ multiplanetary:
     decay_rate: 0.2 # the proportion by which risk for an n-planet civilisation
     # decreases for an (n+1)-planet civilisation
     min_risk: 0 # Longtermist philosophy is basically predicated on this being extremely close to 0.
-<<<<<<< HEAD
-=======
-    stretch_per_reboot: 1.33
->>>>>>> f1912a4 (Add David's stretch per reboot for perils era)
     # In the long run, if this doesn't tend to become almost 0, longtermism isn't
     # possible (in principle if all settlements are in our solar system we might
     # be vulnerable to supernovae etc, but in practice if things went in the
     # right direction I assume we'd get from large numbers of intra-system
     # settlements to interstellar settlements quickly as to be virtually instantaneous on galactic timelines)
-    stretch_per_reboot: 1 # It seems likely fossil fuels and minerals will be
+    stretch_per_reboot: 1.33 # It seems likely fossil fuels and minerals will be
     # a much smaller constraint in this era than in the time of perils. Depletion
     # of fissile materials might matter more in the space age, but even that
     # seems likely to have been mostly resolved by the time another planet is
@@ -513,7 +509,7 @@ multiplanetary:
     # of perils doesn't. So I haven't implemented a linear alternative here.
     # TODO MD->SC: I would invert this param because it's confusing that a
     # larger number means fewer planets.
-    stretch_per_reboot: 1 # Unlike in perils, we might stretch the possibility of
+    stretch_per_reboot: 1.33 # Unlike in perils, we might stretch the possibility of
     # intra-state regression; there each state represents an actual year at some
     # technology level, and I don't see any reason to think per year risk would
     # change at that technology level; for the multiplanetary state, if technology
@@ -579,7 +575,7 @@ preperils:
     # her remarks about technological stagnation
     # base_expected_time_in_years: 300_000  # pessimistic: agricultural revolution takes as long as it did the first time
 
-    stretch_per_reboot: 1.05 # I assume a slight increase in time to develop technology
+    stretch_per_reboot: 1.221 # I assume a slight increase in time to develop technology
     # from burden of disease and environmental damage, but substantially less of
     # a stretch than the later transitions, which seem much more likely to be resource-limited.
 
@@ -591,7 +587,7 @@ preperils:
     # of μ < 1.2 * 10^−5, corresponding to an annual extinction probability below
     # 1 in 87,000.'
 
-    annual_extinction_probability_denominator: 87_000
+    annual_extinction_probability_denominator: 73600
 
     # Optimistic bound from [7]:
     # 'Using the 2Myr origin of Homo strengthens the bound by an order of magnitude

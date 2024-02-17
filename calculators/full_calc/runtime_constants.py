@@ -21,7 +21,7 @@ MAX_PLANETS = 20 # Gas giant moons and hollowed out asteroids might be self-sust
 MAX_CIVILISATIONS = 10
 # For default parameters, higher values of the first two constants barely change
 # the outcomes but substantially increase runtime.
-MAX_PROGRESS_YEARS = 3000 # The longer the stretches x_scales set in the params, the more this
+MAX_PROGRESS_YEARS = 500 # The longer the stretches x_scales set in the params, the more this
 # parameter seems likely to matter
 
 
