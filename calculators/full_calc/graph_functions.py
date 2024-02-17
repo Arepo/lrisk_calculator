@@ -47,7 +47,7 @@ def sigmoid_curved_risk(
 
     return y_scale /  (1 + modified_x_value ** -sharpness * math.e ** -(modified_x_value))
 
-def exponentially_decaying_risk(x, starting_value, decay_rate, min_probability=0, x_translation=2):
+def exponentially_decaying_risk(x, x_scale, starting_value, decay_rate, min_probability=0, x_translation=2):
     """The simplest way I can think of to intuit the various risks given multiple interplanetary
     settlements is as an exponential decay based on the number of planets.
 
@@ -67,4 +67,4 @@ def exponentially_decaying_risk(x, starting_value, decay_rate, min_probability=0
     min_value as 0.1, your actual starting_value will be 0.5
 
     TODO: look into simpler scipy implementations"""
-    return starting_value * (1 - decay_rate) ** (x - x_translation) + min_probability
+    return starting_value * (1 - decay_rate) ** ((x - x_translation)/x_scale) + min_probability

@@ -403,12 +403,13 @@ perils:
     y_scale: 0
     # current_perils_base_x_scale: 118 # Uncomment to affect the current time of perils only
     base_x_scale: 1
+    stretch_per_reboot: 1
     # current_perils_x_translation: 15 # Uncomment to affect the current time of perils only
     x_translation: 0
     # current_perils_sharpness: 2 # Uncomment to affect the current time of perils only
     sharpness: 0
     # current_perils_stretch_per_reboot: 10 # Uncomment to affect the current time of perils only
-    stretch_per_reboot: 1
+
     # I'm including the subsequent two params to avoid conditionals in the code, but these should
     # be 0 under normal assumptions. TODO: explain better
     # You could set them higher to factor in the chance
@@ -438,12 +439,16 @@ multiplanetary:
     decay_rate: 0.45 # the proportion by which risk for an n-planet civilisation
     # decreases for an (n+1)-planet civilisation
     min_risk: 0 # Longtermist philosophy is basically predicated on this being extremely close to 0.
-
     # In the long run, if this doesn't tend to become almost 0, longtermism isn't
     # possible (in principle if all settlements are in our solar system we might
     # be vulnerable to supernovae etc, but in practice if things went in the
     # right direction I assume we'd get from large numbers of intra-system
     # settlements to interstellar settlements quickly as to be virtually instantaneous on galactic timelines)
+    stretch_per_reboot: 1 # It seems likely fossil fuels and minerals will be
+    # a much smaller constraint in this era than in the time of perils. Depletion
+    # of fissile materials might matter more in the space age, but even that
+    # seems likely to have been mostly resolved by the time another planet is
+    # fully self-sustaining. This parameter allows you to express a contrary belief.
 
   preindustrial:
     # By default I treat the probability of transitioning to a preindustrial state as 0 on
@@ -453,6 +458,7 @@ multiplanetary:
     two_planet_risk: 0
     decay_rate: 0
     min_risk: 0
+    stretch_per_reboot: 1
 
   industrial:
     # While this looks somewhat more plausible than transitioning to preindustrial,
@@ -462,6 +468,7 @@ multiplanetary:
     two_planet_risk: 0
     decay_rate: 0
     min_risk: 0
+    stretch_per_reboot: 1
 
   n_planets:
     # Desmos graph of the probability of transitioning from x 'planets' (self
@@ -502,6 +509,13 @@ multiplanetary:
     # of perils doesn't. So I haven't implemented a linear alternative here.
     # TODO MD->SC: I would invert this param because it's confusing that a
     # larger number means fewer planets.
+    stretch_per_reboot: 1 # Unlike in perils, we might stretch the possibility of
+    # intra-state regression; there each state represents an actual year at some
+    # technology level, and I don't see any reason to think per year risk would
+    # change at that technology level; for the multiplanetary state, if technology
+    # has slowed down it could mean it would take longer to create
+    # another settlement, and therefore you'd have a higher probability of you
+    # losing another settlement first.
 
   perils: 'n/a'
   # transitioning to perils is just the specific case of transitioning to n=1 planets given our
@@ -522,7 +536,8 @@ multiplanetary:
     # (unlike the other multiplanetary transitions, I assume this becomes more
     # likely the more planets are settled, and use the same abstract formula as for transitions
     # in the time of perils)
-    x_scale: 13
+    base_x_scale: 13
+    stretch_per_reboot: 1
     y_scale: 0.65 # With enough interplanetary colonies, it becomes increasingly likely that
     # we send out interstellar colony ships, since we've proven most of the
     # technology and might run out of space in our solar system (though there's

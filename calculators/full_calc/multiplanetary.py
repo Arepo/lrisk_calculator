@@ -10,28 +10,28 @@ from calculators.full_calc.params import Params
 params = Params().dictionary['multiplanetary']
 
 
-def extinction_given_multiplanetary(planet_count):
+def extinction_given_multiplanetary(k, planet_count):
     """Probability of transitioning to extinction given a multiplanetary state with q
     settlements."""
-    return parameterised_decaying_transition_probability('extinction', planet_count=planet_count)
+    return parameterised_decaying_transition_probability('extinction', k, planet_count=planet_count)
 
-def preindustrial_given_multiplanetary():
+def preindustrial_given_multiplanetary(k, planet_count):
     """Sum of total preindustrial exit probability over all values of q. Returns 0 on default
     values"""
-    return parameterised_decaying_transition_probability('preindustrial')
+    return parameterised_decaying_transition_probability('preindustrial', k, planet_count=planet_count)
 
-def industrial_given_multiplanetary():
+def industrial_given_multiplanetary(k, planet_count):
     """Sum of total industrial exit probability over all values of q. Returns 0 on default values"""
-    return parameterised_decaying_transition_probability('industrial')
+    return parameterised_decaying_transition_probability('industrial', k=k, planet_count=planet_count)
 
-def interstellar_given_multiplanetary(planet_count):
+def interstellar_given_multiplanetary(k, planet_count):
     """Max value should get pretty close to 1, since at a certain number of planets the tech is all
     necessarily available and you've run out of extra planets to spread to.
 
     TODO need to specify behaviour for max value."""
 
-    def x_scale():
-        return params['interstellar']['x_scale'] # Just intuition
+    def base_x_scale():
+        return params['interstellar']['base_x_scale']
 
     def y_scale():
         # TODO - if this asymptotes too fast, we might get invalid total probabilities. Is there a
@@ -45,37 +45,43 @@ def interstellar_given_multiplanetary(planet_count):
     def sharpness():
         return params['interstellar']['sharpness']
 
+    def x_scale_stretch():
+        return (params['interstellar']['stretch_per_reboot']) ** k
+
+    total_x_scale = base_x_scale() * x_scale_stretch()
+
     # Graph with these values: https://www.desmos.com/calculator/vdyih29fqb
-    return sigmoid_curved_risk(planet_count, x_scale(), y_scale(), x_translation(), sharpness())
+    return sigmoid_curved_risk(planet_count, total_x_scale, y_scale(), x_translation(), sharpness())
 
 
-def parameterised_decaying_transition_probability(target_state, planet_count=None):
+def parameterised_decaying_transition_probability(target_state, k, planet_count=None):
     """Calculate the overall probability of transition for specified value of q given
     user-determined params"""
     if params[target_state]['two_planet_risk'] == 0:
         return 0
 
-
     def starting_value():
         return params[target_state]['two_planet_risk']
-
 
     def decay_rate():
         return params[target_state]['decay_rate']
 
-
     def min_risk():
         return params[target_state]['min_risk']
 
+    def x_scale():
+        return params[target_state]['stretch_per_reboot'] ** k
+
     return exponentially_decaying_risk(
         x=planet_count,
+        x_scale=x_scale(),
         starting_value=starting_value(),
         decay_rate=decay_rate(),
         min_probability=min_risk(),
 )
 
 
-def transition_to_n_planets_given_multiplanetary(planet_count, n):
+def transition_to_n_planets_given_multiplanetary(k, planet_count, n):
     """Should be a value between 0 and 1. Lower treats events that could cause regression to a
     1-planet civilisation in a perils state as having their probability less reduced by having
     multiple settlements.
@@ -94,22 +100,23 @@ def transition_to_n_planets_given_multiplanetary(planet_count, n):
     """
     n_params = params['n_planets']
 
-    def any_intra_multiplanetary_regression(planet_count):
+    def any_intra_multiplanetary_regression(k, planet_count):
         """Calculate the probability of any regression (this could be a parameter
         constant for all values of q, but it seems consistent with the necessary picture of
         multiplanetary tech gradually overtaking weapons tech to expect it the ratio to continue
         improving for some time thereafter)"""
         return exponentially_decaying_risk(x=planet_count,
+                                        x_scale=n_params['stretch_per_reboot'] ** k,
                                         starting_value=n_params['two_planet_risk'],
                                         decay_rate=n_params['decay_rate'],
                                         min_probability=n_params['min_risk'])
 
     def remainder_outcome(planet_count):
-        return 1 - (extinction_given_multiplanetary(planet_count)
-                    + preindustrial_given_multiplanetary()
-                    + industrial_given_multiplanetary()
-                    + any_intra_multiplanetary_regression(planet_count)
-                    + interstellar_given_multiplanetary(planet_count)) # perils_given_multiplanetary is
+        return 1 - (extinction_given_multiplanetary(k, planet_count)
+                    + preindustrial_given_multiplanetary(k, planet_count)
+                    + industrial_given_multiplanetary(k, planet_count)
+                    + any_intra_multiplanetary_regression(k, planet_count)
+                    + interstellar_given_multiplanetary(k, planet_count)) # perils_given_multiplanetary is
                                                             # implicitly included as
                                                             # any_intra_multiplanetary_regression to
                                                             # n = 1
@@ -121,7 +128,7 @@ def transition_to_n_planets_given_multiplanetary(planet_count, n):
     if not n:
         # Allows us to check total probability sums to 1
         # TODO this branch prob obsolete now
-        return any_intra_multiplanetary_regression(planet_count)
+        return any_intra_multiplanetary_regression(k, planet_count)
     if n == planet_count + 1 and planet_count != constant.MAX_PLANETS:
         # This is our catchall branch - the probability is whatever's left after we decide all the
         # other risks
@@ -151,12 +158,13 @@ def transition_to_n_planets_given_multiplanetary(planet_count, n):
                                     / (1 - r))
     # Thus numerator_for_n_planets / geometric_sum_of_weightings is a proportion; you can play
     # with the values at https://www.desmos.com/calculator/ku0p2iahq3
-    return any_intra_multiplanetary_regression(planet_count) * (numerator_for_n_planets / geometric_sum_of_weightings)
+
+    return any_intra_multiplanetary_regression(k, planet_count) * (numerator_for_n_planets / geometric_sum_of_weightings)
                                     # Brackets seem to improve floating point errors at least
                                     # when the contents should be 1
 
 
-def perils_given_multiplanetary(planet_count):
+def perils_given_multiplanetary(k, planet_count):
     """Ideally this would have a more specific notion of where in a time of perils you expect to end
     up given this transition, but since that could get complicated fast, I'm treating it as going to
     perils year 0 for now.
@@ -165,28 +173,4 @@ def perils_given_multiplanetary(planet_count):
     use the existing formula for this.
 
     TODO if going to a fixed perils year, make it a later one."""
-    return transition_to_n_planets_given_multiplanetary(planet_count, 1)
-
-
-
-# exit_probabilities = [extinction_given_multiplanetary(1,11),
-#                         preindustrial_given_multiplanetary(1,11),
-#                         industrial_given_multiplanetary(1,11),
-#                         perils_given_multiplanetary(1,11),
-#                         interstellar_given_multiplanetary(1,11)]
-
-# intra_transition_probabilities = [transition_to_n_planets_given_multiplanetary(1, 11, n)
-#                                   for n in range(2,21)]
-
-# row = exit_probabilities + intra_transition_probabilities
-# # transition_to_n_planets_given_multiplanetary(1, 9, 3)
-
-
-
-# TODO - consider reintroducing this checksum
-# if not 1 == (extinction_given_multiplanetary(k)
-#              + preindustrial_given_multiplanetary(k)
-#              + industrial_given_multiplanetary(k)
-#              + perils_given_multiplanetary(k)
-#              + interstellar_given_multiplanetary(k)):
-#   raise InvalidTransitionProbabilities("Transition probabilities from multiplanetary must == 1")
+    return transition_to_n_planets_given_multiplanetary(k, planet_count, 1)

@@ -148,15 +148,15 @@ class IntraMultiplanetaryMCWrapper():
         planet_range = range(2, constant.MAX_PLANETS + 1) # Python range excludes max value
 
         intra_transition_probabilities = {
-            q: [multiplanetary.transition_to_n_planets_given_multiplanetary(q, n)
+            q: [multiplanetary.transition_to_n_planets_given_multiplanetary(k, q, n)
                for n in planet_range]
             for q in planet_range}
         exit_probabilities = {
-            q: [multiplanetary.extinction_given_multiplanetary(q),
-                multiplanetary.preindustrial_given_multiplanetary(),
-                multiplanetary.industrial_given_multiplanetary(),
-                multiplanetary.perils_given_multiplanetary(q),
-                multiplanetary.interstellar_given_multiplanetary(q)]
+            q: [multiplanetary.extinction_given_multiplanetary(k, q),
+                multiplanetary.preindustrial_given_multiplanetary(k, q),
+                multiplanetary.industrial_given_multiplanetary(k, q),
+                multiplanetary.perils_given_multiplanetary(k, q),
+                multiplanetary.interstellar_given_multiplanetary(k, q)]
             for q in planet_range}
 
         qth_planet_rows = [intra_transition_probabilities[q] + exit_probabilities[q]

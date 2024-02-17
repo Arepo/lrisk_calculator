@@ -42,17 +42,17 @@ def interstellar_given_perils(k, progress_year):
 
 def _parameterised_transition_probability(k, progress_year, target_state):
     if k == 0:
-        # Some kruft required to deal with values potentially being 0
+        # Some 'is not None' kruft required to deal with some values potentially being 0
         base_x_scale = params[target_state].get('current_perils_base_x_scale')
-        base_x_scale = base_x_scale if base_x_scale is not None else params[target_state]['base_x_scale']
+        base_x_scale = base_x_scale or params[target_state]['base_x_scale']
         x_scale_stretch = params[target_state].get('current_perils_stretch_per_reboot')
-        x_scale_stretch = (x_scale_stretch if x_scale_stretch is not None else params[target_state]['stretch_per_reboot']) ** k
+        x_scale_stretch = (x_scale_stretch or params[target_state]['stretch_per_reboot']) ** k
         y_scale = params[target_state].get('current_perils_y_scale')
         y_scale = y_scale if y_scale is not None else params[target_state]['y_scale']
         x_translation = params[target_state].get('current_perils_x_translation')
         x_translation = x_translation if x_translation is not None else params[target_state]['x_translation']
         sharpness = params[target_state].get('current_perils_sharpness')
-        sharpness = sharpness if sharpness is not None else params[target_state]['sharpness']
+        sharpness = sharpness or params[target_state]['sharpness']
     else:
         base_x_scale = params[target_state]['base_x_scale']
         x_scale_stretch = params[target_state]['stretch_per_reboot'] ** k
