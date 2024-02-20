@@ -58,18 +58,16 @@ perils:
     # the effect of reboots on the estimates, you'll need to manually increase the x-stretch (parameter
     # b on Desmos) by an appropriate proportion.
 
+    # y_scale is the max annual probability of extinction from a time of perils.
+
+    y_scale: 0.00054 # Suggested lower bound (see below for why this is default)
     # The most optimistic explicit extinction estimate on the database is given
-    # by Metaculus' median prediction of '1% chance of extinction by 2100'.
+    # by Metaculus' median prediction of '2% chance of extinction by 2100'.
     # https://www.metaculus.com/questions/578/human-extinction-by-2100/
-    # This translates to an average annual extinction probability of 0.00013, which
-    # I guess would double at peak, and I've multiplied by 4/3, since it looks approx
-    # 3/4 of the way up based on, at time of writing, the other values in this section.
-    # TODO MD->SC: rewrite this, I have no clue what "it looks 3/4 of the way up" means
+    # This translates to an average annual extinction probability of 0.00027, which
+    # I guess would double at peak. It could keep going up beyond that, but since most estimates
+    # of AGI have it happening by then and since that's a major factor I assume that's the max.
 
-    # y_scale: 0.0012 # Best guess: ~the geometric mean of upper and lower bounds
-    # Max annual probability of extinction from a time of perils.
-
-    # current_perils_y_scale: 0.00035 # Uncomment to affect the current time of perils only
     # y_scale: 0.004 # Suggested upper bound. Upper bound is
     # based on the highest estimate for the present day on the existential risks database.*
     # https://docs.google.com/spreadsheets/d/1W10B6NJjicD8O0STPiT3tNV3oFnT8YsfjmtYR8RO_RI/edit#gid=0
@@ -81,6 +79,8 @@ perils:
     # extinction seem necessarily more speculative than for lesser regressions,
     # I'm leaving the lower bound as the default.
 
+      # y_scale: 0.0012 # Best guess: ~the geometric mean of upper and lower bounds
+
     # TODO MD->SC: I don't get this reasoning, I think it makes more sense to
     # use the best guess instead of lower bound. And get best guess from the
     # average of the x-risks database instead of the midpoint of the two edges.
@@ -89,9 +89,8 @@ perils:
     # [1] https://docs.google.com/spreadsheets/d/1W10B6NJjicD8O0STPiT3tNV3oFnT8YsfjmtYR8RO_RI/
 
     # current_perils_y_stretch: 0.00035
-    # y_scale: 0.004 # Suggested upper bound
-    # y_scale: 0.0012 # Best guess: ~the geometric mean of upper and lower bounds
-    y_scale: 0.00035 # Suggested lower bound (see above for why this is default)
+
+    # current_perils_y_scale: 0.00035 # Uncomment to affect the current time of perils only
 
     # current_perils_base_x_scale: 90 # Uncomment to affect the current time of perils only
     base_x_scale: 90 # The x-stretch of the graph at k=0 (primary determinant of how quickly the
@@ -138,14 +137,12 @@ perils:
     # value here implies a sharp increase in risk starting around
     # the turn of the century, and continuing to meaningfully increase for around a century after that
     base_background_risk_denominator: 184_000 # The denominator of the fraction used to calculate
-    # background risk of extinction, constant throughout a given time of perils.
+    # background risk of extinction, constant throughout a given time of perils (the yaml format
+    # doesn't allow fractions, but base background risk is 1/base_background_risk_denominator).
     # This is based on one of the middling values of the base_annual_extinction_probability_denominator
     # parameter below (see reasoning there), assuming premodern technology removes
     # about 50% of the natural extinction risk by e.g. having large food stockpiles
     # (under most assumptions, this will probably have little effect on the overall calculation).
-    # TODO MD->SC: The numerator and denominator here are confusing. I would restructure this as
-    # risk_growth_per_reboot = 1.05
-    # base_background_risk = 1 / 184,000
 
   preindustrial:
 
@@ -395,7 +392,6 @@ perils:
     # sake, I'm treating this transition as as 0 probability (y-stretch of
     # 0 with everything else being irrelevant), but you can adjust if that seems
     # wrong.
-    # TODO MD->SC: What do you mean you're not effectively modeling AI? Isn't AI pretty important?
 
     # Some values below are set to 1 to avoid Division by Zero errors in the code
 
