@@ -188,9 +188,8 @@ for i in range(1, constant.MAX_CIVILISATIONS):
     print(mc.absorption_probabilities()[1][mc.states.index(f'multiplanetary-{i}')])
     print('*' * 20)
 print("These results have been saved in the ./results.csv file - please consider submitting them to the"\
-      " repo or just copying and pasting them here: https://docs.google.com/spreadsheets/d/132hveII9MYkGrW0uDvYzh1pqcmAqKuxQ3pHq6iCZH2A/edit#gid=0")
+      " repo or just copying and pasting them here: https://docs.google.com/spreadsheets/d/1NFZCeEj1gQxd43IdE5c3-SY8qyL-NTkRMiGt3XQl_mI/")
 
-import os
 file_name = 'results.csv'
 
 states = []
