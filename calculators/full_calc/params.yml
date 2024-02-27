@@ -19,13 +19,13 @@ preperils:
     # c = base_expected_time_in_years
     # d = stretch_per_reboot
 
-    base_expected_time_in_years: 11_100
-    # base_expected_time_in_years: 500  # optimistic
-    # base_expected_time_in_years: 300_000  # pessimistic
+    base_expected_time_in_years: 10_571
+    # base_expected_time_in_years: 476  # optimistic
+    # base_expected_time_in_years: 285_714  # pessimistic
     stretch_per_reboot: 1.05
 
     base_annual_extinction_probability: 0.000012
-    per_civilisation_annual_extinction_probability_multiplier: 1.02
+    per_reboot_annual_extinction_probability_multiplier: 1.02
 
   industrial:
     # Parameters describing the chance of reaching a time of perils (vs going
@@ -41,16 +41,16 @@ preperils:
     # d = stretch_per_reboot
     # g = base_annual_extinction_probability_coefficient
 
-    base_expected_time_in_years: 381 # geometric mean of the optimistic and pessimistic views
-    # base_expected_time_in_years: 1500 # pessimistic
-    # base_expected_time_in_years: 100 # optimistic
+    base_expected_time_in_years: 109 # ~geometric mean of the optimistic and pessimistic views
+    # base_expected_time_in_years: 429 # pessimistic
+    # base_expected_time_in_years: 29 # optimistic
     stretch_per_reboot: 3.5 # geometric mean of the optimistic and pessimistic views
     # stretch_per_reboot: 10 # pessimistic
     # stretch_per_reboot: 1.2 # optimistic
 
     base_annual_extinction_probability: 0.000012
     annual_extinction_probability_coefficient: 0.7 # Constant multiple of annual_extinction_probability
-    per_civilisation_annual_extinction_probability_multiplier: 1.02
+    per_reboot_annual_extinction_probability_multiplier: 1.02
 
 perils:
   # Some of the parameters in 'perils' have a 'current_perils_'-prefixed
@@ -92,9 +92,7 @@ perils:
     # stretch_per_reboot is a per-reboot multiplier on the x-stretch (the formula for x_scale is
     # base_x_scale * stretch_per_reboot ** k), so the primary determinant of how quickly the
     # extinction risk rises per year at high k-values). Higher values imply longer before both good
-    # and bad technology-caused exits from the time of perils become possible. This is also assumed
-    # to be a multiplier on the length of the time of perils for the purposes of calculating the
-    # total background risk for the period.
+    # and bad technology-caused exits from the time of perils become possible.
     stretch_per_reboot: 3.5 # ~the geometric mean of optimistic and pessimistic views
     # stretch_per_reboot: 10 # Pessimistic
     # stretch_per_reboot: 1.2 # Optimistic
