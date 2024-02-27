@@ -151,17 +151,16 @@ def transition_to_n_planets_given_multiplanetary(k, planet_count, n):
     # The commented out return values is the exponential decrease described above. TODO - where?
     r = n_params['common_ratio_for_geometric_sum']
 
-    numerator_for_n_planets = r ** n # How relatively likely is it, given
-    # some loss, that that loss took us to exactly n planets?
-    # TODO - see if this still matches intuitions
-    geometric_sum_of_weightings = (r * (1 - r ** (planet_count - 1))
-                                    / (1 - r))
-    # Thus numerator_for_n_planets / geometric_sum_of_weightings is a proportion; you can play
-    # with the values at https://www.desmos.com/calculator/ku0p2iahq3
+    numerator_for_n_planets = r ** (n-1) # How relatively likely is it, given
+    # some loss, that that loss took us to exactly n planets? (where min value for n is 1,
+    # but to make the geometric sum work, we need to start from a 0-exponent)
 
-    return any_intra_multiplanetary_regression(k, planet_count) * (numerator_for_n_planets / geometric_sum_of_weightings)
-                                    # Brackets seem to improve floating point errors at least
-                                    # when the contents should be 1
+    geometric_sum_of_weightings = ((1 - r ** (planet_count - 1))
+                                    / (1 - r))
+
+    return (numerator_for_n_planets / geometric_sum_of_weightings) * any_intra_multiplanetary_regression(k, planet_count)
+           # ^These brackets seem to improve floating point errors at least
+           # when the contents should be 1
 
 
 def perils_given_multiplanetary(k, planet_count):

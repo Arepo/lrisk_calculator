@@ -1,50 +1,75 @@
-# This file contains all the subjective parameters for full_calc.py
-# - the script which implements the perils-focused model described in this essay* (with the
-# 'survival' state removed since it added complexity had and, given most people's
-# credences had almost no effect on the results).
-# * https://forum.effectivealtruism.org/posts/YnBwoNNqe6knBJH8p/modelling-civilisation-after-a-catastrophe
+# This file contains all the credence-based parameters for full_calc.py
+# (see also ./runtime_constants.py for params that just balance runtime and precision)
 
-# In all the descriptions below, 'k' is the number of times civilisation has regressed to a
-# pre-time-of-perils state, so we're currently in k=0.
+# Discussion of default values/what values should be is on this open Google doc:
+# https://docs.google.com/document/d/1Ag_cnQLBAIzzSJEGos94KDsgvFFvCz-ML54wOZoY7A4/
 
-# I refer to a 'reboot' as meaning any civilisation after our current one: if our
-# current civilisation is the first, the first reboot is our second civilisation
-# (in the code we zero-index civilisations, effectively counting reboots)
+# Uncomment time of perils fields prefixed with 'current_perils_' to affect the current time of perils only
 
-# My guesses for parameters come from some combination of the research I've
-# found in existential risk literature but mostly from eyeballing graphs on
-# Desmos (a browser-based graphing site) to come up with a visually convincing
-# value. Feel free to join in the discussion about these parameters on this
-# Google doc:
-# https://docs.google.com/document/d/1Ag_cnQLBAIzzSJEGos94KDsgvFFvCz-ML54wOZoY7A4
+preperils:
+  preindustrial:
+    # Parameters describing the chance of becoming industrial (vs extinct) from
+    # a preindustrial state
+    # Desmos graph of the probability of the xth civilisation going directly extinct
+    # from a preindustrial state: https://www.desmos.com/calculator/d2uyrkresh
+    # The Desmos values correspond to the parameters in this section as follow:
+    # x = number of previous civilisations (calculated for every number up to the MAX_CIVILISATIONS constant)
+    # a = per_civilisation_annual_extinction_probability_multiplier
+    # b = annual_extinction_probability
+    # c = base_expected_time_in_years
+    # d = stretch_per_reboot
 
-# Some of the parameters in 'perils' have a 'current_perils_'-prefixed
-# alternative.* If you uncomment this, they will be used only for determining
-# the graphs of our current time of perils, and the default values will be used
-# for all future times of perils. TODO At the moment, using any of these
-# current_perils parameters will mess up the alignment of later columns in the
-# CSV file by inserting a column for each current_perils value.
+    base_expected_time_in_years: 11_100
+    # base_expected_time_in_years: 500  # optimistic
+    # base_expected_time_in_years: 300_000  # pessimistic
+    stretch_per_reboot: 1.05
 
-# TODO MD->SC: Perhaps write an appendix in a forum post with the reasoning on
-# every individual parameter. It's probably reasonable to be transparent but
-# much of this reasoning is deep in the weeds so it can be relegated to an
-# appendix.
+    base_annual_extinction_probability: 0.000012
+    per_civilisation_annual_extinction_probability_multiplier: 1.02
+
+  industrial:
+    # Parameters describing the chance of reaching a time of perils (vs going
+    # extinct) from an industrial state
+    # Desmos graph of the probability of the xth civilisation going directly extinct
+    # from an industrial state:
+    # https://www.desmos.com/calculator/2gzrlt4bfa
+    # The Desmos values correspond to the parameters in this section as follow:
+    # x = number of previous civilisations (calculated for every number up to the MAX_CIVILISATIONS constant)
+    # a = per_civilisation_annual_extinction_probability_multiplier
+    # b = annual_extinction_probability_denominator
+    # c = base_expected_time_in_years
+    # d = stretch_per_reboot
+    # g = base_annual_extinction_probability_coefficient
+
+    base_expected_time_in_years: 381 # geometric mean of the optimistic and pessimistic views
+    # base_expected_time_in_years: 1500 # pessimistic
+    # base_expected_time_in_years: 100 # optimistic
+    stretch_per_reboot: 3.5 # geometric mean of the optimistic and pessimistic views
+    # stretch_per_reboot: 10 # pessimistic
+    # stretch_per_reboot: 1.2 # optimistic
+
+    base_annual_extinction_probability: 0.000012
+    annual_extinction_probability_coefficient: 0.7 # Constant multiple of annual_extinction_probability
+    per_civilisation_annual_extinction_probability_multiplier: 1.02
 
 perils:
-  current_progress_year: 70
-  # We're 78 actual years after the first nuclear bomb was detonated, and we've
-  # lost 8 years to zero or negative economic growth, so we've effectively
-  # progressed 70 economic-years since the time of perils began. I gauged
-  # economic growth by eyeballing these graphs:
-  # https://data.worldbank.org/indicator/NY.GDP.MKTP.KD.ZG
-  # https://ourworldindata.org/grapher/total-gdp-in-the-uk-since-1270 (only for
-  # the UK, but goes back further). You can also modify this param keeping other
-  # values constant to see the net effect of some intra-perils on our ultimate
-  # probability of success.
+  # Some of the parameters in 'perils' have a 'current_perils_'-prefixed
+  # alternative.* If you uncomment this, they will be used only for determining
+  # the graphs of our current time of perils, and the default values will be used
+  # for all future times of perils.
+  #
+  # TODO At the moment, using any of these
+  # current_perils parameters will mess up the alignment of later columns in the
+  # CSV file by inserting a column for each current_perils value.
+
+  # The time of perils graphs all assume k=0. To see
+  # the effect of reboots on the estimates, you'll need to manually increase the x-stretch (parameter
+  # b on Desmos) by an appropriate proportion.
+  current_progress_year: 71
 
   extinction:
     # Desmos graph of the probability in progress year x of transitioning
-    # from a perils state directly to extinction: https://www.desmos.com/calculator/pjtjvukwag
+    # from a perils state directly to extinction: https://www.desmos.com/calculator/zvt7dy6pwb
     # The Desmos values correspond to the parameters in this section as follows
     # x = progress year
     # a = y_scale
@@ -54,101 +79,50 @@ perils:
     # m = per_civilisation_background_risk_numerator
     # n = base_background_risk_denominator
 
-    # This graph assumes k=0. To see
-    # the effect of reboots on the estimates, you'll need to manually increase the x-stretch (parameter
-    # b on Desmos) by an appropriate proportion.
-
     # y_scale is the max annual probability of extinction from a time of perils.
+    y_scale: 0.00054 # Optimistic/best guess (see Google doc for why optimistic guess is used by default)
+    # y_scale: 0.004 # Pessimistic
+    # y_scale: 0.0012 # the geometric mean of optimistic and pessimistic views
+    # current_perils_y_scale: 0
 
-    y_scale: 0.00054 # Suggested lower bound (see below for why this is default)
-    # The most optimistic explicit extinction estimate on the database is given
-    # by Metaculus' median prediction of '2% chance of extinction by 2100'.
-    # https://www.metaculus.com/questions/578/human-extinction-by-2100/
-    # This translates to an average annual extinction probability of 0.00027, which
-    # I guess would double at peak. It could keep going up beyond that, but since most estimates
-    # of AGI have it happening by then and since that's a major factor I assume that's the max.
+    base_x_scale: 108 # The x-stretch of the graph at k=0 (primary determinant of how quickly the
+    # extinction risk rises per progress year at low k-values).
+    # current_perils_base_x_scale: 0
 
-    # y_scale: 0.004 # Suggested upper bound. Upper bound is
-    # based on the highest estimate for the present day on the existential risks database.*
-    # https://docs.google.com/spreadsheets/d/1W10B6NJjicD8O0STPiT3tNV3oFnT8YsfjmtYR8RO_RI/edit#gid=0
-    # Extrapolating, this would give us a 33% chance of going extinct within 100 years.
-    # TODO: This is currently higher than the y_scale for a transition to
-    # preindustrial or industrial, which seems implausible to me. I would either
-    # use upper bound for preindustrial, or lower bound for extinction. Since
-    # I don't *have* good upper bounds for the former, and since arguments for
-    # extinction seem necessarily more speculative than for lesser regressions,
-    # I'm leaving the lower bound as the default.
-
-      # y_scale: 0.0012 # Best guess: ~the geometric mean of upper and lower bounds
-
-    # TODO MD->SC: I don't get this reasoning, I think it makes more sense to
-    # use the best guess instead of lower bound. And get best guess from the
-    # average of the x-risks database instead of the midpoint of the two edges.
-    # If you do that, you can shorted the above 3 paragraphs to the following:
-    # The extinction risk estimates are derived from the existential risks database[1].
-    # [1] https://docs.google.com/spreadsheets/d/1W10B6NJjicD8O0STPiT3tNV3oFnT8YsfjmtYR8RO_RI/
-
-    # current_perils_y_stretch: 0.00035
-
-    # current_perils_y_scale: 0.00035 # Uncomment to affect the current time of perils only
-
-    # current_perils_base_x_scale: 90 # Uncomment to affect the current time of perils only
-    base_x_scale: 90 # The x-stretch of the graph at k=0 (primary determinant of how quickly the
-    # extinction risk rises per progress year at low k-values). I'm setting this to be the same
-    # as the multiplanetary x-stretch, since many of the technologies that enable latter enable the
-    # former (but this one starts rising sooner because of the smaller x-translation).
-
-    # current_perils_stretch_per_reboot: 3.5 # Uncomment to affect the current time of perils only
-    stretch_per_reboot: 3.5 # Best guess: ~the geometric mean of upper and lower bounds
-    # stretch_per_reboot: 10 # Suggested upper bound.
-    # A per-reboot multiplier on the x-stretch (the formula for x_scale is
+    # stretch_per_reboot is a per-reboot multiplier on the x-stretch (the formula for x_scale is
     # base_x_scale * stretch_per_reboot ** k), so the primary determinant of how quickly the
     # extinction risk rises per year at high k-values). Higher values imply longer before both good
     # and bad technology-caused exits from the time of perils become possible. This is also assumed
     # to be a multiplier on the length of the time of perils for the purposes of calculating the
     # total background risk for the period.
+    stretch_per_reboot: 3.5 # ~the geometric mean of optimistic and pessimistic views
+    # stretch_per_reboot: 10 # Pessimistic
+    # stretch_per_reboot: 1.2 # Optimistic
+    # current_perils_stretch_per_reboot: 0
 
-    # If Dartnell's pessimism here[2] extends to developing modern technology without fossil fuels,
-    # this could be very much harder the first time around. This number is based on us
-    # having used 90% of fossil fuels, and assuming that each subsequent civilisation is as consumptive
-    # of resources.
-    # [2] https://aeon.co/essays/could-we-reboot-a-modern-civilisation-without-fossil-fuels
-    # stretch_per_reboot: 1.2 # Suggested lower bound
-    # A guess about the max ability of human ingenuity to overcome resource
-    # constraints, and assuming no great compounding effects from such constraints.
-    per_civilisation_background_risk_numerator: 1.05 # Best guess
-    # A slight per-year-per-civilisation increase to background risk of extinction,
-    # representing for example, climate naturally changing away from the one best
-    # suited to humans, increased burden of disease.
+    # x_translation is the delay at the start of a time of perils before we expect
+    # this risk to kick in.
+    x_translation: 15
+    # current_perils_x_translation: 0
 
-    # Note that high values of this will break the calculator, by making the per-year risk
-    # in later civilisations approach or exceed 1. TODO: make it more robust to this
+    # sharpness is an abstract (but not-very-influential parameter) codetermining steepness.
+    sharpness: 6 #
+    # current_perils_sharpness: 0
 
-    # current_perils_x_translation: 15 # Uncomment to affect the current time of perils only
-    x_translation: 15 # The delay at the start of a time of perils before we expect this risk to
-    # kick in. The default value assumes (with what we now know) that this would have been basically
-    # impossible via nuclear weaponry until the world had stockpiled tens of thousands of nuclear
-    # warheads. I'm treating that as after the huge jump between 1955 and 1960
-    # described in https://en.wikipedia.org/wiki/Historical_nuclear_weapons_stockpiles_and_nuclear_tests_by_country.
-    # current_perils_sharpness: 6 # Uncomment to affect the current time of perils only
-    sharpness: 6 # A not-very-influential parameter codetermining steepness, set by eyeballing the Desmos graph
-    # given the other params. Setting this value to 3 in every section yields reasonable results
-    # but you can adjust it for more control of the steepest region of the graph - the default
-    # value here implies a sharp increase in risk starting around
-    # the turn of the century, and continuing to meaningfully increase for around a century after that
-    base_background_risk_denominator: 184_000 # The denominator of the fraction used to calculate
-    # background risk of extinction, constant throughout a given time of perils (the yaml format
-    # doesn't allow fractions, but base background risk is 1/base_background_risk_denominator).
-    # This is based on one of the middling values of the base_annual_extinction_probability_denominator
-    # parameter below (see reasoning there), assuming premodern technology removes
-    # about 50% of the natural extinction risk by e.g. having large food stockpiles
-    # (under most assumptions, this will probably have little effect on the overall calculation).
+    # base_background_risk is the background risk (i.e. non-technologicalrisk ) of extinction, constant throughout
+    # a given time of perils.
+    base_background_risk: 0.0000054
+
+    # per_reboot_background_risk_multiplier is a multiplier applied to base_background_risk
+    # for each civilisation after the first. # Note that high values of this will break
+    # the calculator, by making the per-year risk in later civilisations approach or exceed 1.
+    # TODO: make it more robust to this
+    per_reboot_background_risk_multiplier: 1.05
 
   preindustrial:
-
     # Desmos graph of the probability in progress year x of transitioning
     # from a perils state directly to a preindustrial state:
-    # https://www.desmos.com/calculator/w8ajlykmzk
+    # https://www.desmos.com/calculator/viekibtzhv
     # The Desmos values correspond to the parameters in this section as follows
     # x = progress year
     # a = y_scale
@@ -158,54 +132,32 @@ perils:
     # m = per_civilisation_background_risk_numerator
     # n = base_background_risk_denominator
 
-    # I'm treating nukes as being substantially the most likely tech to cause
-    # this outcome, since they destroy far more resources than a pandemic would.
-    # So I expect the risk to level out relatively early in a time of perils.
-    # current_perils_y_stretch: 0.0009
-    y_scale: 0.0009 # Best guess - see below
-    # Max annual probability of transitioning to a preindustrial state from
-    # a time of perils, from Ord's estimate[3] of a 0.05 chance of full scale nuclear war
-    # in the next century.
-    # [3] https://80000hours.org/podcast/episodes/toby-ord-the-precipice-existential-risk-future-humanity/#transcript
-    # I assume it reaches double that at peak, and that such a war would move us
-    # to preindustrial with 0.3 probability. Then I triple it for the combined
-    # chance of transitioning to preindustrial via any other catastrophe. So we
-    # get 0.0005 * 2 * 0.3 * 3 = 0.0009.
+    y_scale: 0.0008
+    # current_perils_y_scale: 0
 
-    # Since this transition isn't really covered in the literature that I've seen,
-    # I don't have a simple way to generate upper/lower bounds.
+    base_x_scale: 180
+    # current_perils_base_x_scale: 0
 
-    # current_perils_base_x_stretch: 75
-    base_x_scale: 75 # Suggested upper bound. I suggest sharpness = 2 when using this value
-    # The x-stretch of the graph at k=0 (how quickly the
-    # extinction risk rises per progress year at k=0)
-    # base_x_scale: 10.5 # Suggested lower bound. I suggest sharpness = 2 when using this value
-    # current_perils_stretch_per_reboot: 3.5 # Uncomment to affect the current time of perils only
-    stretch_per_reboot: 3.5 # Best guess: ~the geometric mean of upper and lower bounds
-    # I assume the same friction to progress on technologies that would cause this transition as
-    # those that would cause extinction, thus:
-    # stretch_per_reboot: 10 # Suggested upper bound
-    # stretch_per_reboot: 1.2 # Suggested lower bound
+    x_translation: 5
+    # current_perils_x_translation: 0
 
-    per_civilisation_background_risk_numerator: 1.05 # Best guess:
-    # Same as for industrial
+    sharpness: 0.4
+    # current_perils_sharpness: 0
 
-    # current_perils_x_translation: 5 # Uncomment to affect the current time of perils only
-    x_translation: 5 # I assume this gets much more plausible after at least two countries developed
-    # a nuclear arsenal, which took about 10 years the first time (the sharpness parameter below
-    # keeps it close to for the first 5 years)
+    stretch_per_reboot: 3.5 # The geometric mean of upper and lower bounds
+    # stretch_per_reboot: 10 # Pessimistic
+    # stretch_per_reboot: 1.2 # Optimistic
+    # current_perils_stretch_per_reboot: 0
 
-    # current_perils_sharpness: 0.9
-    sharpness: 0.9 # Based on historical nuclear arsenals, this rose so fast I don't want it to look
-    # 'S'ish
-    base_background_risk_denominator: 87_000
-    # background risk for pre-industrial retrogression is 2x background extinction risk
+    per_reboot_background_risk_multiplier: 1.05
+
+    base_background_risk: 0.000016
 
   industrial:
 
     # Desmos graph of the probability in progress year x of transitioning
     # from a perils state directly to an industrial state:
-    # https://www.desmos.com/calculator/ycylxrxgs0
+    # https://www.desmos.com/calculator/ioo96u3cih
     # The Desmos values correspond to the parameters in this section as follows
     # x = progress year
     # a = y_scale
@@ -215,39 +167,28 @@ perils:
     # m = per_civilisation_background_risk_numerator
     # n = base_background_risk_denominator
 
+    y_scale: 0.0056 # Geometric mean of optimistic and pessimistic views
+    # y_scale: 0.0015 # Optimistic
+    # y_scale: 0.021 # Pessimistic
     # current_perils_y_scale: 0.0015
-    y_scale: 0.0015 # Max annual probability of reverting to industrial era from a time of perils.
-    # Loosely based on the estimates in FHI’s 2008 Global Catastrophic Risks Survey and a Metaculus
-    # poll[1], plus the assumption that reverting to industrial era is considerably less likely
-    # than ‘at least a billion dead before 2100’.
-    # [1] https://www.metaculus.com/questions/1493/global-population-decline-10-by-2100/
 
+    base_x_scale: 180
     # current_perils_base_x_scale: 85
-    base_x_scale: 85 # Suggested upper bound
-    # base_x_scale: 15 # Suggested lower bound. I use sharpness = 2 when using this value
-    # current_perils_stretch_per_reboot: 3.5
 
-    stretch_per_reboot: 3.5 # Best guess: ~the geometric mean of upper and lower bounds
-    # I assume the same friction to progress on technologies that would cause this transition as
-    # those that would cause extinction, thus:
-    # stretch_per_reboot: 10 # Suggested upper bound
-    # stretch_per_reboot: 1.2 # Suggested lower bound
-
-    per_civilisation_background_risk_numerator: 1.05 # Best guess:
-    # Same as for preindustrial
-
-    # current_perils_x_translation: 0 # Uncomment to affect the current time of perils only
+    # current_perils_x_translation: 0
     x_translation: 0 # The definitionally minimum possible regression at the start of a time of
     # perils
-    # current_perils_sharpness: 0.9 # Uncomment to affect the current time of perils only
-    sharpness: 0.9 # A not-very-influential parameter codetermining steepness, set by eyeballing the Desmos graph
-    # given the other params. Setting this value to 3 in every section yields reasonable results
-    # but you can adjust it for more control of the steepest region of the graph.
-    # Based on historical nuclear arsenals, this rose so fast I don't want it to look
-    # 'S'ish
-    base_background_risk_denominator: 61_000 # I assume this is approx a third of what
-    # it is for extinction (ie the probability is 3x that for extinction), in line with the
-    # best guess ratios for the y_scale.
+
+    sharpness: 0.9
+    # current_perils_sharpness: 0.9
+
+    stretch_per_reboot: 3.5 # Best guess: ~the geometric mean of optimistic and pessimistic views
+    # stretch_per_reboot: 10 # Pessimistic
+    # stretch_per_reboot: 1.2 # Optimistic
+    # current_perils_stretch_per_reboot: 3.5
+
+    per_reboot_background_risk_multiplier: 1.05
+    base_background_risk: 0.000022
 
   progress_year_n:
     # Desmos graph of the probability of retrogressing
@@ -261,84 +202,20 @@ perils:
     # p = origin progress year (iterated through in code), such that 0 <= x <= p
     # n = common_ratio_for_geometric_sum
 
+    # algorithm: 'exponential' # Optimistic
+    # algorithm: 'linear' # Pessimistic
+    algorithm: 'mean' # Since much of the runtime comes from the algorithm used here,
+    # consider setting it to one of the more efficient ones above if an upper/lower bound will do
 
-    # The parameters in this section determine the probability of transitioning within the
-    # time of perils from progress-year p to progress-year n.
+    common_ratio_for_geometric_sum: 1.4 # Only required for exponential and mean algorithms (but
+    # messes up the results.csv columning if you comment it out when using linear)
+    any_regression: 0.057
 
-    # There are two base ways I can think of to deal with this, which I think
-    # could yield very different results. In either case we assume some base probability of
-    # any intra-perils regressions - this is the any_regression param below - and divide
-    # that probability up in the probabilities of regressing to progress year p.
-    # There's also the option to take the mean of the other two algorithms, which is the default.
-
-    # 1) to assume the probability of regressing to any specific progress year decreases
-    # exponentially the further back we might regress. So the probability, given some
-    # intraperils regression of regressing from progress year p to progress year
-    # q is b^q/<the geometric sum b^0 + b^1 + ... + b^p>, where b is the
-    # common_ratio_for_geometric_sum parameter below. TODO Double check this is implemented correctly
-
-    # More generally, given some intra-perils regression r and some common ratio c (set by
-    # the common_ratio_for_geometric_sum parameter below>, the probability of regressing to exactly
-    # progress-year n is c**n / <the geometric sum of the numerators for all
-    # values {c**0, c**1 ... c**n}>. In practice, the calculator treats all regressions of
-    # more than 50 progress years as having 0 probability, since that saves a lot of runtime
-    # and they’re indistinguishable from 0 on the current values well before that.
-
-    # I'm not sure this is a very convincing algorithm though. Using global GDP
-    # growth/contraction (https://www.macrotrends.net/countries/WLD/world/gdp-gross-domestic-product)
-    # as a proxy for technology level, we've arguably regressed during about 4 calendar
-    # years since 1961, when the world bank started tracking global data, and perhaps 5
-    # times in the 20th century based on UK data (https://ourworldindata.org/grapher/total-gdp-in-the-uk-since-1270)
-    #  which goes back further, with each regression being between about 0 and 2 progress years[^xcurrent]. For comparatively tiny values of g
-    # (that is, barely above 1), our having been limited to such small regressions would look
-    # incredibly unlikely. For higher values of g, it would put the total probability of
-    # regressing more than a few years at a far lower value than the probability of a regression
-    # to an earlier technological state - which also seems wrong. So at best, this
-    # algorithm offers a lower bound on the significance of intra-perils regressions.
-
-    # To use this exponential algorithm, uncomment the next line, and comment out
-    # the "algorithm" 'mean'" line further down:
-    # algorithm: 'exponential' # Upper bound
-
-    common_ratio_for_geometric_sum: 1.4 # I chose the current value fairly arbitrarily, by looking at the world
-    # GDP graph https://data.worldbank.org/indicator/NY.GDP.MKTP.KD.ZG, treating
-    # 1975, and 1982 as a regression of 0 years, 2009 as a regression
-    # of 1, and 2020 as a regression of 2, and looking for a probability outcome
-    # slightly below that (to account for eg survivor bias, and selection effects
-    # from starting to count immediately after WWII).
-    # TODO explain what this parameter is
-
-    # 2) A simple alternative that errs much too far in the other direction would be a linear
-    # decrease given by an arithmetic rather than geometric progression, ie. 1/a, 2/a, 3/a ... q/a
-    # for a regression to progress year 0, 1, 2 ..., where q = 1 + <our current progress year> and
-    # a = 1 + 2 + 3 ... + q. This seems like a
-    # much worse fit for historical data, but much more intuitively consistent with the
-    # risks of regressing even further not being massively higher.
-
-    # To use this linear algorithm, uncomment the following two lines (leaving
-    # common_ratio_for_geometric_sum uncommented - it's not used by the linear algorithm, but it preserves
-    # the column structure of the params in results.csv):
-    # algorithm: 'linear' # Lower bound
-
-    # 3) The mean of the linear and exponential algorithms (this might substantially
-    # extend the runtime).
-    algorithm: 'mean' # Best guess - consequently set as default, but since the bulk of the
-    # runtime comes from the algorithm used here, consider setting it to one of the more efficient
-    # ones above if an upper/lower bound will do
-
-    any_regression: 0.026 # The annual probability of any intra-perils regression, used by both
-    # the exponential and linear algorithms. This could be a function of k and/or p - but seems ok to
-    # treat as a constant (at any given time using all the nukes would, more or
-    # less by definition, at least revert us to year 0 of the time of perils).
-    # This value is based on it roughly happening twice in 77 years: https://data.worldbank.org/indicator/NY.GDP.MKTP.KD.ZG
-
-    # See also UK GDP, for which reliable data goes back farther but is unsurprisingly more uneven:
-    # https://ourworldindata.org/grapher/total-gdp-in-the-uk-since-1270.
 
 
   multiplanetary:
     # Desmos graph of the probability in progress year x of transitioning
-    # from a perils state directly to a multiplanetary state: https://www.desmos.com/calculator/mv10b5ighs
+    # from a perils state directly to a multiplanetary state: https://www.desmos.com/calculator/sbkmcbfzlj
     # The Desmos values correspond to the parameters in this section as follows
     # x = progress year
     # a = y_scale
@@ -346,38 +223,28 @@ perils:
     # c = x_translation
     # d = sharpness
 
-    # I chose values higher than Metaculus' 60% probability for a colony by
-    # 2100[5] because Metaculus' probability is unconditional, whereas this is
-    # an estimate of the probability of transition given that we continue
-    # advancing through the time of perils without interruption.
-    # [5] https://www.metaculus.com/questions/1432/will-humans-have-a-sustainable-off-world-presence-by-2100/
-    # current_perils_base_x_stretch: 81
-    base_x_scale: 90
-    # current_perils_x_translation: 70
-    x_translation: 70
-    # 70 years represents the best case scenario of time from the first nuke to
-    # the first self-sustaining offworld settlement, which lines up with Robert
-    # Zubrin's ~1990 proposal.
-    # current_perils_y_stretch: 0.07
-    y_scale: 0.07 # Meaning a high tech civilisation could create a new
+    y_scale: 0.07
+    # current_perils_y_stretch: 0
 
-    # settlement maybe every ~15 years on average, given somewhere nearby to expand to
-    # (it gives probability = 1/2 of at least one after 10 years. TODO: do a more rigorous
-    # calculation here).
-    # current_perils_sharpness: 2 # Uncomment to affect the current time of perils only
-    sharpness: 2 # A not-very-influential parameter codetermining steepness, set by eyeballing the Desmos graph
-    # given the other params. Setting this value to 3 in every section yields reasonable results
-    # but you can adjust it for more control of the steepest region of the graph
-    # current_perils_stretch_per_reboot: 3.5 # Uncomment to affect the current time of perils only
-    stretch_per_reboot: 3.5 # Best guess: ~the geometric mean of upper and lower bounds
-    # I assume the same friction to progress on technologies that would cause this transition as
-    # those that would cause extinction, thus:
-    # stretch_per_reboot: 10 # Suggested upper bound
-    # stretch_per_reboot: 1.2 # Suggested lower bound
-    # I'm including the subsequent two params to avoid conditionals in the code, but these should # remain unchanged for normal use cases - the background risk of humanity
-    # becoming multiplanetary is probably safe to treat as 0. TODO Explain better
-    per_civilisation_background_risk_numerator: 0
-    base_background_risk_denominator: 1
+    base_x_scale: 240
+    # current_perils_base_x_scale: 0
+
+    x_translation: 70
+    # current_perils_x_translation: 0
+
+    sharpness: 1.5
+    # current_perils_sharpness: 0
+
+    stretch_per_reboot: 3.5 # Geometric mean of optimistic and pessimistic views
+    # stretch_per_reboot: 10 # Pessimistic
+    # stretch_per_reboot: 1.2 # Optimistic
+    # current_perils_stretch_per_reboot: 3.5
+
+    # I'm including the subsequent two params to simplify the code, but these should
+    # remain unchanged for normal use cases - the 'background' risk of humanity
+    # becoming multiplanetary is probably safe to treat as 0.
+    per_reboot_background_risk_multiplier: 0
+    base_background_risk: 0
 
 
   interstellar:
@@ -395,31 +262,27 @@ perils:
 
     # Some values below are set to 1 to avoid Division by Zero errors in the code
 
-    # current_perils_y_scale: 0 # Uncomment to affect the current time of perils only
+    # current_perils_y_scale: 0
     y_scale: 0
-    # current_perils_base_x_scale: 118 # Uncomment to affect the current time of perils only
+    # current_perils_base_x_scale: 118
     base_x_scale: 1
     stretch_per_reboot: 1
-    # current_perils_x_translation: 15 # Uncomment to affect the current time of perils only
+    # current_perils_x_translation: 15
     x_translation: 0
-    # current_perils_sharpness: 2 # Uncomment to affect the current time of perils only
+    # current_perils_sharpness: 2
     sharpness: 0
-    # current_perils_stretch_per_reboot: 10 # Uncomment to affect the current time of perils only
+    # current_perils_stretch_per_reboot: 10
 
-    # I'm including the subsequent two params to avoid conditionals in the code, but these should
-    # be 0 under normal assumptions. TODO: explain better
+    # I'm including the subsequent two params to simplify the code, but these should
+    # be 0 under normal assumptions.
+
     # You could set them higher to factor in the chance
     # of an alien civilisation spreading throughout the galaxy - though then you'd need to tweak
     # the other states to allow for that too, and it would probably easier to just model separately.
-    per_civilisation_background_risk_numerator: 0
-    base_background_risk_denominator: 1
+    per_reboot_background_risk_multiplier: 0
+    base_background_risk: 0
 
 multiplanetary:
-  # The params in this section govern transitional probabilities from a multiplanetary
-  # state to each of the nested states. For multiplanetary states, we don’t use
-  # the number of previous civilisations as a parameter, on the grounds that if
-  # you’ve reached that state you’re probably capable of advanced resource
-  # extraction without the use of fossil fuels.
   extinction:
     # Desmos graph of the probability of transitioning from x 'planets' (self
     # supporting, technologically independent settlements) directly to extinction
@@ -431,20 +294,12 @@ multiplanetary:
     # c = x_translation
     # d = min_risk
 
-    two_planet_risk: 0.12
+    two_planet_risk: 0.12 # The probability of this transition from 2 planets
     decay_rate: 0.45 # the proportion by which risk for an n-planet civilisation
     # decreases for an (n+1)-planet civilisation
-    min_risk: 0 # Longtermist philosophy is basically predicated on this being extremely close to 0.
-    # In the long run, if this doesn't tend to become almost 0, longtermism isn't
-    # possible (in principle if all settlements are in our solar system we might
-    # be vulnerable to supernovae etc, but in practice if things went in the
-    # right direction I assume we'd get from large numbers of intra-system
-    # settlements to interstellar settlements quickly as to be virtually instantaneous on galactic timelines)
-    stretch_per_reboot: 1 # It seems likely fossil fuels and minerals will be
-    # a much smaller constraint in this era than in the time of perils. Depletion
-    # of fissile materials might matter more in the space age, but even that
-    # seems likely to have been mostly resolved by the time another planet is
-    # fully self-sustaining. This parameter allows you to express a contrary belief.
+    min_risk: 0
+    stretch_per_reboot: 1
+
 
   preindustrial:
     # By default I treat the probability of transitioning to a preindustrial state as 0 on
@@ -485,37 +340,21 @@ multiplanetary:
     # probability of any regression that we regress the given number of planets.
     two_planet_risk: 0.2
     decay_rate: 0.4
-    min_risk: 0 # Best guess
-    # min_risk: 0.04 # Suggested upper bound
-    # The minimum risk of losing at least one planet before gaining
-    # one. Given that the light cone increases cubically,
-    # I would expect it to tend to a very low rate.
-    # The upper bound is the proportion of <all best guess max probabilities of
-    # regression from a time of perils>/<all best-guess max probabilities of making
-    # it past a time of perils>.
-    # In this case the lower bound is basically my best guess.
 
-    common_ratio_for_geometric_sum: 1.4 # Used for weighting the different numbers of planets we
-    # might lose conditional on us losing 1 or more. Higher gives higher
-    # probability that given such a loss we'll lose a smaller number of planets.
-    # This is used the same way as the common ratio for intra-perils regressions
-    # In this case I'm more confident that it's appropriate, since the definition
-    # of 'planets' presupposes a certain independence from each others' fate
-    # in the way the definition of technologies (i.e. progress years) in a time
-    # of perils doesn't. So I haven't implemented a linear alternative here.
+    # min_risk is the minimum risk of losing at least one planet before gaining
+    # one in an arbitrarily large civilisation.
+    min_risk: 0 # Optimistic
+    # min_risk: 0.04 # Pessimistic
+
+
+    common_ratio_for_geometric_sum: 1.4
+
     # TODO MD->SC: I would invert this param because it's confusing that a
     # larger number means fewer planets.
-    stretch_per_reboot: 1 # Unlike in perils, we might stretch the possibility of
-    # intra-state regression; there each state represents an actual year at some
-    # technology level, and I don't see any reason to think per year risk would
-    # change at that technology level; for the multiplanetary state, if technology
-    # has slowed down it could mean it would take longer to create
-    # another settlement, and therefore you'd have a higher probability of you
-    # losing another settlement first.
+    stretch_per_reboot: 1
 
-  perils: 'n/a'
-  # transitioning to perils is just the specific case of transitioning to n=1 planets given our
-  # assumptions about transitioning to n planets.
+  perils: n/a
+  # transitioning to perils is just the specific case of transitioning to n=1 planets.
 
   interstellar:
 
@@ -529,150 +368,8 @@ multiplanetary:
     # c = x_translation
     # d = min_risk
 
-    # (unlike the other multiplanetary transitions, I assume this becomes more
-    # likely the more planets are settled, and use the same abstract formula as for transitions
-    # in the time of perils)
+    # (unlike the other multiplanetary transitions, this uses the s-curve formula)
+    y_scale: 0.65
     base_x_scale: 13
-    stretch_per_reboot: 1
-    y_scale: 0.65 # With enough interplanetary colonies, it becomes increasingly likely that
-    # we send out interstellar colony ships, since we've proven most of the
-    # technology and might run out of space in our solar system (though there's
-    # a lot of scope for interpretation about how many planets and planetoids would be suitable).
     sharpness: 2
-
-preperils:
-  preindustrial:
-
-    # Parameters describing the chance of becoming industrial (vs extinct) from
-    # a preindustrial state
-    # Desmos graph of the probability of the xth civilisation going directly extinct
-    # from a preindustrial state: https://www.desmos.com/calculator/ta88srytop
-    # The Desmos values correspond to the parameters in this section as follow:
-    # x = number of previous civilisations (calculated for every number up to the MAX_CIVILISATIONS constant)
-    # a = per_civilisation_annual_extinction_probability_multiplier
-    # b = annual_extinction_probability_denominator
-    # c = base_expected_time_in_years
-    # d = stretch_per_reboot
-    # with an probability of extinction A:
-
-    # The estimates of expected time to recover come from Luisa
-    # Rodriguez's post[6]. The estimates of annual extinction rate
-    # come from Andrew Snyder-Beattie, Toby Ord & Michael Bonsall’s paper[7].
-    # These each give us many plausible choice of parameter values, so I list
-    # them below under the relevant quote from each essay, in the order they
-    # appeared in the relevant text - uncomment as preferred.
-    # [6] https://forum.effectivealtruism.org/posts/Nc9fCzjBKYDaDJGiX/what-is-the-likelihood-that-civilizational-collapse-would-1
-    # [7] https://doi.org/10.1038/s41598-019-47540-7
-
-    # base_expected_time_in_years: 500  # optimistic: agricultural and industrial revolutions are much easier the second time
-    base_expected_time_in_years: 11_100  # 3X Luisa's upper end of her best-case guess in her scenario 'Inside view — if we assume that existing
-    # physical and human capital would accelerate the speed of re-industrialization relative to the base rate (and
-    # therefore) the British industrial revolution happened about when we’d have expected' scenario, to account for
-    # her remarks about technological stagnation
-    # base_expected_time_in_years: 300_000  # pessimistic: agricultural revolution takes as long as it did the first time
-
-    stretch_per_reboot: 1.05 # I assume a slight increase in time to develop technology
-    # from burden of disease and environmental damage, but substantially less of
-    # a stretch than the later transitions, which seem much more likely to be resource-limited.
-
-    # Quotes from Snyder-Beattie et al.[7]:
-    # 'We can also relax the one in million relative likelihood constraint and
-    # derive less conservative upper bounds. An alternative bound would be rates
-    # with relative likelihood below 10−1 (1 in 10) when compared to the baseline
-    # rate of 10−8. If we assume humanity has lasted 200kyr, we obtain a bound
-    # of μ < 1.2 * 10^−5, corresponding to an annual extinction probability below
-    # 1 in 87,000.'
-
-    annual_extinction_probability_denominator: 87_000
-
-    # Optimistic bound from [7]:
-    # 'Using the 2Myr origin of Homo strengthens the bound by an order of magnitude
-    # in a similar way and produces annual extinction probabilities below 1 in 870,000.'
-    # base_annual_extinction_probability_denominator: 870_000
-
-    per_civilisation_annual_extinction_probability_multiplier: 1 # Multiplier on
-    # the annual extinction risk for each civilisation.
-
-  industrial:
-    # Parameters describing the chance of reaching a time of perils (vs going
-    # extinct) from an industrial state
-    # Desmos graph of the probability of the xth civilisation going directly extinct
-    # from an industrial state:
-    # https://www.desmos.com/calculator/gbabrcojng
-    # The Desmos values correspond to the parameters in this section as follow:
-    # x = number of previous civilisations (calculated for every number up to the MAX_CIVILISATIONS constant)
-    # a = per_civilisation_annual_extinction_probability_multiplier
-    # b = annual_extinction_probability_denominator
-    # c = base_expected_time_in_years
-    # d = stretch_per_reboot
-    # g = base_annual_extinction_probability_coefficient
-
-    # For expected time in years, we have to make some strong assumptions, so I
-    # suggest two sets of values, representing a pessimistic and an optimistic scenario:
-
-    # Values for a pessimistic scenario
-
-    # In this scenario, used by default, all knowledge of previous
-    # civilisations' technology is lost or made useless by
-    # resource constraints. Thus the original ~150 years for the industrial -> time-of-perils
-    # transition extends 10-fold for the first reboot, then more gently for subsequent reboots
-    # as fossil fuels entirely deplete, and phosphorus, rare earths etc are
-    # progressively converted to unusable states. On phosphorus, see this discussion
-    # between John Halstead and David Denkenberger:
-    # https://forum.effectivealtruism.org/posts/rtoGkzQkAhymErh2Q/are-we-going-to-run-out-of-phosphorous
-
-    # base_expected_time_in_years: 1500 # suggested upper bound
-    # I assume ten times the duration for rebooting with no oil, much less coal
-    # that's more expensive to mine, and maybe 10% of the energy of our current
-    # civilisation embodied in landfill[11].
-    # [11] https://scitechdaily.com/scientists-estimate-that-the-embodied-energy-of-waste-plastics-equates-to-12-of-u-s-industrial-energy-use/
-
-    # Dartnell envisions what the process might look like here[12]. He suggests
-    # a second industrial -> time-of-perils transition is unlikely to *ever* happen.
-    # [12] https://aeon.co/essays/could-we-reboot-a-modern-civilisation-without-fossil-fuels
-
-    # stretch_per_reboot: 1.5 # suggested upper bound
-
-    # Values for an optimistic scenario
-
-    # In this scenario, the absence of fossil fuels/other resources
-    # is much less punitive and that enough knowledge from previous civilisations
-    # is retained to actually speed up this transition in the first couple of reboots.
-
-    # base_expected_time_in_years: 100 # suggested lower bound
-    # In this scenario I assume the first reboot is slightly faster than the first
-    # industrial revolution
-    # despite depleted resources, dues to retained scientific knowledge and old
-    # technology available to learn from
-    # stretch_per_reboot: 1.2 # suggested lower bound
-
-    base_expected_time_in_years: 381 # best guess - geometric mean of the upper and lower bounds
-    stretch_per_reboot: 1.34 # best guess - geometric mean of the upper and lower bounds
-
-    # ***
-
-    # For extinction probability per year, we can start with the base rates
-    # given in the previous calculation, and then multiply them by some factor
-    # based on whether we think industry would make humans more or less resilient.
-    annual_extinction_probability_denominator: 87_000
-    base_annual_extinction_probability_coefficient: 0.7 # Clark (2008)[8] estimates
-    # that British grain output doubled between ~1760-1850, and had doubled over
-    # the 300 years before that.
-    # [8] http://dx.doi.org/10.1111/j.1468-0289.1991.tb01273.x
-    # TODO MD->SC: I don't understand what grain output has to do with extinction probability
-
-    # So if we assume losses of food are uncorrelated with each other, and the
-    # majority of the world would go through a similar transition at once, that
-    # would suggest a lower bound on this multiplier of ~0.25. Obviously the
-    # rest of the world was slower, though - going by these[9] estimates[10] of historical
-    # wheat yield specifically, the US took til about the 1930s to start catching up.
-    # [9] https://www.researchgate.net/figure/Wheat-Yields-1800-2004_fig1_263620307
-    # [10] https://www.agry.purdue.edu/ext/corn/news/timeless/yieldtrends.html
-
-    # But surplus food production might not matter much for extreme events such as a
-    # supervolcano that blocked out the sky for many years, and I suspect such
-    # events constitute the majority of pre-modern extinction risk.
-
-    # ***
-    per_civilisation_annual_extinction_probability_multiplier: 1 # Multiplier on
-    # the annual extinction risk for each civilisation.
+    stretch_per_reboot: 1

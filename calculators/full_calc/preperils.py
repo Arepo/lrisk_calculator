@@ -18,13 +18,7 @@ def extinction_given_preindustrial(k):
 
     expected_time_in_years = base_expected_time_in_years * stretch_per_reboot ** k
 
-    extinction_probability_per_year = (1 /
-        p_params.annual_extinction_probability_denominator)
-
-    extinction_probability_per_year = (1 /
-        p_params.annual_extinction_probability_denominator)
-
-    return 1 - ((1 - extinction_probability_per_year) ** expected_time_in_years)
+    return 1 - ((1 - p_params.base_annual_extinction_probability) ** expected_time_in_years)
 
 
 def industrial_given_preindustrial(k, k1):
@@ -49,15 +43,11 @@ def extinction_given_industrial(k):
     base_expected_time_in_years = i_params.base_expected_time_in_years
     stretch_per_reboot  = i_params.stretch_per_reboot
 
-    base_annual_extinction_probability = (1 /
-        i_params.annual_extinction_probability_denominator)
-
     expected_time_in_years = base_expected_time_in_years * stretch_per_reboot ** k
 
-    return (1 - (1 - base_annual_extinction_probability
-                     * i_params.base_annual_extinction_probability_coefficient)
+    return (1 - (1 - i_params.base_annual_extinction_probability
+                     * i_params.annual_extinction_probability_coefficient)
                 ** expected_time_in_years)
-
 
 def perils_given_industrial(k, k1):
     """Calculate probability of extinction from industrial state in the kth civilisation,

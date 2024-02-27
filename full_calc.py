@@ -230,7 +230,6 @@ with open(file_name, 'a', newline='') as csvfile:
         # Write header only if file is empty or doesn't exist
         writer.writerow(
             ['Brief description ', 'Notes',
-             'Loss of value from Industrial-1 as proportion of loss of value from Preindustrial-1',
              "Loss of value of reverting to Preindustrial-1 as as proportion of loss of value of extinction",
              "Loss of value of reverting to Industrial-1 as proportion of loss of value of extinction",
              "Absolute loss of expected value from transitioning to Preindustrial-1",
@@ -242,7 +241,7 @@ with open(file_name, 'a', newline='') as csvfile:
             + ['MAX_PLANETS', 'MAX_CIVILISATIONS', 'MAX_PROGRESS_YEARS']
             + Params().get_param_keys())
     writer.writerow(
-        [' ', ' ', industrial_as_preindustrial_proportion]
+        [' ', ' ']
         + [preindustrial_as_extinction_proportion, industrial_as_extinction_proportion]
         + [preindustrial_in_terms_of_astronomical_value, industrial_in_terms_of_astronomical_value]
         + all_success_probabilities

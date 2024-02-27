@@ -66,8 +66,8 @@ def _parameterised_transition_probability(k, progress_year, target_state):
     def background_risk():
         # Exponent should be >0, since this is a probability that should be settable to 0 (and can't
         # be if the exponent is 0)
-        return (params[target_state]['per_civilisation_background_risk_numerator'] ** (k + 1)
-                /params[target_state]['base_background_risk_denominator'])
+        return (params[target_state]['per_reboot_background_risk_multiplier'] ** k
+                * params[target_state]['base_background_risk'])
 
     return background_risk() + sigmoid_curved_risk(
         x=progress_year,
