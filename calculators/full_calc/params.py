@@ -18,7 +18,7 @@ class Params:
 
 
     def __getattr__(self, item):
-        return self.__dict__.get(item, None)
+        return self.__dict__[item]
 
     def describe(self):
         """Returns a description of the parameters"""
