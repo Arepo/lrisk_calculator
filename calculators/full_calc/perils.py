@@ -42,6 +42,7 @@ def interstellar_given_perils(k, progress_year):
 
 def _parameterised_transition_probability(k, progress_year, target_state):
     if k == 0:
+        # Fetch any 'current_perils_' values and use those in preference to the standard ones.
         # Some 'is not None' kruft required to deal with some values potentially being 0
         base_x_scale = params[target_state].get('current_perils_base_x_scale')
         base_x_scale = base_x_scale or params[target_state]['base_x_scale']
@@ -54,6 +55,7 @@ def _parameterised_transition_probability(k, progress_year, target_state):
         sharpness = params[target_state].get('current_perils_sharpness')
         sharpness = sharpness or params[target_state]['sharpness']
     else:
+        # Use the standard values (no current_perils_)
         base_x_scale = params[target_state]['base_x_scale']
         x_scale_stretch = params[target_state]['stretch_per_reboot'] ** k
         y_scale = params[target_state]['y_scale']
