@@ -161,7 +161,7 @@ col1, col2 = st.columns(2, gap="large")
 # First Section: Industrial given Preindustrial
 
 with col1:
-    st.write("""**What is the probability any time civilisation reverts to a preindustrial state,
+    st.write("""**What is the probability any time civilisation reverts to a _preindustrial_ state,
              that it directly transitions to either of the following states (assuming those are the
              only possible outcomes)?**""")
 
@@ -176,7 +176,7 @@ with col1:
 # Second Section: Future perils given preindustrial
 
 with col2:
-    st.write("""**What is the probability any time civilisation either enters an industrial
+    st.write("""**What is the probability any time civilisation enters an _industrial_
              state that it directly transitions to
              either of the following states (assuming those are the only possible outcomes)?**""")
 
@@ -191,9 +191,8 @@ with col2:
 # # Section 3: Transitions from present perils
 
 '---'
-
-st.markdown("""## Transitional probabilities from the current 'time of perils'
-""")
+st.markdown("""## Transitional probabilities from the <span style='color: #07A0A3;'>current 'time of perils'</span>
+""", unsafe_allow_html=True)
 
 st.write("""**From our current state (postindustrial, dependent on a single planet, high-tech weaponry available),
          what is the probability that civilisation transitions directly to the following states?
@@ -222,8 +221,8 @@ st.markdown(obelus_string, unsafe_allow_html=True)
 
 '---'
 
-st.markdown("""## Transitional probabilities from any future 'times of perils'
-""")
+st.markdown("""## Transitional probabilities from any <span style='color: #FF8000;'>future 'times of perils'</span>
+""", unsafe_allow_html=True)
 
 st.write("""**If future civilisations ever regain technology resembling our current level
          (postindustrial, dependent on a single planet, high-tech weaponry available), what is the probability
@@ -244,7 +243,8 @@ for transition in all_transitions['from future perils']:
 
 '---'
 
-st.markdown("""## Transitional probabilities from multiplanetary states""")
+st.markdown("""## Transitional probabilities from <span style='color: #6600CC;'>multiplanetary</span> states"""
+            , unsafe_allow_html=True)
 
 st.write("""**If civilisation ever develops self-sustaining settlements on more than one planets),
          what is the probability that they will transitions directly to the following states?
