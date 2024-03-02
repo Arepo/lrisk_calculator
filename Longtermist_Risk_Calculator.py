@@ -161,8 +161,8 @@ col1, col2 = st.columns(2, gap="large")
 # First Section: Industrial given Preindustrial
 
 with col1:
-    st.write("""**What is the probability any time civilisation reverts to a _preindustrial_ state,
-             that it directly transitions to either of the following states (assuming those are the
+    st.write("""**What is your credence that any time civilisation reverts to a _preindustrial_ state,
+            it then directly transitions to each of the following states (assuming those are the
              only possible outcomes)?**""")
 
     for transition in all_transitions['from preindustrial']:
@@ -176,9 +176,9 @@ with col1:
 # Second Section: Future perils given preindustrial
 
 with col2:
-    st.write("""**What is the probability any time civilisation enters an _industrial_
-             state that it directly transitions to
-             either of the following states (assuming those are the only possible outcomes)?**""")
+    st.write("""**What is your credence that any time civilisation enters an _industrial_
+             it directly transitions to
+             each of the following states (assuming those are the only possible outcomes)?**""")
 
     for transition in all_transitions['from industrial']:
         st.slider(
@@ -195,7 +195,7 @@ st.markdown("""## Transitional probabilities from the <span style='color: #07A0A
 """, unsafe_allow_html=True)
 
 st.write("""**From our current state (postindustrial, dependent on a single planet, high-tech weaponry available),
-         what is the probability that civilisation transitions directly to the following states?
+         what is your credence that civilisation transitions directly to the following states?
          (assuming those are the only possible outcomes)?**""")
 
 def make_on_change_present_perils_callback(transition_name):
@@ -225,7 +225,7 @@ st.markdown("""## Transitional probabilities from any <span style='color: #FF800
 """, unsafe_allow_html=True)
 
 st.write("""**If future civilisations ever regain technology resembling our current level
-         (postindustrial, dependent on a single planet, high-tech weaponry available), what is the probability
+         (postindustrial, dependent on a single planet, high-tech weaponry available), what is your credence
          that they will transitions directly to the following states?
          (assuming those are the only possible outcomes)?**""")
 
@@ -247,7 +247,7 @@ st.markdown("""## Transitional probabilities from <span style='color: #6600CC;'>
             , unsafe_allow_html=True)
 
 st.write("""**If civilisation ever develops self-sustaining settlements on more than one planets),
-         what is the probability that they will transitions directly to the following states?
+         what is your credence that they will transition directly to the following states?
          (assuming those are the only possible outcomes)?**""")
 
 for transition in all_transitions['from multiplanetary']:
@@ -291,7 +291,7 @@ probabilities_df = pd.DataFrame(
     data.items(),
     columns=['Civilisation state', 'Probability of becoming interstellar'])
 
-st.markdown(f"### tl;dr: we have a {round(success_probabilities[2] * 100)}% chance of becoming interstellar")
+st.markdown(f"### tl;dr: your credences imply a {round(success_probabilities[2] * 100)}% chance of becoming interstellar")
 
 
 st.markdown("""<h6 style="text-align: center;">
