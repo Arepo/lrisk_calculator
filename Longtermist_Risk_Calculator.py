@@ -134,7 +134,7 @@ def make_on_change_callback(transition_name, origin_state):
 
 st.write("#### The tool below allows you to give credences representing the transitional probabilities in the following diagram (descriptions below):")
 
-st.image('https://39669.cdn.cke-cs.com/cgyAlfpLFBBiEjoXacnz/images/a4fab3864e51d5ecf59ea5a9d82e9ed8cbb98e30d914ba37.png/w_1170')
+st.image('https://39669.cdn.cke-cs.com/cgyAlfpLFBBiEjoXacnz/images/801d9181980811eb1e1985ea36266e6a2ef3c250d4c8068a.png/w_1278')
 
 st.write("""_Extinction_: Extinction of whatever type of life you value any time inclusively between now and our sun’s death (i.e. any case where we've failed to develop interplanetary technology that lets us escape the event).
 
