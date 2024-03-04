@@ -152,8 +152,8 @@ _Interstellar_: Civilisation has progressed to having at least two self-sustaini
 
 # Make values percentages
 
-st.write("#### Now adjust the values to see how the overall probability of human descendants becoming interstellar"\
-         " changes based on your credences.")
+st.write("#### Now adjust the values to see how your overall credence of human descendants becoming interstellar"\
+         " changes based on your credences for individual transitions.")
 
 col1, col2 = st.columns(2, gap="large")
 
