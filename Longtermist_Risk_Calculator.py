@@ -140,7 +140,7 @@ st.write("""_Extinction_: Extinction of whatever type of life you value any time
 
 _Preindustrial_: Civilisation has regressed to [pre-first-industrial-revolution](https://www.britannica.com/money/topic/Industrial-Revolution/The-first-Industrial-Revolution)-equivalent technology.
 
-_Industrial_: Civilisation has technology comparable to the first industrial revolution but does not yet have the technological capacity to do enough civilisational damage to regress to a previous state (e.g. nuclear weapons, biopandemics etc). A formal definition of industrial revolution technology is tricky but seems unlikely to dramatically affect probability estimates. In principle it could be something like '[kcals captured per capita](https://lukemuehlhauser.com/three-wild-speculations-from-amateur-quantitative-macrohistory/) go up more than 5x as much in a 100 year period as they had in any of the previous five 100-year periods.’
+_Industrial_: Civilisation has technology comparable to the first industrial revolution but does not yet have the technological capacity to do enough civilisational damage to regress to a previous state (e.g. nuclear weapons, biopandemics etc). A formal definition of industrial revolution technology is tricky but seems unlikely to dramatically affect credences. In principle it could be something like '[kcals captured per capita](https://lukemuehlhauser.com/three-wild-speculations-from-amateur-quantitative-macrohistory/) go up more than 5x as much in a 100 year period as they had in any of the previous five 100-year periods.’
 
 _Current perils_: Our current state, as of 1945, when we developed nuclear weaponry - what Carl Sagan called the ‘time of perils’.
 
@@ -398,7 +398,7 @@ your credences of the transitions from our current time of perils conditional on
 happening, to compare the difference it makes to our prospects. This way you can compare the
 counterfactual value of 'events' which are 'you work on some cause area'. You can make such
 adjustments with fields below (numbers input manually, to allow you high precision about your
-estimate of the outcome):""")
+assessment of the outcome):""")
 
 col1, col2, col3 = st.columns(3, gap="small")
 
