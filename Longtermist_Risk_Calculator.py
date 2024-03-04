@@ -397,12 +397,12 @@ st.markdown("""You could also consider an event, rather than as a transition, to
 your credences of the transitions from our current time of perils conditional on the event
 happening, to compare the difference it makes to our prospects. This way you can compare the
 counterfactual value of 'events' which are 'you work on some cause area'. You can make such
-adjustments with fields below (numbers input manually, to allow you arbitrary precision about your
+adjustments with fields below (numbers input manually, to allow you high precision about your
 estimate of the outcome):""")
 
 col1, col2, col3 = st.columns(3, gap="small")
 
-precision = 9
+precision = 16
 
 for state, col in zip(all_transitions['from abstract state'][:3], (col1, col2, col3)):
     with col:
