@@ -12,6 +12,11 @@ st.set_page_config(
         page_title="L-risk calculator",
 )
 
+# To use query strings chosen before 4 March 2024, replace the following...
+# A+%27minor%27+technological+regression%E2%80%A0+from+present+perils
+# with the following...
+# A+%27minor%27+technological+regression+%28to+%27Future+perils%27%29%E2%80%A0+from+present+perils
+
 # TODO Add Sankey diagram
 
 all_transitions = {
@@ -406,7 +411,7 @@ assessment of the outcome):""")
 
 col1, col2, col3 = st.columns(3, gap="small")
 
-precision = 16
+precision = 15 # Higher precision than this runs into floating point errors
 
 for state, col in zip(all_transitions['given counterfactual event'][:3], (col1, col2, col3)):
     with col:
