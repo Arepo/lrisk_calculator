@@ -41,9 +41,9 @@ class SimpleCalc:
                 industrial_given_present_perils=0, future_perils_given_present_perils=0,
                 interstellar_given_present_perils=0, extinction_given_future_perils=0,
                 preindustrial_given_future_perils=0, industrial_given_future_perils=0,
-                interstellar_given_future_perils=0, extinction_given_multiplanetary=0,
-                preindustrial_given_multiplanetary=0, industrial_given_multiplanetary=0,
-                future_perils_given_multiplanetary=0):
+                future_perils_given_future_perils=0, interstellar_given_future_perils=0,
+                extinction_given_multiplanetary=0, preindustrial_given_multiplanetary=0,
+                industrial_given_multiplanetary=0, future_perils_given_multiplanetary=0):
 
         # Premodern transition probabilities
         self.ext_g_pi = extinction_given_preindustrial
@@ -60,6 +60,7 @@ class SimpleCalc:
         self.ext_g_fp = extinction_given_future_perils
         self.pi_g_fp = preindustrial_given_future_perils
         self.i_g_fp = industrial_given_future_perils
+        self.fp_g_fp = future_perils_given_future_perils
         self.int_g_fp = interstellar_given_future_perils
 
         # Multiplanetary transition probabilities
@@ -158,6 +159,12 @@ class SimpleCalc:
         return self.i_g_fp
 
     @rounded
+    def future_perils_given_future_perils(self):
+        """Return the rounded user-specified probability. Co-determines the
+        probability of becoming a multiplanetary civilisation from this state"""
+        return self.fp_g_fp
+
+    @rounded
     def interstellar_given_future_perils(self):
         """Return the rounded user-specified probability. Co-determines the
         probability of becoming a multiplanetary civilisation from this state"""
@@ -170,6 +177,7 @@ class SimpleCalc:
         return 1 - (self.extinction_given_future_perils()
                     + self.preindustrial_given_future_perils()
                     + self.industrial_given_future_perils()
+                    + self.future_perils_given_future_perils()
                     + self.interstellar_given_future_perils())
 
     # From mutiplanetary
@@ -238,7 +246,7 @@ class SimpleCalc:
                                                     self.preindustrial_given_future_perils(),
                                                     self.industrial_given_future_perils(),
                                                     0,
-                                                    0,
+                                                    self.future_perils_given_future_perils(),
                                                     self.multiplanetary_given_future_perils(),
                                                     self.interstellar_given_future_perils()]
         multiplanetary_transition_probabilities = [self.extinction_given_multiplanetary(),

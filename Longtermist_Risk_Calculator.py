@@ -27,7 +27,7 @@ all_transitions = {
         'Extinction',
         'Preindustrial',
         'Industrial',
-        "A 'minor' technological regression†",
+        "A 'minor' technological regression (to 'Future perils')†",
         'Multiplanetary††',
         'Interstellar/existential security'
     ],
@@ -35,6 +35,7 @@ all_transitions = {
         'Extinction',
         'Preindustrial',
         'Industrial',
+        "A 'minor' technological regression*",
         'Multiplanetary††',
         'Interstellar/existential security'
     ],
@@ -49,15 +50,17 @@ all_transitions = {
         'Extinction',
         'Preindustrial',
         'Industrial',
-        "A 'minor' technological regression†",
+        "A 'minor' technological regression (to 'Future perils')†",
         'Multiplanetary††',
         'Interstellar/existential security'
     ]
 }
 
-obelus_string = """<span style="font-size:0.8em;">† Defined as an event that effectively reset the modern era, i.e. technologically regressed us the equivalent of about about 50-100 years, but left us with nuclear arsenals or other comparatively destructive weaponry.</span>
+obelus_string = """<span style="font-size:0.8em;">† You could think of this as an event that effectively reset the modern era, i.e. technologically regressed us the equivalent of about about 50-100 years, but left us with nuclear arsenals or other comparatively destructive weaponry.</span>
 
 <span style="font-size:0.8em;">†† Defined as civilisation having established self-sustaining settlements on more than one planet.</span>"""
+
+asterisk_string = """<span style="font-size:0.8em;">* A null transition, given to make this easier to compare with the present time of perils</span>"""
 
 last_listed_transitions = [transitions[-1] + " " + origin_state for origin_state, transitions in all_transitions.items()]
 
@@ -134,7 +137,7 @@ def make_on_change_callback(transition_name, origin_state):
 
 st.write("#### The tool below allows you to give credences representing the transitional probabilities in the following diagram (descriptions below):")
 
-st.image('https://39669.cdn.cke-cs.com/cgyAlfpLFBBiEjoXacnz/images/801d9181980811eb1e1985ea36266e6a2ef3c250d4c8068a.png/w_1278')
+st.image('https://39669.cdn.cke-cs.com/cgyAlfpLFBBiEjoXacnz/images/e3bf81141f1ce63574e0b48959e03344cf21077931bd95dd.png/w_1096')
 
 st.write("""_Extinction_: Extinction of whatever type of life you value any time inclusively between now and our sun’s death (i.e. any case where we've failed to develop interplanetary technology that lets us escape the event).
 
@@ -237,7 +240,7 @@ for transition in all_transitions['from future perils']:
     key=transition + " " + 'from future perils' + "_from_input",
     **common_form_values)
 
-
+st.markdown(asterisk_string, unsafe_allow_html=True)
 
 # Section 5 Transitional probabilities from multiplanetary states
 
@@ -269,12 +272,13 @@ all_transition_probabilities = {
     'extinction_given_present_perils': st.session_state['Extinction from present perils'],
     'preindustrial_given_present_perils': st.session_state['Preindustrial from present perils'],
     'industrial_given_present_perils': st.session_state['Industrial from present perils'],
-    'future_perils_given_present_perils': st.session_state["A 'minor' technological regression† from present perils"],
+    'future_perils_given_present_perils': st.session_state["A 'minor' technological regression (to 'Future perils')† from present perils"],
     'interstellar_given_present_perils': st.session_state['Interstellar/existential security from present perils'],
 
     'extinction_given_future_perils': st.session_state['Extinction from future perils'],
     'preindustrial_given_future_perils': st.session_state['Preindustrial from future perils'],
     'industrial_given_future_perils': st.session_state['Industrial from future perils'],
+    'future_perils_given_future_perils': st.session_state["A 'minor' technological regression* from future perils"],
     'interstellar_given_future_perils': st.session_state['Interstellar/existential security from future perils'],
 
     'extinction_given_multiplanetary': st.session_state['Extinction from multiplanetary'],
