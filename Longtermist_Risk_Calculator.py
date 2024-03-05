@@ -437,8 +437,12 @@ counterfactual_transitional_probabilities = (
 
 result = np.round(np.dot(probability_differences, counterfactual_transitional_probabilities),
                   precision)
+extinction_proportion = result/success_probabilities[2]
 st.markdown("The expected value of the event is ${0}V$.".format(result))
-
+if result > 0:
+    st.markdown("The event is ${0}$ times as good as avoiding a counterfactual extinction event.".format(extinction_proportion))
+if result < 0:
+    st.markdown("The event is ${0}$ times as bad as extinction.".format(-extinction_proportion))
 '----'
 
 st.markdown("Your answers are stored in the URL - please share them with others :)")
