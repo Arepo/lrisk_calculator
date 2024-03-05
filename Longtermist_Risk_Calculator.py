@@ -45,7 +45,7 @@ all_transitions = {
         'Future perils',
         'Interstellar/existential security'
     ],
-    'from abstract state': [
+    'given counterfactual event': [
         'Extinction',
         'Preindustrial',
         'Industrial',
@@ -65,7 +65,7 @@ last_listed_transitions = [transitions[-1] + " " + origin_state for origin_state
 target_states = [target_state + " " + origin_state for origin_state, target_state_list in all_transitions.items()
                  for target_state in target_state_list]
 
-concrete_transitions = [state for state in target_states if not state.endswith('from abstract state')]
+concrete_transitions = [state for state in target_states if not state.endswith('given counterfactual event')]
 
 common_form_values = {
     'min_value': 0.0,
@@ -118,8 +118,8 @@ for session_value in target_states:
     query_params = st.experimental_get_query_params()
     if session_value in query_params:
         st.session_state[session_value] = float(query_params[session_value][0])
-    elif session_value.endswith('from abstract state') and session_value not in st.session_state:
-        st.session_state[session_value] = st.session_state[session_value.replace('from abstract state', 'from present perils')]
+    elif session_value.endswith('given counterfactual event') and session_value not in st.session_state:
+        st.session_state[session_value] = st.session_state[session_value.replace('given counterfactual event', 'from present perils')]
     elif session_value not in st.session_state and session_value in last_listed_transitions:
         st.session_state[session_value] = 1.0
     elif session_value not in st.session_state:
@@ -200,11 +200,11 @@ st.write("""**From our current state (postindustrial, dependent on a single plan
 
 def make_on_change_present_perils_callback(transition_name):
     """Create a function to allow us to pass the transition name to the callback, and to update the
-    probabilities of abstract state to match"""
+    probabilities of counterfactuale event to match"""
     def callback():
         update_transitions(transition_name, 'from present perils')
         for state in all_transitions['from present perils']:
-            st.session_state[state + " " + 'from abstract state'] = st.session_state[state + " " + 'from present perils']
+            st.session_state[state + " " + 'given counterfactual event'] = st.session_state[state + " " + 'from present perils']
     return callback
 
 for transition in all_transitions['from present perils']:
@@ -387,11 +387,11 @@ st.plotly_chart(proportion_fig, use_container_width=True)
 
 
 
-# Section 6 - Transitional probabilities from abstract events
+# Section 6 - Transitional probabilities from counterfactual events
 
 '---'
 
-st.markdown("""## Transitional probabilities from abstract events""")
+st.markdown("""## Transitional probabilities from counterfactual events""")
 
 st.markdown("""You could also consider an event, rather than as a transition, to be an adjustment
 your credences of the transitions from our current time of perils conditional on the event
@@ -404,25 +404,25 @@ col1, col2, col3 = st.columns(3, gap="small")
 
 precision = 16
 
-for state, col in zip(all_transitions['from abstract state'][:3], (col1, col2, col3)):
+for state, col in zip(all_transitions['given counterfactual event'][:3], (col1, col2, col3)):
     with col:
         st.number_input(
             label=state,
-            value=st.session_state[state + " " + 'from abstract state'],
-            on_change=make_on_change_callback(state, 'from abstract state'),
-            key=state + " " + 'from abstract state' + "_from_input",
+            value=st.session_state[state + " " + 'given counterfactual event'],
+            on_change=make_on_change_callback(state, 'given counterfactual event'),
+            key=state + " " + 'given counterfactual event' + "_from_input",
             min_value= 0.0,
             max_value= 1.0,
             step= 0.01,
             format= f"%.{precision}f")
 
-for state, col in zip(all_transitions['from abstract state'][3:], (col1, col2, col3)):
+for state, col in zip(all_transitions['given counterfactual event'][3:], (col1, col2, col3)):
     with col:
         st.number_input(
             label=state,
-            value=st.session_state[state + " " + 'from abstract state'],
-            on_change=make_on_change_callback(state, 'from abstract state'),
-            key=state + " " + 'from abstract state' + "_from_input",
+            value=st.session_state[state + " " + 'given counterfactual event'],
+            on_change=make_on_change_callback(state, 'given counterfactual event'),
+            key=state + " " + 'given counterfactual event' + "_from_input",
             min_value= 0.0,
             max_value= 1.0,
             step= 0.01,
@@ -432,8 +432,8 @@ st.write(obelus_string, unsafe_allow_html=True)
 
 probability_differences = np.array(list(calc.probability_differences().values()))
 counterfactual_transitional_probabilities = (
-    np.array([st.session_state[state + " " + 'from abstract state']
-              for state in all_transitions['from abstract state']]))
+    np.array([st.session_state[state + " " + 'given counterfactual event']
+              for state in all_transitions['given counterfactual event']]))
 
 result = np.round(np.dot(probability_differences, counterfactual_transitional_probabilities),
                   precision)
