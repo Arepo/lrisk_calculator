@@ -140,7 +140,7 @@ def make_on_change_callback(transition_name, origin_state):
     return callback
 
 
-st.write("#### The tool below allows you to give credences representing the transitional probabilities in the following diagram (descriptions below):")
+st.write("#### This tool allows you to give credences representing the transitional probabilities in the following diagram (descriptions below):")
 
 st.image('https://39669.cdn.cke-cs.com/cgyAlfpLFBBiEjoXacnz/images/e3bf81141f1ce63574e0b48959e03344cf21077931bd95dd.png/w_1096')
 
@@ -234,7 +234,7 @@ st.markdown("""## Transitional probabilities from any <span style='color: #FF800
 
 st.write("""**If future civilisations ever regain technology resembling our current level
          (postindustrial, dependent on a single planet, high-tech weaponry available), what is your credence
-         that they will transitions directly to the following states?
+         that they will transition directly to the following states?
          (assuming those are the only possible outcomes)?**""")
 
 for transition in all_transitions['from future perils']:
