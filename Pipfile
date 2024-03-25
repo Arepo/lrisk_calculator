@@ -10,6 +10,7 @@ streamlit = "==1.27.0"
 numpy = "==1.26.0"
 pydtmc = "==8.7.0"
 pyyaml = "==6.0.1"
+importlib_resources = "==5.2.0"
 
 [dev-packages]
 
