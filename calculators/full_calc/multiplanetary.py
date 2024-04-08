@@ -149,7 +149,7 @@ def transition_to_n_planets_given_multiplanetary(k, planet_count, n):
     # return any_intra_multiplanetary_regression(q) * ((n + 1)
     #                                               / (1 + (q ** 2)/2 + 3 * q / 2))
     # The commented out return values is the exponential decrease described above. TODO - where?
-    r = n_params['common_ratio_for_geometric_sum']
+    r = n_params['regression_size_skew']
 
     numerator_for_n_planets = r ** (n-1) # How relatively likely is it, given
     # some loss, that that loss took us to exactly n planets? (where min value for n is 1,

@@ -152,7 +152,7 @@ def transition_to_year_n_given_perils(k:int, progress_year:int, n=None):
             max_regressed_states = possible_regressions
             target_year = n
 
-        r = params['progress_year_n']['common_ratio_for_geometric_sum']
+        r = params['progress_year_n']['regression_size_skew']
 
         # TODO cache this value, probably for each value of possible_regressions - may be a bad trade
         # off if it puts millions of floats into short term memory

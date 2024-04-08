@@ -198,14 +198,14 @@ perils:
     # x = target progress year (iterated through in the code)
     # a = any_regression
     # p = origin progress year (iterated through in code), such that 0 <= x <= p
-    # n = common_ratio_for_geometric_sum
+    # n = regression_size_skew
 
     # algorithm: 'exponential' # Optimistic
     # algorithm: 'linear' # Pessimistic
     algorithm: 'mean' # Since much of the runtime comes from the algorithm used here,
     # consider setting it to one of the more efficient ones above if an upper/lower bound will do
 
-    common_ratio_for_geometric_sum: 1.4 # Only required for exponential and mean algorithms (but
+    regression_size_skew: 1.4 # Only required for exponential and mean algorithms (but
     # messes up the results.csv columning if you comment it out when using linear)
     any_regression: 0.057
 
@@ -345,7 +345,7 @@ multiplanetary:
     # min_risk: 0.04 # Pessimistic
 
 
-    common_ratio_for_geometric_sum: 1.4
+    regression_size_skew: 1.4
 
     # TODO MD->SC: I would invert this param because it's confusing that a
     # larger number means fewer planets.
