@@ -41,8 +41,9 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-
-
+<p align="center">
+<img src="images/simple_calc_output.png" width=600 height=462>
+</p>
 
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
