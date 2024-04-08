@@ -41,7 +41,7 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-[![Product Name Screen Shot][images/simple_calc_output.png]](https://example.com)
+<img src="images/simple_calc_output.png" alt="Simple calc output" width="750" height="634">
 
 
 
