@@ -129,7 +129,7 @@ To run the full calc:
     - [ ] zipf algorithm for intra-perils regression
 - [ ] (Major enhancement): allow users to easily add and remove Markov Chain states via a UI
 - [ ] (Majorer enhancement): introduce some kind of Monte Carlo simulation functionality
-- [ ] 
+
 
 See the [open issues](https://github.com/arepo/lrisk_calculator/issues) for a full list of proposed features (and known issues).
 
