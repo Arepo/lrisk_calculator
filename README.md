@@ -2,7 +2,7 @@
 <div align="center">
 
 <p align="center">
-    A functional but implementation of the models of human civilisation development described <a href="https://forum.effectivealtruism.org/posts/YnBwoNNqe6knBJH8p/modelling-civilisation-beyond-a-catastrophe">here</a> (though note updates to the cyclical model described <a href="https://forum.effectivealtruism.org/s/gWsTMm5Nbgdxedyns/p/ouuj93CPymfnvu8uQ">here</a>). Those posts are highly recommended reading if you want to use the full calculator, otherwise the inputs required might be opaque.
+    A functional implementation of the models of human civilisation development described <a href="https://forum.effectivealtruism.org/posts/YnBwoNNqe6knBJH8p/modelling-civilisation-beyond-a-catastrophe">here</a> (though note updates to the cyclical model described <a href="https://forum.effectivealtruism.org/s/gWsTMm5Nbgdxedyns/p/ouuj93CPymfnvu8uQ">here</a>). Those posts are highly recommended reading if you want to use the full calculator, otherwise the inputs required might be opaque.
     <br />
     <a href="https://github.com/arepo/lrisk_calculator"><strong>Explore the docs »</strong></a>
     <br />
