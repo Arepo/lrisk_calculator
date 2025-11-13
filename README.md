@@ -75,7 +75,7 @@ python3.10 -m  pipenv shell
   python full_calc.py
 ```
 
-We are using python 3.10 as that's the version @Arepo used, and it will probably give fewer problems.
+I built this with Python 3.10, so using that will probably give fewer problems.
 
 Some debugging commands which might help are:
 
